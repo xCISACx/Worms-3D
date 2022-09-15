@@ -55,7 +55,7 @@ public class GameManager : MonoBehaviour
             NextTurn();
         }
         
-        if (Input.GetKeyDown(KeyCode.Tab))
+        if (!_currentPlayer.roundUnitPicked && Input.GetKeyDown(KeyCode.Tab))
         {
             ChangeUnit();
         }
@@ -80,23 +80,32 @@ public class GameManager : MonoBehaviour
 
     private void ChangeUnit()
     {
+        _currentPlayer.currentUnit.highlighted = false;
+        Debug.Log("previous unit: " + _currentPlayer.currentUnit);
         _currentPlayer.currentUnit.canMove = false;
+        _currentPlayer.currentUnit.canPlay = false;
         
         _currentPlayer = playerList[currentPlayerIndex];
         _currentPlayer.currentUnitIndex++;
         _currentPlayer.currentUnitIndex %= _currentPlayer.unitList.Count;
+        _currentPlayer.currentUnit = _currentPlayer.unitList[_currentPlayer.currentUnitIndex];
+        
+        Debug.Log("new unit: " + _currentPlayer.currentUnit);
         
         mainCamera.followTarget = _currentPlayer.currentUnit.transform;
 
         currentUnitText.text = "Current Unit: " + (_currentPlayer.currentUnitIndex + 1);
+        _currentPlayer.currentUnit.highlighted = true;
     }
 
     private void PickUnit()
     {
-        _currentPlayer.currentUnit = _currentPlayer.unitList[_currentPlayer.currentUnitIndex];
+        _currentPlayer.unitPickedFlag = true;
+        _currentPlayer.roundUnitPicked = true;
+        _currentPlayer.currentUnit.canMove = true;
+        _currentPlayer.currentUnit.highlighted = false;
+        _currentPlayer.currentUnit.canPlay = true;
 
-        _currentPlayer.unitPicked = true;
-        
         turnTimer = defaultTurnTime;
         startTurnTimer = true;
     }
@@ -108,18 +117,20 @@ public class GameManager : MonoBehaviour
         currentPlayerText.text = "Current Player: " + (currentPlayerIndex + 1);
         currentUnitText.text = "Current Unit: " + (_currentPlayer.currentUnitIndex + 1);
         playerList[currentPlayerIndex].canPlay = true;
-        playerList[currentPlayerIndex].currentUnit.canMove = true;
         playerList[currentPlayerIndex].turnStarted = true;
+        _currentPlayer.currentUnit.highlighted = true;
         Debug.Log(_currentPlayer);
     }
 
     void NextTurn()
     {
+        _currentPlayer.currentUnit.highlighted = false; // disable the highlight of the previous player's unit before switching to the next player
         startTurnTimer = false;
         currentPlayerIndex++;
         currentPlayerIndex %= _playerCount;
         _currentPlayer = playerList[currentPlayerIndex];
         mainCamera.followTarget = _currentPlayer.currentUnit.transform;
+        _currentPlayer.currentUnit.highlighted = true;
         currentPlayerText.text = "Current Player: " + (currentPlayerIndex + 1);
         currentUnitText.text = "Current Unit: " + (_currentPlayer.currentUnitIndex + 1);
         turnTimer = defaultTurnTime;
