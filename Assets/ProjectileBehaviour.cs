@@ -47,10 +47,12 @@ public class ProjectileBehaviour : MonoBehaviour
         {
             Debug.Log(collider.gameObject.name);
             Rigidbody rb = collider.GetComponent<Rigidbody>();
+            
             if (rb != null)
             {
                 rb.AddExplosionForce(explosionForce, transform.position, explosionRadius, upwardsModifier);
                 Debug.Log("adding explosion force");
+                //Deal Damage to each unit
             }
         }
     }
