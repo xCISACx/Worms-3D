@@ -15,7 +15,7 @@ public class GameManager : MonoBehaviour
     private int _playerCount = 4;
     [SerializeField] private Dictionary<PlayerBehaviour, UnitBehaviour[]> playerUnitDictionary;
     private PlayerBehaviour _currentPlayer;
-    [SerializeField] private List<PlayerBehaviour> playerList;
+    public List<PlayerBehaviour> playerList;
     [SerializeField] private List<UnitBehaviour> unitList;
     [SerializeField] private TMP_Text currentPlayerText;
     [SerializeField] private TMP_Text currentUnitText;
@@ -83,7 +83,7 @@ public class GameManager : MonoBehaviour
         _currentPlayer.currentUnit.highlighted = false;
         Debug.Log("previous unit: " + _currentPlayer.currentUnit);
         _currentPlayer.currentUnit.canMove = false;
-        _currentPlayer.currentUnit.canPlay = false;
+        _currentPlayer.currentUnit.canAct = false;
         
         _currentPlayer = playerList[currentPlayerIndex];
         _currentPlayer.currentUnitIndex++;
@@ -104,7 +104,7 @@ public class GameManager : MonoBehaviour
         _currentPlayer.roundUnitPicked = true;
         _currentPlayer.currentUnit.canMove = true;
         _currentPlayer.currentUnit.highlighted = false;
-        _currentPlayer.currentUnit.canPlay = true;
+        _currentPlayer.currentUnit.canAct = true;
 
         turnTimer = defaultTurnTime;
         startTurnTimer = true;

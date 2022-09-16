@@ -20,16 +20,19 @@ public class CameraBehaviour : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        MouseInput.x = Input.GetAxis("Mouse X") * sensitivity;
+        MouseInput.y = Input.GetAxis("Mouse Y") * sensitivity;
         
+        transform.localRotation = Quaternion.Euler(-MouseInput.y, MouseInput.x, 0);
+        MouseInput.y = Mathf.Clamp(MouseInput.y, -90, 90);
     }
 
     private void LateUpdate()
     {
-        transform.position = new Vector3(followTarget.position.x, followTarget.position.y + yOffset, followTarget.position.z - followDistance);
-        MouseInput.x = Input.GetAxis("Mouse X") * sensitivity;
-        MouseInput.y = Input.GetAxis("Mouse Y") * sensitivity;
-        transform.localRotation = Quaternion.Euler(-MouseInput.y, MouseInput.x, 0);
-        MouseInput.y = Mathf.Clamp(MouseInput.y, -90, 90);
+        if (followTarget)
+        {
+            transform.position = new Vector3(followTarget.position.x, followTarget.position.y + yOffset, followTarget.position.z - followDistance);   
+        }
 
     }
 }

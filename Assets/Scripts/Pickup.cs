@@ -2,23 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "New Weapon", menuName = "Weapon")]
-public class Weapon : ScriptableObject
+[CreateAssetMenu(fileName = "New Pickup", menuName = "Pickup")]
+public class Pickup : ScriptableObject
 {
-    [Header ("Name")]
-    
-    public string name;
-    
     [Header("Model")] 
     
     public GameObject model;
     
-    [Header ("Stats")]
+    [SerializeField] private float ammoAmount;
+    [SerializeField] private float healthAmount;
+    [SerializeField] private float armourAmount;
+    [SerializeField] private Weapon weapon;
     
-    public float damage;
-    public float range;
-    public float accuracy;
-
     // Start is called before the first frame update
     void Start()
     {

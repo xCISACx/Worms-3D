@@ -8,10 +8,12 @@ using Math = System.Math;
 
 public class WeaponBehaviour : MonoBehaviour
 {
-    [SerializeField] public GameObject user;
-    [SerializeField] private GameObject projectilePrefab;
+    public GameObject user;
+    public GameObject projectilePrefab;
+    public GameObject weaponModel;
+    public Transform weaponModelParent;
     [SerializeField] private Transform shootPoint;
-    [SerializeField] private float shootForce;
+    [SerializeField] public float shootForce;
     [SerializeField] private LineRenderer lineRenderer;
     [SerializeField] private int lineSegmentCount = 100;
     [SerializeField] private int linePointCount = 100;
@@ -22,7 +24,7 @@ public class WeaponBehaviour : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        shootPoint = transform.GetChild(0);
+        
     }
 
     private void Awake()
@@ -39,7 +41,7 @@ public class WeaponBehaviour : MonoBehaviour
             var newProjectile = Instantiate(projectilePrefab, shootPoint.position, Quaternion.identity);
             Physics.IgnoreCollision(newProjectile.GetComponent<Collider>(), user.GetComponent<Collider>());
             newProjectile.GetComponent<Rigidbody>().AddForce(transform.forward * shootForce, ForceMode.Impulse);
-            Debug.Log("shoot");
+            //Debug.Log("shoot");
             Destroy(newProjectile.gameObject, 10f);
         }
         

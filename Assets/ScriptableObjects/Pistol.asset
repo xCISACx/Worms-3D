@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c8418ecd33bc6c540aef28d6c9f4d068, type: 3}
-  m_Name: Bazooka
+  m_Name: Pistol
   m_EditorClassIdentifier: 
-  name: Bazooka
-  model: {fileID: 1710935246616217760, guid: 1b41f25082248c341bba805b64e88913, type: 3}
-  ammoPrefab: {fileID: 7926522421175382475, guid: b15f321068190a0479093c1c480dc696, type: 3}
+  name: Pistol
+  model: {fileID: 1710935246616217760, guid: 07dc19d18bd9cfc4fad84889cab32ae8, type: 3}
+  ammoPrefab: {fileID: 7926522421175382475, guid: 1e211596a4235124a934628de8cfb63a, type: 3}
   damage: 45
-  range: 200
+  range: 50
   accuracy: 90

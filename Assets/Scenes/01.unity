@@ -295,6 +295,54 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1 &32287306
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 32287308}
+  - component: {fileID: 32287307}
+  m_Layer: 0
+  m_Name: Map
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!65 &32287307
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 32287306}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 84.62317, y: 57.242657, z: 282.3}
+  m_Center: {x: -10.165098, y: 28.948671, z: 57.309998}
+--- !u!4 &32287308
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 32287306}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 29.575848, y: -2.8085136, z: -89.34067}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1039378430}
+  - {fileID: 808533058}
+  - {fileID: 1818294500}
+  m_Father: {fileID: 0}
+  m_RootOrder: 12
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &37593891
 GameObject:
   m_ObjectHideFlags: 0
@@ -345,8 +393,9 @@ MonoBehaviour:
   SelectionArrow: {fileID: 403302052}
   currentWeaponSelected: 0
   selectedWeapon: {fileID: 0}
-  currentWeapon: {fileID: 0}
+  currentWeaponObject: {fileID: 0}
   weaponSlot: {fileID: 0}
+  WeaponParentPrefab: {fileID: 0}
 --- !u!54 &37593893
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -636,7 +685,7 @@ RectTransform:
   - {fileID: 555093661}
   - {fileID: 1500027504}
   m_Father: {fileID: 0}
-  m_RootOrder: 9
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -693,8 +742,9 @@ MonoBehaviour:
   SelectionArrow: {fileID: 1565654896}
   currentWeaponSelected: 0
   selectedWeapon: {fileID: 0}
-  currentWeapon: {fileID: 0}
+  currentWeaponObject: {fileID: 0}
   weaponSlot: {fileID: 0}
+  WeaponParentPrefab: {fileID: 0}
 --- !u!54 &71295666
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -857,7 +907,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 10
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &150767398
 GameObject:
@@ -909,8 +959,9 @@ MonoBehaviour:
   SelectionArrow: {fileID: 2107691117}
   currentWeaponSelected: 0
   selectedWeapon: {fileID: 0}
-  currentWeapon: {fileID: 0}
+  currentWeaponObject: {fileID: 0}
   weaponSlot: {fileID: 0}
+  WeaponParentPrefab: {fileID: 0}
 --- !u!54 &150767400
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1423,8 +1474,9 @@ MonoBehaviour:
   SelectionArrow: {fileID: 27676597}
   currentWeaponSelected: 0
   selectedWeapon: {fileID: 0}
-  currentWeapon: {fileID: 0}
+  currentWeaponObject: {fileID: 0}
   weaponSlot: {fileID: 0}
+  WeaponParentPrefab: {fileID: 0}
 --- !u!54 &238096105
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -2134,8 +2186,9 @@ MonoBehaviour:
   SelectionArrow: {fileID: 993330478}
   currentWeaponSelected: 0
   selectedWeapon: {fileID: 0}
-  currentWeapon: {fileID: 0}
+  currentWeaponObject: {fileID: 0}
   weaponSlot: {fileID: 0}
+  WeaponParentPrefab: {fileID: 0}
 --- !u!54 &502393712
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -2282,8 +2335,9 @@ MonoBehaviour:
   SelectionArrow: {fileID: 1280578330}
   currentWeaponSelected: 0
   selectedWeapon: {fileID: 0}
-  currentWeapon: {fileID: 0}
+  currentWeaponObject: {fileID: 0}
   weaponSlot: {fileID: 0}
+  WeaponParentPrefab: {fileID: 0}
 --- !u!54 &545088902
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -2965,8 +3019,9 @@ MonoBehaviour:
   SelectionArrow: {fileID: 937564560}
   currentWeaponSelected: 0
   selectedWeapon: {fileID: 0}
-  currentWeapon: {fileID: 0}
+  currentWeaponObject: {fileID: 0}
   weaponSlot: {fileID: 0}
+  WeaponParentPrefab: {fileID: 0}
 --- !u!54 &635059424
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -3113,8 +3168,9 @@ MonoBehaviour:
   SelectionArrow: {fileID: 616790459}
   currentWeaponSelected: 0
   selectedWeapon: {fileID: 0}
-  currentWeapon: {fileID: 0}
+  currentWeaponObject: {fileID: 0}
   weaponSlot: {fileID: 0}
+  WeaponParentPrefab: {fileID: 0}
 --- !u!54 &657961773
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -4180,12 +4236,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 808533052}
   m_LocalRotation: {x: -0.7071057, y: -0.70710796, z: 0.0000020638108, w: 0.0000021234155}
-  m_LocalPosition: {x: -21.352856, y: -0.20714188, z: -3.828125}
+  m_LocalPosition: {x: -50.928703, y: 2.6013718, z: 85.51254}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_Father: {fileID: 32287308}
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: -180, z: 90}
 --- !u!1 &834974550
 GameObject:
@@ -4409,8 +4465,9 @@ MonoBehaviour:
   SelectionArrow: {fileID: 235976418}
   currentWeaponSelected: 0
   selectedWeapon: {fileID: 0}
-  currentWeapon: {fileID: 0}
+  currentWeaponObject: {fileID: 0}
   weaponSlot: {fileID: 0}
+  WeaponParentPrefab: {fileID: 0}
 --- !u!54 &871034440
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -5272,8 +5329,9 @@ MonoBehaviour:
   SelectionArrow: {fileID: 1813159636}
   currentWeaponSelected: 0
   selectedWeapon: {fileID: 0}
-  currentWeapon: {fileID: 0}
+  currentWeaponObject: {fileID: 0}
   weaponSlot: {fileID: 0}
+  WeaponParentPrefab: {fileID: 0}
 --- !u!54 &1006199755
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -5376,7 +5434,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh24468
+  m_Name: pb_Mesh24472
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -5650,7 +5708,7 @@ Transform:
   m_Children:
   - {fileID: 617599156}
   m_Father: {fileID: 0}
-  m_RootOrder: 14
+  m_RootOrder: 11
   m_LocalEulerAnglesHint: {x: -46.313, y: 0, z: 0}
 --- !u!1 &1039104261
 GameObject:
@@ -5702,8 +5760,9 @@ MonoBehaviour:
   SelectionArrow: {fileID: 1090762201}
   currentWeaponSelected: 1
   selectedWeapon: {fileID: 11400000, guid: ebda638ec41bea446a7d963424f2f6f9, type: 2}
-  currentWeapon: {fileID: 0}
+  currentWeaponObject: {fileID: 0}
   weaponSlot: {fileID: 1231771205}
+  WeaponParentPrefab: {fileID: 4260267504412137361, guid: b4b69d7fe949fcd41bcd2dc408d8e439, type: 3}
 --- !u!65 &1039104263
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -6138,12 +6197,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1039378424}
   m_LocalRotation: {x: -0, y: -1, z: -0, w: 0.0000029504295}
-  m_LocalPosition: {x: -9.764809, y: 0, z: -3.8281765}
+  m_LocalPosition: {x: -39.340656, y: 2.8085136, z: 85.51249}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_Father: {fileID: 32287308}
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: -180, z: 0}
 --- !u!1 &1090762201
 GameObject:
@@ -6478,7 +6537,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh24122
+  m_Name: pb_Mesh24126
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -6814,8 +6873,9 @@ MonoBehaviour:
   SelectionArrow: {fileID: 986337864}
   currentWeaponSelected: 0
   selectedWeapon: {fileID: 0}
-  currentWeapon: {fileID: 0}
+  currentWeaponObject: {fileID: 0}
   weaponSlot: {fileID: 0}
+  WeaponParentPrefab: {fileID: 0}
 --- !u!54 &1256032243
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -7238,7 +7298,7 @@ Transform:
   - {fileID: 1256032247}
   - {fileID: 1006199759}
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1477275543
 GameObject:
@@ -7687,7 +7747,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 13
+  m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1565654896
 GameObject:
@@ -8008,8 +8068,9 @@ MonoBehaviour:
   SelectionArrow: {fileID: 689509576}
   currentWeaponSelected: 0
   selectedWeapon: {fileID: 0}
-  currentWeapon: {fileID: 0}
+  currentWeaponObject: {fileID: 0}
   weaponSlot: {fileID: 0}
+  WeaponParentPrefab: {fileID: 0}
 --- !u!54 &1588576079
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -8260,7 +8321,7 @@ Transform:
   - {fileID: 1588576083}
   - {fileID: 71295670}
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1742255052
 GameObject:
@@ -8319,7 +8380,7 @@ Transform:
   - {fileID: 545088906}
   - {fileID: 150767404}
   m_Father: {fileID: 0}
-  m_RootOrder: 8
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1778205007
 GameObject:
@@ -8371,8 +8432,9 @@ MonoBehaviour:
   SelectionArrow: {fileID: 682416735}
   currentWeaponSelected: 0
   selectedWeapon: {fileID: 0}
-  currentWeapon: {fileID: 0}
+  currentWeaponObject: {fileID: 0}
   weaponSlot: {fileID: 0}
+  WeaponParentPrefab: {fileID: 0}
 --- !u!54 &1778205009
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -8616,8 +8678,9 @@ MonoBehaviour:
   SelectionArrow: {fileID: 1477275543}
   currentWeaponSelected: 0
   selectedWeapon: {fileID: 0}
-  currentWeapon: {fileID: 0}
+  currentWeaponObject: {fileID: 0}
   weaponSlot: {fileID: 0}
+  WeaponParentPrefab: {fileID: 0}
 --- !u!54 &1810194107
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -9223,12 +9286,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1818294494}
   m_LocalRotation: {x: -0.7071057, y: -0.70710796, z: 0.0000020638108, w: 0.0000021234155}
-  m_LocalPosition: {x: 57.8, y: -0.20714188, z: -3.828125}
+  m_LocalPosition: {x: 28.224152, y: 2.6013718, z: 85.51254}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 12
+  m_Father: {fileID: 32287308}
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: -180, z: 90}
 --- !u!1 &1839539164
 GameObject:
@@ -9287,7 +9350,7 @@ Transform:
   - {fileID: 1778205013}
   - {fileID: 1810194111}
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2053023964
 GameObject:
@@ -9339,8 +9402,9 @@ MonoBehaviour:
   SelectionArrow: {fileID: 834974550}
   currentWeaponSelected: 0
   selectedWeapon: {fileID: 0}
-  currentWeapon: {fileID: 0}
+  currentWeaponObject: {fileID: 0}
   weaponSlot: {fileID: 0}
+  WeaponParentPrefab: {fileID: 0}
 --- !u!54 &2053023966
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -9443,7 +9507,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh24244
+  m_Name: pb_Mesh24248
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -9782,7 +9846,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2727298428513077179, guid: 34733f823077fd24f808e8a2ae7830f7, type: 3}
       propertyPath: m_RootOrder
-      value: 11
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 2727298428513077179, guid: 34733f823077fd24f808e8a2ae7830f7, type: 3}
       propertyPath: m_LocalPosition.x
