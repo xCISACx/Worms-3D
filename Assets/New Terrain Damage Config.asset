@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5032c893b159eb8499c113f8e6ca4a9b, type: 3}
   m_Name: New Terrain Damage Config
   m_EditorClassIdentifier: 
-  MinRadius: 2
-  MaxRadius: 3
-  MinDepth: 0.5
-  MaxDepth: 0.8
+  MinRadius: 2.5
+  MaxRadius: 2.5
+  MinDepth: 1
+  MaxDepth: 2
   RemoveEarth: 1
-  HoleShape: 1
-  ColorForDamage: 0
+  HoleShape: 2
+  ColorForDamage: 1
