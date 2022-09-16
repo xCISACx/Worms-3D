@@ -191,12 +191,20 @@ public class UnitBehaviour : MonoBehaviour
                 //We can't move but can still rotate for aiming purposes
                 
                 RotateWithMovement();
-                HandleWeaponAiming();
+                if (Input.GetMouseButton(1))
+                {
+                    HandleWeaponAiming();
+                }
+                else
+                {
+                    GameManager.Instance.mainCamera.m_XAxis.m_InputAxisName = "Mouse X";
+                    GameManager.Instance.mainCamera.m_YAxis.m_InputAxisName = "Mouse Y";
+                }
             }
             
         }
 
-        if (rigidbody.velocity.y < 0f)
+        if (rigidbody.velocity.y <= 0f)
         {
             //Debug.Log("going down");
             rigidbody.velocity += Vector3.up * Physics.gravity.y * (5f - 1) * Time.deltaTime;
@@ -205,6 +213,9 @@ public class UnitBehaviour : MonoBehaviour
 
     private void HandleWeaponAiming()
     {
+        GameManager.Instance.mainCamera.m_XAxis.m_InputAxisName = string.Empty;
+        GameManager.Instance.mainCamera.m_YAxis.m_InputAxisName = string.Empty;
+        
         var aimSpeed = 2f;
         float vertical = Input.GetAxis ("Mouse Y") * aimSpeed;
 

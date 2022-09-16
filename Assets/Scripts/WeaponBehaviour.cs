@@ -40,7 +40,7 @@ public class WeaponBehaviour : MonoBehaviour
         {
             var newProjectile = Instantiate(projectilePrefab, shootPoint.position, Quaternion.identity);
             Physics.IgnoreCollision(newProjectile.GetComponent<Collider>(), user.GetComponent<Collider>());
-            newProjectile.GetComponent<Rigidbody>().AddForce(transform.forward * shootForce, ForceMode.Impulse);
+            newProjectile.GetComponent<Rigidbody>().AddForce(shootPoint.transform.up * shootForce, ForceMode.Impulse);
             //Debug.Log("shoot");
             Destroy(newProjectile.gameObject, 10f);
         }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Net.Mime;
+using Cinemachine;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -10,7 +11,7 @@ using UnityEngine.Serialization;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
-    [SerializeField] private CameraBehaviour mainCamera;
+    public CinemachineFreeLook mainCamera;
     public int currentPlayerIndex;
     private int _playerCount = 4;
     [SerializeField] private Dictionary<PlayerBehaviour, UnitBehaviour[]> playerUnitDictionary;
@@ -39,6 +40,8 @@ public class GameManager : MonoBehaviour
                 unitList.Add(playerList[i].unitList[j]);
             }
         }
+
+        Cursor.lockState = CursorLockMode.Locked;
     }
     
     // Start is called before the first frame update
@@ -92,7 +95,8 @@ public class GameManager : MonoBehaviour
         
         Debug.Log("new unit: " + _currentPlayer.currentUnit);
         
-        mainCamera.followTarget = _currentPlayer.currentUnit.transform;
+        mainCamera.Follow = _currentPlayer.currentUnit.transform;
+        mainCamera.LookAt = _currentPlayer.currentUnit.transform;
 
         currentUnitText.text = "Current Unit: " + (_currentPlayer.currentUnitIndex + 1);
         _currentPlayer.currentUnit.highlighted = true;
@@ -113,7 +117,8 @@ public class GameManager : MonoBehaviour
     void Init()
     {
         _currentPlayer = playerList[currentPlayerIndex];
-        mainCamera.followTarget = _currentPlayer.currentUnit.transform;
+        mainCamera.Follow = _currentPlayer.currentUnit.transform;
+        mainCamera.LookAt = _currentPlayer.currentUnit.transform;
         currentPlayerText.text = "Current Player: " + (currentPlayerIndex + 1);
         currentUnitText.text = "Current Unit: " + (_currentPlayer.currentUnitIndex + 1);
         playerList[currentPlayerIndex].canPlay = true;
@@ -129,7 +134,8 @@ public class GameManager : MonoBehaviour
         currentPlayerIndex++;
         currentPlayerIndex %= _playerCount;
         _currentPlayer = playerList[currentPlayerIndex];
-        mainCamera.followTarget = _currentPlayer.currentUnit.transform;
+        mainCamera.Follow = _currentPlayer.currentUnit.transform;
+        mainCamera.LookAt = _currentPlayer.currentUnit.transform;
         _currentPlayer.currentUnit.highlighted = true;
         currentPlayerText.text = "Current Player: " + (currentPlayerIndex + 1);
         currentUnitText.text = "Current Unit: " + (_currentPlayer.currentUnitIndex + 1);

@@ -13,7 +13,7 @@ public class ProjectileBehaviour : MonoBehaviour
     [SerializeField] private float explosionForce;
     [SerializeField] private float explosionRadius;
     [SerializeField] private float upwardsModifier;
-    
+    [SerializeField] private TerrainDamageConfig TerrainDamageConfig;
 
 
     // Start is called before the first frame update
@@ -41,6 +41,7 @@ public class ProjectileBehaviour : MonoBehaviour
                     Quaternion.identity);
                 ApplyKnockback(origin);
                 ApplySplashDamage(origin);
+                other.GetComponent<TerrainDamager>().ApplyDamage(origin, TerrainDamageConfig, 1.0f);
                 Destroy(gameObject);
             }
             else
