@@ -21,12 +21,6 @@ public class WeaponBehaviour : MonoBehaviour
     [SerializeField] private List<Vector3> linePoints = new List<Vector3>();
     [SerializeField] private int multiplier = 10;
     
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
     private void Awake()
     {
         lineRenderer.enabled = true;
@@ -36,22 +30,20 @@ public class WeaponBehaviour : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) && user.GetComponent<UnitBehaviour>().canAct)
         {
             var newProjectile = Instantiate(projectilePrefab, shootPoint.position, Quaternion.identity);
             Physics.IgnoreCollision(newProjectile.GetComponent<Collider>(), user.GetComponent<Collider>());
             newProjectile.GetComponent<Rigidbody>().AddForce(shootPoint.transform.up * shootForce, ForceMode.Impulse);
             //Debug.Log("shoot");
+            user.GetComponent<UnitBehaviour>().canAct = false;
+            user.GetComponent<UnitBehaviour>().shotsFiredDuringRound++;
             Destroy(newProjectile.gameObject, 10f);
         }
         
         //DrawProjection();
     }
 
-    private void FixedUpdate()
-    {
-        
-    }
 
     private void UpdateLineRenderer()
     {

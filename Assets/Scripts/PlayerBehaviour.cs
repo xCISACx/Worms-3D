@@ -10,6 +10,7 @@ public class PlayerBehaviour : MonoBehaviour
     public int playerIndex = 0;
     public bool canPlay;
     public bool turnStarted;
+    public bool turnEnded;
     public bool unitPickedFlag;
     public List<UnitBehaviour> unitList;
     public UnitBehaviour currentUnit;
@@ -21,13 +22,15 @@ public class PlayerBehaviour : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        currentUnit = unitList[0];
+        if (GameManager.Instance.matchStarted)
+        {
+            currentUnit = unitList[0];
+        }
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Awake()
     {
-        
+        GameManager.Instance.AlivePlayers.Add(this);
     }
 
     private void OnValidate()

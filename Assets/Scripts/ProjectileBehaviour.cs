@@ -41,7 +41,7 @@ public class ProjectileBehaviour : MonoBehaviour
                     Quaternion.identity);
                 ApplyKnockback(origin);
                 ApplySplashDamage(origin);
-                other.GetComponent<TerrainDamager>().ApplyDamage(origin, TerrainDamageConfig, 1.0f);
+                //other.GetComponent<TerrainDamager>().ApplyDamage(origin, TerrainDamageConfig, 1.0f);
                 Destroy(gameObject);
             }
             else

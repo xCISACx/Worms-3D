@@ -192,6 +192,7 @@ GameObject:
   - component: {fileID: 7597424063120724403}
   - component: {fileID: 2657291521718811014}
   - component: {fileID: 9213076887394555852}
+  - component: {fileID: 1968938877}
   m_Layer: 6
   m_Name: HealthText
   m_TagString: Untagged
@@ -353,6 +354,19 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_renderer: {fileID: 2657291521718811014}
   m_maskType: 0
+--- !u!114 &1968938877
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4682179609253633539}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e1e89dcccc80e934c8c8e5b84d864da6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cam: {fileID: 0}
 --- !u!1 &6706881824310305738
 GameObject:
   m_ObjectHideFlags: 0
@@ -582,7 +596,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6706881825711459467}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 2, z: 1}
   m_ConstrainProportionsScale: 0
@@ -620,6 +634,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Owner: 0
+  PlayerColour: {r: 1, g: 0, b: 0, a: 1}
   Player: {fileID: 0}
   canMove: 0
   canAct: 0
@@ -636,7 +651,7 @@ MonoBehaviour:
   maxMoveDistance: 60
   jumpForce: 500
   SelectionArrow: {fileID: 6706881824450330711}
-  currentWeaponSelected: 1
+  currentWeaponSelected: 0
   selectedWeapon: {fileID: 11400000, guid: c17af4ba3a3f5a74fa3f64806cba367d, type: 2}
   selectedWeaponIndex: 0
   currentWeaponObject: {fileID: 0}
@@ -650,7 +665,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6706881825711459467}
   serializedVersion: 2
-  m_Mass: 50
+  m_Mass: 1
   m_Drag: 0
   m_AngularDrag: 0.05
   m_UseGravity: 1

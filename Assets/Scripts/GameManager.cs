@@ -5,19 +5,24 @@ using System.Linq;
 using System.Net.Mime;
 using Cinemachine;
 using TMPro;
+using Unity.Collections;
 using UnityEngine;
 using UnityEngine.Serialization;
 
 public class GameManager : MonoBehaviour
 {
+    public int NumberOfStartingUnits;
+    public List<PlayerBehaviour> AlivePlayers;
     public static GameManager Instance;
+    public UIReferences UIReferences;
+    public bool matchStarted = false;
+    public bool initDone = false;
     public CinemachineFreeLook mainCamera;
     public int currentPlayerIndex;
-    private int _playerCount = 4;
     [SerializeField] private Dictionary<PlayerBehaviour, UnitBehaviour[]> playerUnitDictionary;
-    private PlayerBehaviour _currentPlayer;
+    public PlayerBehaviour _currentPlayer;
     public List<PlayerBehaviour> playerList;
-    [SerializeField] private List<UnitBehaviour> unitList;
+    public List<UnitBehaviour> unitList;
     [SerializeField] private TMP_Text currentPlayerText;
     [SerializeField] private TMP_Text currentUnitText;
     [SerializeField] private TMP_Text timerText;
@@ -33,52 +38,46 @@ public class GameManager : MonoBehaviour
             DontDestroyOnLoad(this.gameObject);
         }
 
-        for (int i = 0; i < _playerCount; i++)
-        {
-            for (int j = 0; j < 4; j++)
-            {
-                unitList.Add(playerList[i].unitList[j]);
-            }
-        }
-
-        Cursor.lockState = CursorLockMode.Locked;
-    }
-    
-    // Start is called before the first frame update
-    void Start()
-    {
-        Init();
+        //Cursor.lockState = CursorLockMode.Locked;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Return))
+        if (!initDone && playerList.Count > 0)
         {
-            NextTurn();
+            Init();
         }
         
-        if (!_currentPlayer.roundUnitPicked && Input.GetKeyDown(KeyCode.Tab))
+        if (matchStarted)
         {
-            ChangeUnit();
-        }
+            if (Input.GetKeyDown(KeyCode.Return))
+            {
+                NextTurn();
+            }
+        
+            if (!_currentPlayer.roundUnitPicked && Input.GetKeyDown(KeyCode.Tab))
+            {
+                ChangeUnit();
+            }
 
-        if (Input.GetKeyDown(KeyCode.F))
-        {
-            PickUnit();
-        }
+            if (Input.GetKeyDown(KeyCode.F))
+            {
+                PickUnit();
+            }
 
-        if (startTurnTimer)
-        {
-            turnTimer -= Time.deltaTime;
-        }
+            if (startTurnTimer)
+            {
+                turnTimer -= Time.deltaTime;
+            }
 
-        if (turnTimer <= 0f)
-        {
-            NextTurn();
-        }
+            if (turnTimer <= 0f)
+            {
+                NextTurn();
+            }
 
-        timerText.text = turnTimer.ToString("F0");
+            UIReferences.timerText.text = turnTimer.ToString("F0");
+        }
     }
 
     private void ChangeUnit()
@@ -98,7 +97,7 @@ public class GameManager : MonoBehaviour
         mainCamera.Follow = _currentPlayer.currentUnit.transform;
         mainCamera.LookAt = _currentPlayer.currentUnit.transform;
 
-        currentUnitText.text = "Current Unit: " + (_currentPlayer.currentUnitIndex + 1);
+        UIReferences.currentUnitText.text = "Current Unit: " + (_currentPlayer.currentUnitIndex + 1);
         _currentPlayer.currentUnit.highlighted = true;
     }
 
@@ -116,33 +115,40 @@ public class GameManager : MonoBehaviour
 
     void Init()
     {
+        Cursor.lockState = CursorLockMode.Locked;
         _currentPlayer = playerList[currentPlayerIndex];
+        mainCamera = FindObjectOfType<CinemachineFreeLook>();
         mainCamera.Follow = _currentPlayer.currentUnit.transform;
         mainCamera.LookAt = _currentPlayer.currentUnit.transform;
-        currentPlayerText.text = "Current Player: " + (currentPlayerIndex + 1);
-        currentUnitText.text = "Current Unit: " + (_currentPlayer.currentUnitIndex + 1);
+        UIReferences = FindObjectOfType<UIReferences>();
+        UIReferences.currentPlayerText.text = "Current Player: " + (currentPlayerIndex + 1);
+        UIReferences.currentUnitText.text = "Current Unit: " + (_currentPlayer.currentUnitIndex + 1);
         playerList[currentPlayerIndex].canPlay = true;
         playerList[currentPlayerIndex].turnStarted = true;
         _currentPlayer.currentUnit.highlighted = true;
         Debug.Log(_currentPlayer);
+        initDone = true;
     }
 
-    void NextTurn()
+    public void NextTurn()
     {
         _currentPlayer.currentUnit.highlighted = false; // disable the highlight of the previous player's unit before switching to the next player
         startTurnTimer = false;
         currentPlayerIndex++;
-        currentPlayerIndex %= _playerCount;
+        currentPlayerIndex %= GameManager.Instance.playerList.Count;
         _currentPlayer = playerList[currentPlayerIndex];
-        mainCamera.Follow = _currentPlayer.currentUnit.transform;
-        mainCamera.LookAt = _currentPlayer.currentUnit.transform;
-        _currentPlayer.currentUnit.highlighted = true;
-        currentPlayerText.text = "Current Player: " + (currentPlayerIndex + 1);
-        currentUnitText.text = "Current Unit: " + (_currentPlayer.currentUnitIndex + 1);
+        if (_currentPlayer.unitList.Count > 0)
+        {
+            mainCamera.Follow = _currentPlayer.currentUnit.transform;
+            mainCamera.LookAt = _currentPlayer.currentUnit.transform;   
+            _currentPlayer.currentUnit.highlighted = true;
+        }
+        UIReferences.currentPlayerText.text = "Current Player: " + (currentPlayerIndex + 1);
+        UIReferences.currentUnitText.text = "Current Unit: " + (_currentPlayer.currentUnitIndex + 1);
         turnTimer = defaultTurnTime;
         startTurnTimer = true;
 
-        for (int i = 0; i < _playerCount; i++)
+        for (int i = 0; i < GameManager.Instance.playerList.Count; i++)
         {
             if (i == currentPlayerIndex)
             {
