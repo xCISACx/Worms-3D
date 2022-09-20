@@ -18,8 +18,8 @@ public class MenuManager : MonoBehaviour
     [SerializeField] private GameObject PlayerPrefab;
     [SerializeField] private GameObject UnitPrefab;
     public string[] PlayerColours;
-    
-    
+    public AudioClip ButtonHoverSFX;
+    public AudioClip ButtonClickSFX;
 
     IEnumerator LoadAsyncScene()
     {
@@ -142,6 +142,38 @@ public class MenuManager : MonoBehaviour
     public void StartMatch()
     {
         StartCoroutine(LoadAsyncScene());
+    }
+
+    public void PlayButtonHoverSound()
+    {
+        var audioSource = GameManager.Instance.SFXSource;
+        audioSource.PlayOneShot(ButtonHoverSFX);
+    }
+    
+    public void PlayButtonClickSound()
+    {
+        var audioSource = GameManager.Instance.SFXSource;
+        audioSource.PlayOneShot(ButtonClickSFX);
+    }
+
+    public void SetMasterVolume(float value)
+    {
+        GameManager.Instance.AudioMixer.SetFloat("masterVolume", Mathf.Log10(value) * 20f);
+    }
+    
+    public void SetMusicVolume(float value)
+    {
+        GameManager.Instance.AudioMixer.SetFloat("musicVolume", Mathf.Log10(value) * 20f);
+    }
+    
+    public void SetSFXVolume(float value)
+    {
+        GameManager.Instance.AudioMixer.SetFloat("sfxVolume", Mathf.Log10(value) * 20f);
+    }
+
+    public void ToggleFullscreen(bool value)
+    {
+        Screen.fullScreen = value;
     }
 
     public void Quit()

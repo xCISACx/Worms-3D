@@ -7,6 +7,7 @@ using Cinemachine;
 using TMPro;
 using Unity.Collections;
 using UnityEngine;
+using UnityEngine.Audio;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 
@@ -29,6 +30,9 @@ public class GameManager : MonoBehaviour
     public float turnTimer = 60f;
     public bool startTurnTimer;
     public bool gameOver = false;
+    public AudioMixer AudioMixer;
+    public AudioSource MusicSource;
+    public AudioSource SFXSource;
 
     private void Awake()
     {
