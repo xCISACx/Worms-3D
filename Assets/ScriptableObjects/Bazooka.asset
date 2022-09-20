@@ -16,5 +16,6 @@ MonoBehaviour:
   model: {fileID: 1710935246616217760, guid: 1b41f25082248c341bba805b64e88913, type: 3}
   ammoPrefab: {fileID: 7926522421175382475, guid: b15f321068190a0479093c1c480dc696, type: 3}
   damage: 45
-  range: 200
+  shootingForce: {x: 100, y: 100, z: 0}
   accuracy: 90
+  shootingDirection: 0

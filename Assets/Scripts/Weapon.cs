@@ -17,8 +17,10 @@ public class Weapon : ScriptableObject
     
     public GameObject ammoPrefab;
     public int damage;
-    public float range;
+    public Vector3 shootingForce;
     public float accuracy;
+
+    public WeaponBehaviour.Direction shootingDirection;
 
     // Start is called before the first frame update
     void Start()

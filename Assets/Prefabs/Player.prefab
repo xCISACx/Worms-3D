@@ -48,8 +48,8 @@ MonoBehaviour:
   playerIndex: 0
   canPlay: 0
   turnStarted: 0
-  turnEnded: 0
   unitPickedFlag: 0
+  canChangeTurn: 0
   unitList: []
   currentUnit: {fileID: 0}
   currentUnitIndex: 0

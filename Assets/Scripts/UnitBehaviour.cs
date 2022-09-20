@@ -20,14 +20,17 @@ public class UnitBehaviour : MonoBehaviour
     public PlayerNumber Owner;
     public Color PlayerColour;
     public PlayerBehaviour Player;
+    
     public bool canMove;
     public bool canAct;
-    public bool changeTurnFlag = false;
+    public bool canSwitchWeapon;
     public bool highlighted;
     public bool matchInitDone = false;
+    
     public int MaxHealth = 100;
     public int CurrentHealth = 100;
     public TMP_Text HealthText;
+    
     public int shotsFiredDuringRound;
     
     [SerializeField] private Transform camera;
@@ -52,6 +55,8 @@ public class UnitBehaviour : MonoBehaviour
     [SerializeField] private GameObject currentWeaponObject;
     [SerializeField] private Transform weaponSlot;
     [SerializeField] private GameObject WeaponParentPrefab;
+    [SerializeField] private float a;
+    [SerializeField] private float b;
 
     // Start is called before the first frame update
     void Start()
@@ -92,7 +97,7 @@ public class UnitBehaviour : MonoBehaviour
             {
                 var meshRenderer = GetComponentInChildren<MeshRenderer>();
                 meshRenderer.material.color = PlayerColour;
-                Debug.Log("changed colour");
+                //Debug.Log("changed colour");
                 matchInitDone = true;
             }
 
@@ -125,7 +130,7 @@ public class UnitBehaviour : MonoBehaviour
                         this.EquipWeapon();
                     }
 
-                    if (Input.GetKeyDown(KeyCode.LeftControl))
+                    if (Input.GetKeyDown(KeyCode.LeftControl) && canSwitchWeapon)
                     {
                         selectedWeaponIndex++;
                         selectedWeaponIndex = selectedWeaponIndex % Player.WeaponInventory.Count;
@@ -141,7 +146,7 @@ public class UnitBehaviour : MonoBehaviour
 
     private void InitUnit()
     {
-        Debug.Log("initialising unit " + this.gameObject.name);
+        //Debug.Log("initialising unit " + this.gameObject.name);
         turnStartPosition = transform.position;
         lastPosition = transform.position;
         distanceMovedX = 0f;
@@ -155,10 +160,10 @@ public class UnitBehaviour : MonoBehaviour
         //SpawnedSphere = Instantiate(SpherePrefab, turnStartPosition, Quaternion.identity);
         //SpawnedSphere.transform.localScale = new Vector3(maxMoveDistance * 2, maxMoveDistance * 2, maxMoveDistance * 2);
         //Destroy(SpawnedSphere.gameObject, GameManager.Instance.defaultTurnTime);
-        StopCoroutine(WaitForTurnToEnd());
-        changeTurnFlag = false;
+        Player.canChangeTurn = true;
         Player.turnStarted = false;
         canMove = true;
+        canSwitchWeapon = true;
     }
 
     private void FixedUpdate()
@@ -172,8 +177,7 @@ public class UnitBehaviour : MonoBehaviour
                     if (canMove)
                     {
                         Move();
-                        //LimitMovement();
-                        //LimitTotalMovement();
+                        LimitTotalMovement();
                     }
                     else
                     {
@@ -181,8 +185,6 @@ public class UnitBehaviour : MonoBehaviour
                         verticalInput = Input.GetAxisRaw("Vertical");
                         movementVector = new Vector3(horizontalInput, 0, verticalInput);
                         rigidbody.velocity = new Vector3(0f, rigidbody.velocity.y, 0f);
-                        
-                        //RotateWithMovement();
                     }
                     //We can't move but can still rotate for aiming purposes
                     
@@ -202,13 +204,12 @@ public class UnitBehaviour : MonoBehaviour
 
             if (shotsFiredDuringRound >= 1)
             {
-                if (GameManager.Instance.matchStarted && GameManager.Instance.AlivePlayers.Count == 1)
+                canSwitchWeapon = false;
+                Player.canChangeTurn = false;
+                
+                if (GameManager.Instance.AlivePlayers.Count > 1)
                 {
-                    Debug.Log("Player " + GameManager.Instance.AlivePlayers[0] + " won the game!");
-                }
-                else if (GameManager.Instance.AlivePlayers.Count > 1)
-                {
-                    StartCoroutine(WaitForTurnToEnd());
+                    StartCoroutine(GameManager.Instance.WaitForTurnToEnd());
                 }
             }
 
@@ -222,18 +223,37 @@ public class UnitBehaviour : MonoBehaviour
 
     private void HandleWeaponAiming()
     {
+        //remove Cinemachine mouse input strings so we can't move the camera
         GameManager.Instance.mainCamera.m_XAxis.m_InputAxisName = string.Empty;
         GameManager.Instance.mainCamera.m_YAxis.m_InputAxisName = string.Empty;
         
         var aimSpeed = 2f;
         float vertical = Input.GetAxis ("Mouse Y") * aimSpeed;
 
-        var target = weaponSlot;
+        var target = weaponSlot.transform;
         
-        target.transform.Rotate (-vertical, 0, 0);    
-        //float desiredAngleH = target.transform.eulerAngles.y;
-        //Quaternion rotation = Quaternion.Euler (-desiredAngleH, target.transform.rotation.y, target.transform.rotation.z);
-        //target.transform.rotation = rotation;
+        target.transform.Rotate(-vertical, 0, 0);
+
+        /*Vector3 rot = target.localRotation.eulerAngles; TODO: FIX CLAMPING NOT WORKING
+
+        rot.x = Mathf.Clamp(rot.x, a, b);
+        //rot.x = Mathf.Clamp(rot.x, 90, 180);
+
+        target.transform.localRotation = Quaternion.Euler(rot);*/
+        
+        //Debug.Log("local: " + target.localEulerAngles);
+        //Debug.Log("global: " + target.eulerAngles);
+
+        //target.transform.localEulerAngles = new Vector3(Mathf.Clamp(target.localEulerAngles.x, -85f, 85f), target.localEulerAngles.y, target.localEulerAngles.z);
+        //Debug.Log("clamping");
+    }
+    
+    float ClampAngle(float angle, float from, float to)
+    {
+        // accepts e.g. -80, 80
+        if (angle < 0f) angle = 360 + angle;
+        if (angle > 180f) return Mathf.Max(angle, 360+from);
+        return Mathf.Min(angle, to);
     }
 
     private void LimitTotalMovement()
@@ -241,18 +261,21 @@ public class UnitBehaviour : MonoBehaviour
         if (movementVector != Vector3.zero)
         {
             //We separate the distance moved on the X and Z axes so we don't count distance moved in the Y axis.
+            
             distanceMovedX += Mathf.Abs((transform.position.x - lastPosition.x));
             distanceMovedZ += Mathf.Abs((transform.position.z - lastPosition.z));
             distanceMoved = distanceMovedX + distanceMovedZ;
             lastPosition = transform.position;
             //Debug.Log(distanceMovedX);
-            //Debug.Log(distanceMovedZ);   
+            //Debug.Log(distanceMovedZ);
         }
 
+        //If we go over the move distance limit, stop movement
+        
         if (movementVector != Vector3.zero && distanceMoved > maxMoveDistance)
         {
             canMove = false;
-            Debug.Log("Can't move any more");
+            //Debug.Log("Can't move any more");
         }
     }
 
@@ -281,7 +304,7 @@ public class UnitBehaviour : MonoBehaviour
         
             if (distanceMoved > maxMoveDistance)
             {
-                Debug.Log("Can't move farther.");
+                //Debug.Log("Can't move farther.");
                 Vector3 spawnToPlayer = transform.position - turnStartPosition;
                 spawnToPlayer *= maxMoveDistance / distanceMoved;
                 //transform.position = turnStartPosition + fromOrigintoObject;
@@ -304,7 +327,7 @@ public class UnitBehaviour : MonoBehaviour
         movementDirection.y = 0f;
         movementDirection = movementDirection * movementSpeed;
         rigidbody.velocity = new Vector3(movementDirection.x, rigidbody.velocity.y, movementDirection.z);
-        Debug.Log(rigidbody.velocity);
+        //Debug.Log(rigidbody.velocity);
     }
 
     private void Jump()
@@ -320,6 +343,7 @@ public class UnitBehaviour : MonoBehaviour
         GameManager.Instance.UIReferences.GlobalHPBarParent.UpdateBar((int) Owner);
         if (CurrentHealth <= 0)
         {
+            StartCoroutine(GameManager.Instance.WaitForTurnToEnd());
             Die();
         }
     }
@@ -338,20 +362,13 @@ public class UnitBehaviour : MonoBehaviour
         
         Player.unitList.Remove(this);
         GameManager.Instance.unitList.Remove(this);
+
+        if (Player.currentUnit == this)
+        {
+            GameManager.Instance.NextTurn();
+        }
         
         Destroy(gameObject);
-    }
-    
-    IEnumerator WaitForTurnToEnd()
-    {
-        canAct = false;
-        changeTurnFlag = true;
-        if (changeTurnFlag)
-        {
-            shotsFiredDuringRound = 0;
-        }
-        yield return new WaitForSeconds(3);
-        GameManager.Instance.NextTurn();
     }
 
     private void EquipWeapon()
@@ -368,13 +385,17 @@ public class UnitBehaviour : MonoBehaviour
         currentWeaponObject = newWeaponParentObject;
         var weaponScript = currentWeaponObject.GetComponent<WeaponBehaviour>();
         weaponScript.weaponModel = selectedWeapon.model;
-        weaponScript.shootForce = selectedWeapon.range;
+        weaponScript.shootForce = selectedWeapon.shootingForce;
         weaponScript.projectilePrefab = selectedWeapon.ammoPrefab;
         weaponScript.projectilePrefab.GetComponent<ProjectileBehaviour>().damage = selectedWeapon.damage;
+        weaponScript.shootingDirection = selectedWeapon.shootingDirection;
 
         var newWeapon = Instantiate(weaponScript.weaponModel, newWeaponParentObject.transform.position,
             newWeaponParentObject.transform.rotation);
-        
+
+        weaponScript.shootPoint = newWeapon.GetComponent<ModelProperties>().ShootPoint;
+        weaponScript.lineRenderer.transform.position = weaponScript.shootPoint.position;
+
         newWeapon.transform.SetParent(weaponScript.weaponModelParent);
     }
 }

@@ -17,7 +17,7 @@ public class ColourDropdownBehaviour : MonoBehaviour
     {
         MenuManager.PlayerColours[playerIndex] = colour.ToString();
         
-        Debug.Log("index: " + playerIndex + "colour " + colour);
+        //Debug.Log("index: " + playerIndex + "colour " + colour);
 
         switch (MenuManager.PlayerColours[playerIndex])
         {

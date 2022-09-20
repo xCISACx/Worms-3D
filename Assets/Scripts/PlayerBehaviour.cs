@@ -10,8 +10,8 @@ public class PlayerBehaviour : MonoBehaviour
     public int playerIndex = 0;
     public bool canPlay;
     public bool turnStarted;
-    public bool turnEnded;
     public bool unitPickedFlag;
+    public bool canChangeTurn;
     public List<UnitBehaviour> unitList;
     public UnitBehaviour currentUnit;
     public int currentUnitIndex = 0;
@@ -23,6 +23,14 @@ public class PlayerBehaviour : MonoBehaviour
     void Start()
     {
         if (GameManager.Instance.matchStarted)
+        {
+            currentUnit = unitList[0];
+        }
+    }
+
+    private void Update()
+    {
+        if (!currentUnit && unitList.Count > 0)
         {
             currentUnit = unitList[0];
         }

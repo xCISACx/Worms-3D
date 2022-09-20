@@ -68,8 +68,7 @@ public class MenuManager : MonoBehaviour
             
             SceneManager.MoveGameObjectToScene(newPlayer, SceneManager.GetSceneByName(GameScene));
         }
-
-        // Move the GameObject (you attach this in the Inspector) to the newly loaded Scene
+        
         // Unload the previous Scene
         GameManager.Instance.matchStarted = true;
         SceneManager.UnloadSceneAsync(currentScene);
@@ -77,6 +76,12 @@ public class MenuManager : MonoBehaviour
     
     private void Awake()
     {
+        ColourHParent = GameObject.Find("ColourHParent");
+        Cursor.lockState = CursorLockMode.None;
+        MatchSettingsPopup.SetActive(false);
+        GameManager.Instance.gameOver = false;
+        GameManager.Instance.matchStarted = false;
+        
         PlayerColours = new string[1];
         
         for (int i = 0; i < numberOfPlayers; i++)
@@ -103,10 +108,15 @@ public class MenuManager : MonoBehaviour
         PlayerColours = new string[num + 1];
         
         //Add or remove colour selection containers according to number of players
+        
+        ColourHParent = GameObject.Find("ColourHParent");
 
-        for (int j = 0; j < ColourHParent.transform.childCount; j++)
+        if (ColourHParent.transform.childCount > 0)
         {
-            Destroy(ColourHParent.transform.GetChild(j).gameObject);
+            for (int j = 0; j < ColourHParent.transform.childCount; j++)
+            {
+                Destroy(ColourHParent.transform.GetChild(j).gameObject);
+            }   
         }
 
         for (int i = 0; i < numberOfPlayers; i++)

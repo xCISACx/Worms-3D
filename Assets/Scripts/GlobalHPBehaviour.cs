@@ -8,6 +8,8 @@ public class GlobalHPBehaviour : MonoBehaviour
 {
     public Image[] HPBars;
     public int GlobalTeamHP = 0;
+
+    private bool initialisedColours = false;
     // Start is called before the first frame update
     void Start()
     {
@@ -17,11 +19,12 @@ public class GlobalHPBehaviour : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (GameManager.Instance.AlivePlayers.Count > 0)
+        if (GameManager.Instance.AlivePlayers.Count > 0 && !initialisedColours)
         {
             for (int i = 0; i < GameManager.Instance.AlivePlayers.Count; i++)
             {
                 HPBars[i].color = GameManager.Instance.playerList[i].unitList[0].PlayerColour;
+                initialisedColours = true;
             }
         }
     }
@@ -42,12 +45,12 @@ public class GlobalHPBehaviour : MonoBehaviour
             var unitScript = unitList[j].GetComponent<UnitBehaviour>();
 
             GlobalTeamHP += unitScript.CurrentHealth;
-            Debug.Log(GlobalTeamHP);
+            //Debug.Log(GlobalTeamHP);
         }
         
         GlobalTeamHP /= GameManager.Instance.NumberOfStartingUnits;
         
-        Debug.Log(GlobalTeamHP);
+        //Debug.Log(GlobalTeamHP);
         
         /*for (int i = 0; i < GameManager.Instance.playerList.Count; i++)
         {
