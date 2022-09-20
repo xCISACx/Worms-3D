@@ -8,6 +8,7 @@ using UnityEngine.SceneManagement;
 public class MenuManager : MonoBehaviour
 {
     [SerializeField] private GameObject MatchSettingsPopup;
+    [SerializeField] private GameObject SettingsPopup;
     [SerializeField] private GameObject ColourHParent;
     [SerializeField] private GameObject ColourHPrefab;
     private bool showMatchSettings;
@@ -99,9 +100,13 @@ public class MenuManager : MonoBehaviour
 
     public void Options()
     {
-        
+        SettingsPopup.SetActive(true);
     }
-
+    
+    public void CloseOptions() //TODO: MAKE TOGGLE?
+    {
+        SettingsPopup.SetActive(false);
+    }
     public void SetNumberOfPlayers(int num)
     {
         numberOfPlayers = num + 1;
