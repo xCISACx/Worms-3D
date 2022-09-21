@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 [RequireComponent(typeof(Rigidbody))]
 public class UnitBehaviour : MonoBehaviour
@@ -56,6 +57,8 @@ public class UnitBehaviour : MonoBehaviour
     [SerializeField] private GameObject WeaponParentPrefab;
     [SerializeField] private Vector2 movementValue;
 
+    public Transform FPSTarget;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -75,9 +78,6 @@ public class UnitBehaviour : MonoBehaviour
         rigidbody = GetComponent<Rigidbody>();
         camera = Camera.main.transform;
         rigidbody = GetComponent<Rigidbody>();
-
-        GameManager.Instance.PlayerControls.Player.Move.performed += ctx => movementValue = ctx.ReadValue<Vector2>();
-        GameManager.Instance.PlayerControls.Player.Move.canceled += ctx => movementValue = ctx.ReadValue<Vector2>();
 
         //TODO: Make weapon selection function
     }
@@ -99,6 +99,10 @@ public class UnitBehaviour : MonoBehaviour
                 var meshRenderer = GetComponentInChildren<MeshRenderer>();
                 meshRenderer.material.color = PlayerColour;
                 //Debug.Log("changed colour");
+                
+                GameManager.Instance.PlayerControls.Player.Move.performed += ctx => movementValue = ctx.ReadValue<Vector2>();
+                GameManager.Instance.PlayerControls.Player.Move.canceled += ctx => movementValue = ctx.ReadValue<Vector2>();
+                
                 matchInitDone = true;
             }
 
@@ -195,6 +199,7 @@ public class UnitBehaviour : MonoBehaviour
                     }
                     else
                     {
+                        StopWeaponAiming();
                         GameManager.Instance.mainCamera.m_XAxis.m_InputAxisName = "Mouse X";
                         GameManager.Instance.mainCamera.m_YAxis.m_InputAxisName = "Mouse Y";
                     }
@@ -222,16 +227,24 @@ public class UnitBehaviour : MonoBehaviour
 
     private void HandleWeaponAiming()
     {
+        GameManager.Instance.firstPersonCamera.Priority = 100;
+
+        GameManager.Instance.Reticle.GetComponent<Image>().enabled = true;
+        
         //remove Cinemachine mouse input strings so we can't move the camera
         GameManager.Instance.mainCamera.m_XAxis.m_InputAxisName = string.Empty;
         GameManager.Instance.mainCamera.m_YAxis.m_InputAxisName = string.Empty;
         
+        //GameManager.Instance.firstPersonCamera.m_XAxis.m_InputAxisName = string.Empty;
+        //GameManager.Instance.firstPersonCamera.m_YAxis.m_InputAxisName = string.Empty;
+        
         var aimSpeed = 2f;
         float vertical = Input.GetAxis ("Mouse Y") * aimSpeed;
+        float horizontal = Input.GetAxis ("Mouse X") * aimSpeed;
 
         var target = weaponSlot.transform;
         
-        target.transform.Rotate(-vertical, 0, 0);
+        target.transform.Rotate(-vertical, horizontal, 0);
 
         /*Vector3 rot = target.localRotation.eulerAngles; TODO: FIX CLAMPING NOT WORKING
 
@@ -245,6 +258,16 @@ public class UnitBehaviour : MonoBehaviour
 
         //target.transform.localEulerAngles = new Vector3(Mathf.Clamp(target.localEulerAngles.x, -85f, 85f), target.localEulerAngles.y, target.localEulerAngles.z);
         //Debug.Log("clamping");
+    }
+
+    private void StopWeaponAiming()
+    {
+        GameManager.Instance.firstPersonCamera.Priority = 0;
+        
+        GameManager.Instance.firstPersonCamera.m_XAxis.m_InputAxisName = string.Empty;
+        GameManager.Instance.firstPersonCamera.m_YAxis.m_InputAxisName = string.Empty;
+        
+        GameManager.Instance.Reticle.GetComponent<Image>().enabled = false;
     }
     
     float ClampAngle(float angle, float from, float to)
@@ -355,6 +378,7 @@ public class UnitBehaviour : MonoBehaviour
         if (Player.currentUnit == this && Player.unitList.Count > 0)
         {
             Player.currentUnit = Player.unitList[0];
+            GameManager.Instance.NextTurn();
         }
 
         if (Player.unitList.Count == 1) //If this was the player's last unit
@@ -401,6 +425,11 @@ public class UnitBehaviour : MonoBehaviour
 
         weaponScript.shootPoint = newWeapon.GetComponent<ModelProperties>().ShootPoint;
         weaponScript.lineRenderer.transform.position = weaponScript.shootPoint.position;
+        
+        weaponScript.user.GetComponent<UnitBehaviour>().FPSTarget = weaponScript.shootPoint;
+
+        GameManager.Instance.firstPersonCamera.Follow = weaponScript.shootPoint;
+        GameManager.Instance.firstPersonCamera.LookAt = weaponScript.shootPoint;
 
         newWeapon.transform.SetParent(weaponScript.weaponModelParent);
     }

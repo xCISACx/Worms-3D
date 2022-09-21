@@ -14,6 +14,7 @@ public class ProjectileBehaviour : MonoBehaviour
     [SerializeField] private float explosionRadius;
     [SerializeField] private float upwardsModifier;
     [SerializeField] private TerrainDamageConfig TerrainDamageConfig;
+    [SerializeField] private bool spawnedExplosion = false;
 
 
     // Start is called before the first frame update
@@ -34,7 +35,7 @@ public class ProjectileBehaviour : MonoBehaviour
         {
             origin = other.gameObject.GetComponent<Collider>().ClosestPointOnBounds(transform.position);
             
-            if (explosive)
+            if (explosive && !spawnedExplosion)
             {
                 Instantiate(ExplosionPrefab, 
                     origin,
@@ -42,6 +43,7 @@ public class ProjectileBehaviour : MonoBehaviour
                 ApplyKnockback(origin);
                 ApplySplashDamage(origin);
                 //other.GetComponent<TerrainDamager>().ApplyDamage(origin, TerrainDamageConfig, 1.0f);
+                spawnedExplosion = true;
                 Destroy(gameObject);
             }
             else
@@ -55,7 +57,7 @@ public class ProjectileBehaviour : MonoBehaviour
         {
             origin = other.gameObject.GetComponent<Collider>().ClosestPointOnBounds(transform.position);
             
-            if (explosive)
+            if (explosive && !spawnedExplosion)
             {
                 Instantiate(ExplosionPrefab, 
                     origin,
@@ -63,6 +65,7 @@ public class ProjectileBehaviour : MonoBehaviour
                 ApplyKnockback(origin);
                 ApplySplashDamage(origin);
                 //TODO: Deal more damage closer to explosion center.
+                spawnedExplosion = true;
                 Destroy(gameObject);
             }
             else

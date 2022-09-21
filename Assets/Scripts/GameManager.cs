@@ -22,6 +22,7 @@ public class GameManager : MonoBehaviour
     public bool initDone = false;
     public bool changeTurnFlag;
     public CinemachineFreeLook mainCamera;
+    public CinemachineFreeLook firstPersonCamera;
     public int currentPlayerIndex;
     [SerializeField] private Dictionary<PlayerBehaviour, UnitBehaviour[]> playerUnitDictionary;
     public PlayerBehaviour _currentPlayer;
@@ -37,6 +38,7 @@ public class GameManager : MonoBehaviour
     public MenuManager MenuManager;
     public Canvas SettingsPopup;
     public Worms3D PlayerControls;
+    public GameObject Reticle;
 
     private void Awake()
     {
@@ -187,6 +189,7 @@ public class GameManager : MonoBehaviour
         //Debug.Log("previous unit: " + _currentPlayer.currentUnit);
         _currentPlayer.currentUnit.canMove = false;
         _currentPlayer.currentUnit.canAct = false;
+        _currentPlayer.currentUnit.canSwitchWeapon = false;
         
         _currentPlayer = playerList[currentPlayerIndex];
         _currentPlayer.currentUnitIndex++;
@@ -197,6 +200,9 @@ public class GameManager : MonoBehaviour
         
         mainCamera.Follow = _currentPlayer.currentUnit.transform;
         mainCamera.LookAt = _currentPlayer.currentUnit.transform;
+        
+        firstPersonCamera.Follow = _currentPlayer.currentUnit.FPSTarget.transform;
+        firstPersonCamera.LookAt = _currentPlayer.currentUnit.FPSTarget.transform;
 
         UIReferences.currentUnitText.text = "Current Unit: " + (_currentPlayer.currentUnitIndex + 1);
         _currentPlayer.currentUnit.highlighted = true;
@@ -209,6 +215,7 @@ public class GameManager : MonoBehaviour
         _currentPlayer.currentUnit.canMove = true;
         _currentPlayer.currentUnit.highlighted = false;
         _currentPlayer.currentUnit.canAct = true;
+        _currentPlayer.currentUnit.canSwitchWeapon = true;
 
         turnTimer = defaultTurnTime;
         startTurnTimer = true;
@@ -220,10 +227,15 @@ public class GameManager : MonoBehaviour
 
         _currentPlayer = playerList[currentPlayerIndex];
         
+        Reticle = GameObject.FindWithTag("Reticle");
+        
         mainCamera = FindObjectOfType<CinemachineFreeLook>();
+        firstPersonCamera = GameObject.FindWithTag("FirstPersonCamera").GetComponent<CinemachineFreeLook>();
+        firstPersonCamera.Priority = 0;
+        
         mainCamera.Follow = _currentPlayer.currentUnit.transform;
         mainCamera.LookAt = _currentPlayer.currentUnit.transform;
-        
+
         UIReferences = FindObjectOfType<UIReferences>();
         UIReferences.WinCanvas.SetActive(false);
         UIReferences.currentPlayerText.text = "Current Player: " + (currentPlayerIndex + 1);
@@ -252,9 +264,15 @@ public class GameManager : MonoBehaviour
         if (_currentPlayer.unitList.Count > 0)
         {
             mainCamera.Follow = _currentPlayer.currentUnit.transform;
-            mainCamera.LookAt = _currentPlayer.currentUnit.transform;   
+            mainCamera.LookAt = _currentPlayer.currentUnit.transform;
+
+            //firstPersonCamera.Follow = _currentPlayer.currentUnit.FPSTarget.transform;
+            //firstPersonCamera.LookAt = _currentPlayer.currentUnit.FPSTarget.transform;
+            
             _currentPlayer.currentUnit.highlighted = true;
         }
+        
+        _currentPlayer.roundUnitPicked = false;
         
         UIReferences.currentPlayerText.text = "Current Player: " + (currentPlayerIndex + 1);
         UIReferences.currentUnitText.text = "Current Unit: " + (_currentPlayer.currentUnitIndex + 1);

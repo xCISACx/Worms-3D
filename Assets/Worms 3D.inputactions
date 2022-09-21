@@ -363,7 +363,7 @@
                     "path": "<Keyboard>/tab",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Gamepad",
+                    "groups": "Gamepad;Keyboard&Mouse",
                     "action": "ChangeUnit",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -374,7 +374,7 @@
                     "path": "<Gamepad>/rightShoulder",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Keyboard&Mouse",
+                    "groups": "Keyboard&Mouse;Gamepad",
                     "action": "ChangeUnit",
                     "isComposite": false,
                     "isPartOfComposite": false

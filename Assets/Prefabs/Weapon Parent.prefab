@@ -80,6 +80,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   shootingDirection: 0
+  initDone: 0
   user: {fileID: 0}
   projectilePrefab: {fileID: 7926522421175382475, guid: b15f321068190a0479093c1c480dc696, type: 3}
   weaponModel: {fileID: 0}
@@ -87,6 +88,7 @@ MonoBehaviour:
   shootPoint: {fileID: 2716900819515389305}
   shootForce: {x: 0, y: 0, z: 0}
   lineRenderer: {fileID: 1209461737350313463}
+  playerInput: {fileID: 0}
   fire:
     m_Name: Fire
     m_Type: 0
@@ -127,7 +129,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &5672742567344130710
 Transform:
   m_ObjectHideFlags: 0
