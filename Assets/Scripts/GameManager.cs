@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
@@ -35,6 +36,7 @@ public class GameManager : MonoBehaviour
     public AudioSource SFXSource;
     public MenuManager MenuManager;
     public Canvas SettingsPopup;
+    public Worms3D PlayerControls;
 
     private void Awake()
     {
@@ -49,10 +51,22 @@ public class GameManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+        
+        PlayerControls = new Worms3D();
 
         MenuManager = FindObjectOfType<MenuManager>();
 
         //Cursor.lockState = CursorLockMode.Locked;
+    }
+
+    private void OnEnable()
+    {
+        PlayerControls.Enable();
+    }
+
+    private void OnDisable()
+    {
+        PlayerControls.Disable();
     }
 
     // Update is called once per frame
@@ -65,17 +79,17 @@ public class GameManager : MonoBehaviour
         
         if (matchStarted)
         {
-            if (Input.GetKeyDown(KeyCode.Return) && _currentPlayer.canChangeTurn)
+            if (PlayerControls.Player.ChangeTurn.triggered && _currentPlayer.canChangeTurn)
             {
                 NextTurn();
             }
         
-            if (!_currentPlayer.roundUnitPicked && Input.GetKeyDown(KeyCode.Tab))
+            if (!_currentPlayer.roundUnitPicked && PlayerControls.Player.ChangeUnit.triggered)
             {
                 ChangeUnit();
             }
 
-            if (Input.GetKeyDown(KeyCode.F))
+            if (PlayerControls.Player.PickUnit.triggered)
             {
                 PickUnit();
             }
@@ -134,7 +148,7 @@ public class GameManager : MonoBehaviour
         UIReferences.WinCanvas.SetActive(true);
         UIReferences.WinCanvasText.text = AlivePlayers[0].name + " WINS!";
 
-        if (Input.GetKeyDown(KeyCode.F))
+        if (PlayerControls.Player.PickUnit.triggered)
         {
             ResetGame();
             
@@ -149,7 +163,7 @@ public class GameManager : MonoBehaviour
         UIReferences.WinCanvas.SetActive(true);
         UIReferences.WinCanvasText.text = "It's a tie!";
 
-        if (Input.GetKeyDown(KeyCode.F))
+        if (PlayerControls.Player.PickUnit.triggered)
         {
             ResetGame();
             SceneManager.LoadScene(0);

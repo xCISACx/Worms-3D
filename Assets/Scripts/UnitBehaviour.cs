@@ -54,6 +54,7 @@ public class UnitBehaviour : MonoBehaviour
     [SerializeField] private GameObject currentWeaponObject;
     [SerializeField] private Transform weaponSlot;
     [SerializeField] private GameObject WeaponParentPrefab;
+    [SerializeField] private Vector2 movementValue;
 
     // Start is called before the first frame update
     void Start()
@@ -74,7 +75,10 @@ public class UnitBehaviour : MonoBehaviour
         rigidbody = GetComponent<Rigidbody>();
         camera = Camera.main.transform;
         rigidbody = GetComponent<Rigidbody>();
-        
+
+        GameManager.Instance.PlayerControls.Player.Move.performed += ctx => movementValue = ctx.ReadValue<Vector2>();
+        GameManager.Instance.PlayerControls.Player.Move.canceled += ctx => movementValue = ctx.ReadValue<Vector2>();
+
         //TODO: Make weapon selection function
     }
 
@@ -117,17 +121,17 @@ public class UnitBehaviour : MonoBehaviour
             {
                 if (canAct)
                 {
-                    if (Input.GetKeyDown(KeyCode.Space))
+                    if (GameManager.Instance.PlayerControls.Player.Jump.triggered)
                     {
                         Jump();
                     }
 
-                    if (Input.GetMouseButtonDown(2) && currentWeaponSelected && !currentWeaponObject)
+                    if (GameManager.Instance.PlayerControls.Player.EquipWeapon.triggered && currentWeaponSelected && !currentWeaponObject)
                     {
                         this.EquipWeapon();
                     }
 
-                    if (Input.GetKeyDown(KeyCode.LeftControl) && canSwitchWeapon)
+                    if (GameManager.Instance.PlayerControls.Player.ChangeWeapon.triggered && canSwitchWeapon)
                     {
                         selectedWeaponIndex++;
                         selectedWeaponIndex = selectedWeaponIndex % Player.WeaponInventory.Count;
@@ -178,16 +182,14 @@ public class UnitBehaviour : MonoBehaviour
                     }
                     else
                     {
-                        horizontalInput = Input.GetAxisRaw("Horizontal");
-                        verticalInput = Input.GetAxisRaw("Vertical");
-                        movementVector = new Vector3(horizontalInput, 0, verticalInput);
+                        movementVector = new Vector3(movementValue.x, 0, movementValue.y);
                         rigidbody.velocity = new Vector3(0f, rigidbody.velocity.y, 0f);
                     }
                     //We can't move but can still rotate for aiming purposes
                     
                     RotateWithMovement();
                     
-                    if (Input.GetMouseButton(1))
+                    if (GameManager.Instance.PlayerControls.Player.AimWeaponLock.inProgress)
                     {
                         HandleWeaponAiming();
                     }
@@ -282,8 +284,8 @@ public class UnitBehaviour : MonoBehaviour
         {
             Vector3 targetDirection = Vector3.zero;
 
-            targetDirection = camera.forward * verticalInput;
-            targetDirection = targetDirection + camera.right * horizontalInput;
+            targetDirection = camera.forward * movementValue.y;
+            targetDirection = targetDirection + camera.right * movementValue.x;
             targetDirection.Normalize();
             targetDirection.y = 0f;
             
@@ -312,14 +314,17 @@ public class UnitBehaviour : MonoBehaviour
         
     }
 
-    private void Move()
+    public void ReadMovementValues(InputAction.CallbackContext context)
     {
-        horizontalInput = Input.GetAxisRaw("Horizontal");
-        verticalInput = Input.GetAxisRaw("Vertical");
-        movementVector = new Vector3(horizontalInput, 0, verticalInput);
+        movementValue = context.ReadValue<Vector2>();
+    }
+
+    public void Move()
+    {
+        movementVector = new Vector3(movementValue.x, 0, movementValue.y);
         
-        movementDirection = camera.forward * Input.GetAxisRaw("Vertical");
-        movementDirection = movementDirection + camera.right * horizontalInput;
+        movementDirection = camera.forward * movementValue.y;
+        movementDirection = movementDirection + camera.right * movementValue.x;
         movementDirection.Normalize();
         movementDirection.y = 0f;
         movementDirection = movementDirection * movementSpeed;
@@ -376,11 +381,15 @@ public class UnitBehaviour : MonoBehaviour
         }
         
         var newWeaponParentObject = Instantiate(WeaponParentPrefab, weaponSlot.transform.position, weaponSlot.transform.rotation);
-        newWeaponParentObject.transform.SetParent(weaponSlot);
-        newWeaponParentObject.GetComponent<WeaponBehaviour>().user = this.gameObject;
         
         currentWeaponObject = newWeaponParentObject;
+        
         var weaponScript = currentWeaponObject.GetComponent<WeaponBehaviour>();
+        
+        newWeaponParentObject.transform.SetParent(weaponSlot);
+        
+        weaponScript.user = this.gameObject;
+
         weaponScript.weaponModel = selectedWeapon.model;
         weaponScript.shootForce = selectedWeapon.shootingForce;
         weaponScript.projectilePrefab = selectedWeapon.ammoPrefab;
