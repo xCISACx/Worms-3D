@@ -2,9 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
-using Object = UnityEngine.Object;
+using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(Rigidbody))]
 public class UnitBehaviour : MonoBehaviour
@@ -55,8 +54,6 @@ public class UnitBehaviour : MonoBehaviour
     [SerializeField] private GameObject currentWeaponObject;
     [SerializeField] private Transform weaponSlot;
     [SerializeField] private GameObject WeaponParentPrefab;
-    [SerializeField] private float a;
-    [SerializeField] private float b;
 
     // Start is called before the first frame update
     void Start()

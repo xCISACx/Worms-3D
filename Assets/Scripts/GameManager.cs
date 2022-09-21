@@ -33,6 +33,8 @@ public class GameManager : MonoBehaviour
     public AudioMixer AudioMixer;
     public AudioSource MusicSource;
     public AudioSource SFXSource;
+    public MenuManager MenuManager;
+    public Canvas SettingsPopup;
 
     private void Awake()
     {
@@ -43,6 +45,12 @@ public class GameManager : MonoBehaviour
             gameOver = false;
             initDone = false;
         }
+        else
+        {
+            Destroy(gameObject);
+        }
+
+        MenuManager = FindObjectOfType<MenuManager>();
 
         //Cursor.lockState = CursorLockMode.Locked;
     }

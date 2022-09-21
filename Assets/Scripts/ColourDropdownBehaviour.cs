@@ -5,37 +5,37 @@ using UnityEngine;
 
 public class ColourDropdownBehaviour : MonoBehaviour
 {
-    public MenuManager MenuManager;
+    public MainMenuManager MainMenuManager;
     public int playerIndex;
     // Start is called before the first frame update
     private void Awake()
     {
-        MenuManager = FindObjectOfType<MenuManager>();
+        MainMenuManager = FindObjectOfType<MainMenuManager>();
     }
 
     public void SetPlayerColour(int colour)
     {
-        MenuManager.PlayerColours[playerIndex] = colour.ToString();
+        MainMenuManager.PlayerColours[playerIndex] = colour.ToString();
         
         //Debug.Log("index: " + playerIndex + "colour " + colour);
 
-        switch (MenuManager.PlayerColours[playerIndex])
+        switch (MainMenuManager.PlayerColours[playerIndex])
         {
             case "0":
                 //Red
-                MenuManager.PlayerColours[playerIndex] = "#FF0000";
+                MainMenuManager.PlayerColours[playerIndex] = "#FF0000";
                 break;
             case "1":
                 //Green
-                MenuManager.PlayerColours[playerIndex] = "#00FF00";
+                MainMenuManager.PlayerColours[playerIndex] = "#00FF00";
                 break;
             case "2":
-                MenuManager.PlayerColours[playerIndex] = "#0000FF";
+                MainMenuManager.PlayerColours[playerIndex] = "#0000FF";
                 //Blue
                 break;
             case "3":
                 //Yellow
-                MenuManager.PlayerColours[playerIndex] = "#FFFF00";
+                MainMenuManager.PlayerColours[playerIndex] = "#FFFF00";
                 break;
         }
     }

@@ -9,6 +9,7 @@ public class PauseManager : MonoBehaviour
 {
     public bool GamePaused = false;
     public Canvas PauseCanvas;
+    public MenuManager MenuManager;
     
     // Start is called before the first frame update
     void Start()
@@ -32,6 +33,7 @@ public class PauseManager : MonoBehaviour
         else
         {
             Time.timeScale = 1;
+            MenuManager.CloseOptions();
             Cursor.lockState = CursorLockMode.Locked;
         }
     }
