@@ -58,6 +58,7 @@ public class UnitBehaviour : MonoBehaviour
     [SerializeField] private Vector2 movementValue;
 
     public Transform FPSTarget;
+    public bool canAim;
 
     // Start is called before the first frame update
     void Start()
@@ -81,13 +82,6 @@ public class UnitBehaviour : MonoBehaviour
 
         //TODO: Make weapon selection function
     }
-
-    /*private void OnValidate()
-    {
-        Player = GameManager.Instance.playerList[(int) Owner];
-
-        gameObject.name = Owner.ToString() + " Unit " + (transform.GetSiblingIndex() + 1);
-    }*/
 
     // Update is called once per frame
     void Update()
@@ -193,8 +187,11 @@ public class UnitBehaviour : MonoBehaviour
                     
                     RotateWithMovement();
                     
-                    if (GameManager.Instance.PlayerControls.Player.AimWeaponLock.inProgress)
+                    //only aim if the unit has a weapon equipped
+                    
+                    if (GameManager.Instance.PlayerControls.Player.AimWeaponLock.inProgress && currentWeaponObject)
                     {
+                        GameManager.Instance.firstPersonCamera = currentWeaponObject.GetComponent<WeaponBehaviour>().FPSCamera;
                         HandleWeaponAiming();
                     }
                     else
@@ -213,6 +210,7 @@ public class UnitBehaviour : MonoBehaviour
                 
                 if (GameManager.Instance.AlivePlayers.Count > 1)
                 {
+                    Debug.Log("can't act " + GameManager.Instance._currentPlayer.currentUnit);
                     StartCoroutine(GameManager.Instance.WaitForTurnToEnd());
                 }
             }
@@ -234,10 +232,7 @@ public class UnitBehaviour : MonoBehaviour
         //remove Cinemachine mouse input strings so we can't move the camera
         GameManager.Instance.mainCamera.m_XAxis.m_InputAxisName = string.Empty;
         GameManager.Instance.mainCamera.m_YAxis.m_InputAxisName = string.Empty;
-        
-        //GameManager.Instance.firstPersonCamera.m_XAxis.m_InputAxisName = string.Empty;
-        //GameManager.Instance.firstPersonCamera.m_YAxis.m_InputAxisName = string.Empty;
-        
+
         var aimSpeed = 2f;
         float vertical = Input.GetAxis ("Mouse Y") * aimSpeed;
         float horizontal = Input.GetAxis ("Mouse X") * aimSpeed;
@@ -245,6 +240,7 @@ public class UnitBehaviour : MonoBehaviour
         var target = weaponSlot.transform;
         
         target.transform.Rotate(-vertical, horizontal, 0);
+        //target.transform.rotation = Quaternion.Euler(Camera.main.transform.eulerAngles.x, Camera.main.transform.eulerAngles.y + 180,Camera.main.transform.eulerAngles.z);
 
         /*Vector3 rot = target.localRotation.eulerAngles; TODO: FIX CLAMPING NOT WORKING
 
@@ -262,12 +258,15 @@ public class UnitBehaviour : MonoBehaviour
 
     private void StopWeaponAiming()
     {
-        GameManager.Instance.firstPersonCamera.Priority = 0;
-        
-        GameManager.Instance.firstPersonCamera.m_XAxis.m_InputAxisName = string.Empty;
-        GameManager.Instance.firstPersonCamera.m_YAxis.m_InputAxisName = string.Empty;
-        
+        if (GameManager.Instance.firstPersonCamera)
+        {
+            GameManager.Instance.firstPersonCamera.Priority = 0;   
+        }
+
         GameManager.Instance.Reticle.GetComponent<Image>().enabled = false;
+        
+        GameManager.Instance.mainCamera.m_XAxis.m_InputAxisName = "Mouse X";
+        GameManager.Instance.mainCamera.m_YAxis.m_InputAxisName = "Mouse Y";
     }
     
     float ClampAngle(float angle, float from, float to)
@@ -377,8 +376,8 @@ public class UnitBehaviour : MonoBehaviour
     {
         if (Player.currentUnit == this && Player.unitList.Count > 0)
         {
-            Player.currentUnit = Player.unitList[0];
-            GameManager.Instance.NextTurn();
+            Debug.Log("unit killed itself");
+            GameManager.Instance.NextTurn(true);
         }
 
         if (Player.unitList.Count == 1) //If this was the player's last unit
@@ -389,11 +388,6 @@ public class UnitBehaviour : MonoBehaviour
         Player.unitList.Remove(this);
         GameManager.Instance.unitList.Remove(this);
 
-        if (Player.currentUnit == this)
-        {
-            GameManager.Instance.NextTurn();
-        }
-        
         Destroy(gameObject);
     }
 
@@ -423,14 +417,19 @@ public class UnitBehaviour : MonoBehaviour
         var newWeapon = Instantiate(weaponScript.weaponModel, newWeaponParentObject.transform.position,
             newWeaponParentObject.transform.rotation);
 
-        weaponScript.shootPoint = newWeapon.GetComponent<ModelProperties>().ShootPoint;
+        weaponScript.shootPoint.localPosition = newWeapon.GetComponent<ModelProperties>().ShootPoint.localPosition;
         weaponScript.lineRenderer.transform.position = weaponScript.shootPoint.position;
+        weaponScript.FPSCamera.transform.position = weaponScript.shootPoint.position;
         
-        weaponScript.user.GetComponent<UnitBehaviour>().FPSTarget = weaponScript.shootPoint;
+        //weaponScript.user.GetComponent<UnitBehaviour>().FPSTarget = weaponScript.shootPoint;
 
-        GameManager.Instance.firstPersonCamera.Follow = weaponScript.shootPoint;
-        GameManager.Instance.firstPersonCamera.LookAt = weaponScript.shootPoint;
+        GameManager.Instance.firstPersonCamera = weaponScript.FPSCamera;
+
+        //GameManager.Instance.firstPersonCamera.Follow = weaponScript.shootPoint;
+        //GameManager.Instance.firstPersonCamera.LookAt = weaponScript.shootPoint;
 
         newWeapon.transform.SetParent(weaponScript.weaponModelParent);
+
+        canAim = true;
     }
 }

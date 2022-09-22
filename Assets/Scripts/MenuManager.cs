@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 
 public class MenuManager : MonoBehaviour
 {
-    [SerializeField] private Canvas SettingsPopup;
+    [SerializeField] private GameObject SettingsPopup;
     private bool showSettings;
     public AudioClip ButtonHoverSFX;
     public AudioClip ButtonClickSFX;
@@ -18,17 +18,19 @@ public class MenuManager : MonoBehaviour
         Screen.fullScreen = true;
         FullScreenMode = FullScreenMode.FullScreenWindow;
         Cursor.lockState = CursorLockMode.None;
-        SettingsPopup.enabled = false;
+        SettingsPopup.SetActive(false);
     }
 
     public void Options()
     {
-        SettingsPopup.enabled = true;
+        //SettingsPopup.enabled = true;
+        SettingsPopup.gameObject.SetActive(true);
     }
     
     public void CloseOptions() //TODO: MAKE TOGGLE?
     {
-        SettingsPopup.enabled = false;
+        //SettingsPopup.enabled = false;
+        SettingsPopup.gameObject.SetActive(false);
     }
 
     public void PlayButtonHoverSound()

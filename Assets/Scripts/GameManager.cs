@@ -22,7 +22,7 @@ public class GameManager : MonoBehaviour
     public bool initDone = false;
     public bool changeTurnFlag;
     public CinemachineFreeLook mainCamera;
-    public CinemachineFreeLook firstPersonCamera;
+    public CinemachineVirtualCamera firstPersonCamera;
     public int currentPlayerIndex;
     [SerializeField] private Dictionary<PlayerBehaviour, UnitBehaviour[]> playerUnitDictionary;
     public PlayerBehaviour _currentPlayer;
@@ -42,18 +42,17 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
-        if (!Instance)
-        {
-            Instance = this;
-            DontDestroyOnLoad(this.gameObject);
-            gameOver = false;
-            initDone = false;
+        if (Instance != null && Instance != this) 
+        { 
+            Destroy(this.gameObject);
+            return;
         }
         else
         {
-            Destroy(gameObject);
+            Instance = this;
+            DontDestroyOnLoad(this.gameObject);
         }
-        
+
         PlayerControls = new Worms3D();
 
         MenuManager = FindObjectOfType<MenuManager>();
@@ -83,7 +82,7 @@ public class GameManager : MonoBehaviour
         {
             if (PlayerControls.Player.ChangeTurn.triggered && _currentPlayer.canChangeTurn)
             {
-                NextTurn();
+                NextTurn(false);
             }
         
             if (!_currentPlayer.roundUnitPicked && PlayerControls.Player.ChangeUnit.triggered)
@@ -103,7 +102,7 @@ public class GameManager : MonoBehaviour
 
             if (turnTimer <= 0f)
             {
-                NextTurn();
+                NextTurn(false);
             }
             
             if (UIReferences)
@@ -127,21 +126,26 @@ public class GameManager : MonoBehaviour
                     Tie();
                 }   
             }
+            
+            if (!mainCamera.Follow || !mainCamera.LookAt && _currentPlayer.currentUnit.transform && !gameOver)
+            {
+                mainCamera.Follow = _currentPlayer.currentUnit.transform;
+                mainCamera.LookAt = _currentPlayer.currentUnit.transform;
+            }
         }
     }
     
     public IEnumerator WaitForTurnToEnd()
     {
         _currentPlayer.currentUnit.canAct = false;
+        _currentPlayer.currentUnit = _currentPlayer.unitList[0];
         changeTurnFlag = true;
-        
+
+        yield return new WaitForSeconds(3);
         if (changeTurnFlag)
         {
-            _currentPlayer.currentUnit.shotsFiredDuringRound = 0;
+            NextTurn(false);
         }
-        
-        yield return new WaitForSeconds(3);
-        NextTurn();
     }
 
     private void Win()
@@ -185,6 +189,9 @@ public class GameManager : MonoBehaviour
 
     private void ChangeUnit()
     {
+        mainCamera.m_XAxis.m_InputAxisName = "Mouse X";
+        mainCamera.m_YAxis.m_InputAxisName = "Mouse Y";
+        
         _currentPlayer.currentUnit.highlighted = false;
         //Debug.Log("previous unit: " + _currentPlayer.currentUnit);
         _currentPlayer.currentUnit.canMove = false;
@@ -200,12 +207,10 @@ public class GameManager : MonoBehaviour
         
         mainCamera.Follow = _currentPlayer.currentUnit.transform;
         mainCamera.LookAt = _currentPlayer.currentUnit.transform;
-        
-        firstPersonCamera.Follow = _currentPlayer.currentUnit.FPSTarget.transform;
-        firstPersonCamera.LookAt = _currentPlayer.currentUnit.FPSTarget.transform;
 
         UIReferences.currentUnitText.text = "Current Unit: " + (_currentPlayer.currentUnitIndex + 1);
         _currentPlayer.currentUnit.highlighted = true;
+        _currentPlayer.currentUnit.canAim = false;
     }
 
     private void PickUnit()
@@ -230,9 +235,7 @@ public class GameManager : MonoBehaviour
         Reticle = GameObject.FindWithTag("Reticle");
         
         mainCamera = FindObjectOfType<CinemachineFreeLook>();
-        firstPersonCamera = GameObject.FindWithTag("FirstPersonCamera").GetComponent<CinemachineFreeLook>();
-        firstPersonCamera.Priority = 0;
-        
+
         mainCamera.Follow = _currentPlayer.currentUnit.transform;
         mainCamera.LookAt = _currentPlayer.currentUnit.transform;
 
@@ -244,23 +247,31 @@ public class GameManager : MonoBehaviour
         playerList[currentPlayerIndex].canPlay = true;
         playerList[currentPlayerIndex].turnStarted = true;
         _currentPlayer.currentUnit.highlighted = true;
+        _currentPlayer.currentUnit.canAim = false;
         
         //Debug.Log(_currentPlayer);
         initDone = true;
     }
 
-    public void NextTurn()
+    public void NextTurn(bool selfdeath)
     {
+        Debug.Log("next turn");
         changeTurnFlag = false;
-        _currentPlayer.currentUnit.highlighted = false; // disable the highlight of the previous player's unit before switching to the next player
+        firstPersonCamera.Priority = 0;
         
+        mainCamera.m_XAxis.m_InputAxisName = "Mouse X";
+        mainCamera.m_YAxis.m_InputAxisName = "Mouse Y";
+
+        _currentPlayer.currentUnit.highlighted = false; // disable the highlight of the previous player's unit before switching to the next player
+        _currentPlayer.currentUnit.shotsFiredDuringRound = 0; // disable the highlight of the previous player's unit before switching to the next player   
+
         startTurnTimer = false;
         
         currentPlayerIndex++;
-        currentPlayerIndex %= GameManager.Instance.playerList.Count;
+        currentPlayerIndex %= playerList.Count;
         
         _currentPlayer = playerList[currentPlayerIndex];
-        
+
         if (_currentPlayer.unitList.Count > 0)
         {
             mainCamera.Follow = _currentPlayer.currentUnit.transform;
@@ -272,6 +283,8 @@ public class GameManager : MonoBehaviour
             _currentPlayer.currentUnit.highlighted = true;
         }
         
+        _currentPlayer.currentUnit.canAim = false;
+
         _currentPlayer.roundUnitPicked = false;
         
         UIReferences.currentPlayerText.text = "Current Player: " + (currentPlayerIndex + 1);

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Cinemachine;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -26,6 +27,7 @@ public class WeaponBehaviour : MonoBehaviour
     public Transform weaponModelParent;
     public Transform shootPoint;
     [SerializeField] public Vector3 shootForce;
+    public CinemachineVirtualCamera FPSCamera;
     public LineRenderer lineRenderer;
     
     public PlayerInput playerInput;
@@ -37,17 +39,7 @@ public class WeaponBehaviour : MonoBehaviour
     private void Awake()
     {
         lineRenderer.enabled = true;
-        GameManager.Instance.PlayerControls = new Worms3D();
-    }
-
-    private void OnEnable()
-    {
-        GameManager.Instance.PlayerControls.Enable();
-    }
-
-    private void OnDisable()
-    {
-        GameManager.Instance.PlayerControls.Disable();
+        //FPSCamera = GetComponentInChildren<CinemachineFreeLook>();
     }
 
     // Update is called once per frame
@@ -99,8 +91,8 @@ public class WeaponBehaviour : MonoBehaviour
         lineRenderer.transform.rotation = transform.localRotation;
 
         //Debug.Log("shoot");
-        user.GetComponent<UnitBehaviour>().canAct = false;
         user.GetComponent<UnitBehaviour>().shotsFiredDuringRound++;
+        user.GetComponent<UnitBehaviour>().canAct = false;
         Destroy(newProjectile.gameObject, 10f);
     }
 }

@@ -40,10 +40,4 @@ public class PlayerBehaviour : MonoBehaviour
     {
         GameManager.Instance.AlivePlayers.Add(this);
     }
-
-    private void OnValidate()
-    {
-        unitList = GetComponentsInChildren<UnitBehaviour>().ToList();
-        name = "Player " + (playerIndex + 1);
-    }
 }
