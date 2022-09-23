@@ -14,9 +14,10 @@ using UnityEngine.Serialization;
 
 public class GameManager : MonoBehaviour
 {
-    public int NumberOfStartingUnits;
-    public List<PlayerBehaviour> AlivePlayers;
     public static GameManager Instance;
+    public Prefs prefs;
+    public int NumberOfStartingUnits = 1;
+    public List<PlayerBehaviour> AlivePlayers;
     public UIReferences UIReferences;
     public bool matchStarted = false;
     public bool initDone = false;
@@ -24,7 +25,6 @@ public class GameManager : MonoBehaviour
     public CinemachineFreeLook mainCamera;
     public CinemachineVirtualCamera firstPersonCamera;
     public int currentPlayerIndex;
-    [SerializeField] private Dictionary<PlayerBehaviour, UnitBehaviour[]> playerUnitDictionary;
     public PlayerBehaviour _currentPlayer;
     public List<PlayerBehaviour> playerList;
     public List<UnitBehaviour> unitList;
@@ -42,32 +42,52 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance != null && Instance != this) 
+        if (!Instance)
         { 
-            Destroy(this.gameObject);
-            return;
-        }
-        else
-        {
             Instance = this;
             DontDestroyOnLoad(this.gameObject);
         }
-
-        PlayerControls = new Worms3D();
+        else
+        {
+            Destroy(gameObject);
+        }
 
         MenuManager = FindObjectOfType<MenuManager>();
+
+        //LoadPlayerPrefs();
 
         //Cursor.lockState = CursorLockMode.Locked;
     }
 
+    private void Start()
+    {
+        LoadPrefs();
+        MenuManager.LoadMenuUIValues();
+    }
+
+    private void LoadPrefs()
+    {
+        Debug.Log("LOADING PREFERENCES...");
+        
+        prefs = Resources.Load<Prefs>("Prefs");
+        
+        AudioMixer.SetFloat("masterVolume", prefs.masterVolume);
+        AudioMixer.SetFloat("musicVolume", prefs.musicVolume);
+        AudioMixer.SetFloat("sfxVolume", prefs.sfxVolume);
+        
+        Screen.SetResolution(prefs.resolutionW, prefs.resolutionH, prefs.fullScreenMode);
+        Screen.fullScreen = prefs.fullscreen;
+    }
+
     private void OnEnable()
     {
+        PlayerControls = new Worms3D();
         PlayerControls.Enable();
     }
 
     private void OnDisable()
     {
-        PlayerControls.Disable();
+        PlayerControls?.Disable();
     }
 
     // Update is called once per frame
@@ -127,7 +147,7 @@ public class GameManager : MonoBehaviour
                 }   
             }
             
-            if (!mainCamera.Follow || !mainCamera.LookAt && _currentPlayer.currentUnit.transform && !gameOver)
+            if ((!mainCamera.Follow || !mainCamera.LookAt) && (_currentPlayer.currentUnit.transform && !gameOver))
             {
                 mainCamera.Follow = _currentPlayer.currentUnit.transform;
                 mainCamera.LookAt = _currentPlayer.currentUnit.transform;
@@ -137,13 +157,15 @@ public class GameManager : MonoBehaviour
     
     public IEnumerator WaitForTurnToEnd()
     {
+        Debug.Log("waiting for turn to end");
         _currentPlayer.currentUnit.canAct = false;
-        _currentPlayer.currentUnit = _currentPlayer.unitList[0];
+        //_currentPlayer.currentUnit = _currentPlayer.unitList[0];
         changeTurnFlag = true;
 
         yield return new WaitForSeconds(3);
         if (changeTurnFlag)
         {
+            Debug.Log("coroutine turn end");
             NextTurn(false);
         }
     }

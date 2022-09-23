@@ -9,6 +9,9 @@ TagManager:
   - ColourHParent
   - FirstPersonCamera
   - Reticle
+  - Master Slider
+  - Music Slider
+  - SFX Slider
   layers:
   - Default
   - TransparentFX

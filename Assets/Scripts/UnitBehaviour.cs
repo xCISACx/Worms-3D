@@ -365,6 +365,7 @@ public class UnitBehaviour : MonoBehaviour
         CurrentHealth -= damage;
         HealthText.text = CurrentHealth.ToString();
         GameManager.Instance.UIReferences.GlobalHPBarParent.UpdateBar((int) Owner);
+        
         if (CurrentHealth <= 0)
         {
             StartCoroutine(GameManager.Instance.WaitForTurnToEnd());
@@ -377,6 +378,7 @@ public class UnitBehaviour : MonoBehaviour
         if (Player.currentUnit == this && Player.unitList.Count > 0)
         {
             Debug.Log("unit killed itself");
+            Debug.Log("suicide turn end");
             GameManager.Instance.NextTurn(true);
         }
 
