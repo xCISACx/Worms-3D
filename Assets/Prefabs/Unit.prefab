@@ -96,8 +96,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 0.74894005, y: 0.5817028, z: 1}
+  m_Center: {x: 0, y: -0.20914859, z: 0}
 --- !u!114 &4354756741992811918
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -315,6 +315,64 @@ MonoBehaviour:
   m_SelectedFaces: 
   m_SelectedEdges: []
   m_SelectedVertices: 
+--- !u!1 &1899337419543668015
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3236598924244742763}
+  - component: {fileID: 3918446731159393480}
+  - component: {fileID: 411597816659513952}
+  m_Layer: 6
+  m_Name: Groundcheck
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3236598924244742763
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1899337419543668015}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: -1.54, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6706881825711459460}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &3918446731159393480
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1899337419543668015}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.71, y: 0.31, z: 0.6}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &411597816659513952
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1899337419543668015}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8b69514b8e154e448b396a5836ecd5a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1985358203056527520
 GameObject:
   m_ObjectHideFlags: 0
@@ -1074,6 +1132,7 @@ Transform:
   - {fileID: 6706881824310305739}
   - {fileID: 7597424063120724403}
   - {fileID: 1263182303730563694}
+  - {fileID: 3236598924244742763}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1130,7 +1189,11 @@ MonoBehaviour:
   weaponSlot: {fileID: 6706881824310305739}
   WeaponParentPrefab: {fileID: 4260267504412137361, guid: b4b69d7fe949fcd41bcd2dc408d8e439, type: 3}
   movementValue: {x: 0, y: 0}
+  fallDamageToTake: 0
+  countFallDamage: 0
+  grounded: 0
   FPSTarget: {fileID: 0}
+  canAim: 0
 --- !u!54 &6706881825711459461
 Rigidbody:
   m_ObjectHideFlags: 0

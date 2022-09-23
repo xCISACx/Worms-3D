@@ -31,7 +31,7 @@ public class ProjectileBehaviour : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.CompareTag("Environment"))
+        if (other.gameObject.CompareTag("Environment") || other.gameObject.CompareTag("Ground"))
         {
             origin = other.gameObject.GetComponent<Collider>().ClosestPointOnBounds(transform.position);
             

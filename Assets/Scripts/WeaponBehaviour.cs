@@ -93,6 +93,8 @@ public class WeaponBehaviour : MonoBehaviour
         //Debug.Log("shoot");
         user.GetComponent<UnitBehaviour>().shotsFiredDuringRound++;
         user.GetComponent<UnitBehaviour>().canAct = false;
+        GameManager.Instance.firstPersonCamera.Follow = newProjectile.transform;
+        GameManager.Instance.firstPersonCamera.LookAt = newProjectile.transform;
         Destroy(newProjectile.gameObject, 10f);
     }
 }

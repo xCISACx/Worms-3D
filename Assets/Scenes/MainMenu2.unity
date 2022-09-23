@@ -2811,7 +2811,7 @@ MonoBehaviour:
   _currentPlayer: {fileID: 0}
   playerList: []
   unitList: []
-  defaultTurnTime: 999999
+  defaultTurnTime: 60
   turnTimer: 60
   startTurnTimer: 0
   gameOver: 0
@@ -2821,6 +2821,7 @@ MonoBehaviour:
   MenuManager: {fileID: 0}
   SettingsPopup: {fileID: 0}
   Reticle: {fileID: 0}
+  fallDamageTreshold: 10
 --- !u!4 &698354960
 Transform:
   m_ObjectHideFlags: 0

@@ -135,5 +135,6 @@ MonoBehaviour:
     m_Bits: 192
   explosionForce: 1000
   explosionRadius: 2.5
-  upwardsModifier: 10
+  upwardsModifier: 1
   TerrainDamageConfig: {fileID: 11400000, guid: 67e2c60653096e54bb7ac0666f7fc953, type: 2}
+  spawnedExplosion: 0

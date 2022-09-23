@@ -52,13 +52,17 @@ public class UnitBehaviour : MonoBehaviour
     [SerializeField] private bool currentWeaponSelected;
     [SerializeField] private Weapon selectedWeapon;
     [SerializeField] private int selectedWeaponIndex;
-    [SerializeField] private GameObject currentWeaponObject;
+    public GameObject currentWeaponObject;
     [SerializeField] private Transform weaponSlot;
     [SerializeField] private GameObject WeaponParentPrefab;
     [SerializeField] private Vector2 movementValue;
+    public float fallDamageToTake;
+    public bool countFallDamage = false;
+    public bool grounded = false;
 
     public Transform FPSTarget;
     public bool canAim;
+    public bool canTakeDamage;
 
     // Start is called before the first frame update
     void Start()
@@ -119,7 +123,7 @@ public class UnitBehaviour : MonoBehaviour
             {
                 if (canAct)
                 {
-                    if (GameManager.Instance.PlayerControls.Player.Jump.triggered)
+                    if (grounded && GameManager.Instance.PlayerControls.Player.Jump.triggered)
                     {
                         Jump();
                     }
@@ -215,11 +219,45 @@ public class UnitBehaviour : MonoBehaviour
                 }
             }
 
-            if (rigidbody.velocity.y <= 0f)
+            if (!grounded && rigidbody.velocity.y <= 0f)
             {
                 //Debug.Log("going down");
                 rigidbody.velocity += Vector3.up * Physics.gravity.y * (5f - 1) * Time.deltaTime;
             }
+
+            if (!grounded && rigidbody.velocity.y < 0f)
+            {
+                countFallDamage = true;
+                
+                Debug.Log(rigidbody.velocity);
+                
+                if (countFallDamage)
+                {
+                    fallDamageToTake += 0.3f;
+                }
+            }
+        }
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Ground"))
+        {
+            countFallDamage = false;
+
+            if (canTakeDamage && fallDamageToTake >= GameManager.Instance.fallDamageTreshold)
+            {
+                TakeDamage((int) fallDamageToTake);
+            }
+            fallDamageToTake = 0;
+        }
+    }
+    
+    private void OnCollisionStay (Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Ground"))
+        {
+            countFallDamage = false;
         }
     }
 
@@ -363,9 +401,10 @@ public class UnitBehaviour : MonoBehaviour
     public void TakeDamage(int damage)
     {
         CurrentHealth -= damage;
+        canTakeDamage = false;
         HealthText.text = CurrentHealth.ToString();
         GameManager.Instance.UIReferences.GlobalHPBarParent.UpdateBar((int) Owner);
-        
+
         if (CurrentHealth <= 0)
         {
             StartCoroutine(GameManager.Instance.WaitForTurnToEnd());
@@ -379,6 +418,7 @@ public class UnitBehaviour : MonoBehaviour
         {
             Debug.Log("unit killed itself");
             Debug.Log("suicide turn end");
+            Player.currentUnit = Player.unitList[(Player.currentUnitIndex + 1) % Player.unitList.Count];
             GameManager.Instance.NextTurn(true);
         }
 

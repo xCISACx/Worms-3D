@@ -39,6 +39,7 @@ public class GameManager : MonoBehaviour
     public Canvas SettingsPopup;
     public Worms3D PlayerControls;
     public GameObject Reticle;
+    public int fallDamageTreshold;
 
     private void Awake()
     {
@@ -53,6 +54,8 @@ public class GameManager : MonoBehaviour
         }
 
         MenuManager = FindObjectOfType<MenuManager>();
+
+        NumberOfStartingUnits = 1;
 
         //LoadPlayerPrefs();
 
@@ -147,11 +150,11 @@ public class GameManager : MonoBehaviour
                 }   
             }
             
-            if ((!mainCamera.Follow || !mainCamera.LookAt) && (_currentPlayer.currentUnit.transform && !gameOver))
+            /*if ((!mainCamera.Follow || !mainCamera.LookAt) && (_currentPlayer.currentUnit.transform && !gameOver))
             {
                 mainCamera.Follow = _currentPlayer.currentUnit.transform;
                 mainCamera.LookAt = _currentPlayer.currentUnit.transform;
-            }
+            }*/
         }
     }
     
@@ -252,6 +255,7 @@ public class GameManager : MonoBehaviour
     {
         Cursor.lockState = CursorLockMode.Locked;
 
+        currentPlayerIndex = 0;
         _currentPlayer = playerList[currentPlayerIndex];
         
         Reticle = GameObject.FindWithTag("Reticle");
@@ -279,13 +283,17 @@ public class GameManager : MonoBehaviour
     {
         Debug.Log("next turn");
         changeTurnFlag = false;
-        firstPersonCamera.Priority = 0;
         
+        if (firstPersonCamera)
+        {
+            firstPersonCamera.Priority = 0;
+        }
+
         mainCamera.m_XAxis.m_InputAxisName = "Mouse X";
         mainCamera.m_YAxis.m_InputAxisName = "Mouse Y";
 
         _currentPlayer.currentUnit.highlighted = false; // disable the highlight of the previous player's unit before switching to the next player
-        _currentPlayer.currentUnit.shotsFiredDuringRound = 0; // disable the highlight of the previous player's unit before switching to the next player   
+        _currentPlayer.currentUnit.shotsFiredDuringRound = 0; // reset the shots of the previous player's unit before switching to the next player   
 
         startTurnTimer = false;
         
@@ -294,17 +302,6 @@ public class GameManager : MonoBehaviour
         
         _currentPlayer = playerList[currentPlayerIndex];
 
-        if (_currentPlayer.unitList.Count > 0)
-        {
-            mainCamera.Follow = _currentPlayer.currentUnit.transform;
-            mainCamera.LookAt = _currentPlayer.currentUnit.transform;
-
-            //firstPersonCamera.Follow = _currentPlayer.currentUnit.FPSTarget.transform;
-            //firstPersonCamera.LookAt = _currentPlayer.currentUnit.FPSTarget.transform;
-            
-            _currentPlayer.currentUnit.highlighted = true;
-        }
-        
         _currentPlayer.currentUnit.canAim = false;
 
         _currentPlayer.roundUnitPicked = false;
@@ -329,6 +326,22 @@ public class GameManager : MonoBehaviour
                 playerList[i].currentUnit.canMove = false;
                 playerList[i].turnStarted = false;
             }
+            playerList[i].currentUnit.canTakeDamage = true;
+        }
+        
+        if (_currentPlayer.unitList.Count > 0)
+        {
+            mainCamera.Follow = _currentPlayer.currentUnit.transform;
+            mainCamera.LookAt = _currentPlayer.currentUnit.transform;
+            Debug.Log("setting camera follow to: " + _currentPlayer.currentUnit.transform);
+
+            if (_currentPlayer.currentUnit.currentWeaponObject)
+            {
+                firstPersonCamera = _currentPlayer.currentUnit.currentWeaponObject.GetComponent<WeaponBehaviour>().FPSCamera;
+                firstPersonCamera = _currentPlayer.currentUnit.currentWeaponObject.GetComponent<WeaponBehaviour>().FPSCamera;   
+            }
+
+            _currentPlayer.currentUnit.highlighted = true;
         }
             
         //Debug.Log(_currentPlayer);

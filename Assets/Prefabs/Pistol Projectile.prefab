@@ -128,10 +128,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   explosive: 0
+  damage: 0
   ExplosionPrefab: {fileID: 2727298428513077183, guid: 34733f823077fd24f808e8a2ae7830f7, type: 3}
   layerMask:
     serializedVersion: 2
     m_Bits: 192
   explosionForce: 1000
   explosionRadius: 20
-  upwardsModifier: 5
+  upwardsModifier: 0
+  TerrainDamageConfig: {fileID: 0}
+  spawnedExplosion: 0
