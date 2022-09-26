@@ -13,6 +13,7 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] private GameObject ColourHPrefab;
     private bool showMatchSettings;
 
+    public GameObject map;
     public string GameScene;
     public int numberOfPlayers;
     [SerializeField] private int numberOfPlayerUnits;
@@ -46,10 +47,11 @@ public class MainMenuManager : MonoBehaviour
 
             for (int j = 0; j < numberOfPlayerUnits; j++)
             {
-                var xPos = UnityEngine.Random.Range(0, 100f);
-                var zPos = UnityEngine.Random.Range(0, 100f);
+                var xPos = UnityEngine.Random.Range(-120, 120f);
+                var zPos = UnityEngine.Random.Range(-120, 120f);
+                var yPos = UnityEngine.Random.Range(0, 50f);
                 
-                var newUnit = Instantiate(UnitPrefab, new Vector3(xPos, 0, zPos), Quaternion.identity);
+                var newUnit = Instantiate(UnitPrefab, map.GetComponentInChildren<MeshRenderer>().bounds.ClosestPoint(new Vector3(xPos, 0, zPos)), Quaternion.identity);
 
                 newUnit.transform.SetParent(newPlayer.transform);
                 playerScript.unitList.Add(newUnit.GetComponent<UnitBehaviour>());
@@ -67,6 +69,7 @@ public class MainMenuManager : MonoBehaviour
                 GameManager.Instance.unitList.Add(newUnit.GetComponent<UnitBehaviour>());
             }
             
+            SceneManager.MoveGameObjectToScene(map, SceneManager.GetSceneByName(GameScene));
             SceneManager.MoveGameObjectToScene(newPlayer, SceneManager.GetSceneByName(GameScene));
         }
         

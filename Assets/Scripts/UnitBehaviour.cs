@@ -248,6 +248,7 @@ public class UnitBehaviour : MonoBehaviour
             if (canTakeDamage && fallDamageToTake >= GameManager.Instance.fallDamageTreshold)
             {
                 TakeDamage((int) fallDamageToTake);
+                GameManager.Instance.SpawnDamagePopUp(transform, new Vector3(0, 2f, 0),  (int) fallDamageToTake);
             }
             fallDamageToTake = 0;
         }
@@ -280,20 +281,6 @@ public class UnitBehaviour : MonoBehaviour
         
         target.transform.Rotate(-vertical, 0, 0);
         target2.transform.Rotate(0, horizontal, 0);
-        //target.transform.rotation = Quaternion.Euler(Camera.main.transform.eulerAngles.x, Camera.main.transform.eulerAngles.y + 180,Camera.main.transform.eulerAngles.z);
-
-        /*Vector3 rot = target.localRotation.eulerAngles; TODO: FIX CLAMPING NOT WORKING
-
-        rot.x = Mathf.Clamp(rot.x, a, b);
-        //rot.x = Mathf.Clamp(rot.x, 90, 180);
-
-        target.transform.localRotation = Quaternion.Euler(rot);*/
-        
-        //Debug.Log("local: " + target.localEulerAngles);
-        //Debug.Log("global: " + target.eulerAngles);
-
-        //target.transform.localEulerAngles = new Vector3(Mathf.Clamp(target.localEulerAngles.x, -85f, 85f), target.localEulerAngles.y, target.localEulerAngles.z);
-        //Debug.Log("clamping");
     }
 
     private void StopWeaponAiming()
@@ -406,6 +393,7 @@ public class UnitBehaviour : MonoBehaviour
         canTakeDamage = false;
         HealthText.text = CurrentHealth.ToString();
         GameManager.Instance.UIReferences.GlobalHPBarParent.UpdateBar((int) Owner);
+        GameManager.Instance.SpawnDamagePopUp(transform, new Vector3(0, 2f, 0), damage);
 
         if (CurrentHealth <= 0)
         {

@@ -5451,6 +5451,7 @@ MonoBehaviour:
   SettingsPopup: {fileID: 1938521251}
   ColourHParent: {fileID: 1725115534}
   ColourHPrefab: {fileID: 4260327539246144657, guid: a4bd911645fe3094596575813ca3c564, type: 3}
+  map: {fileID: 0}
   GameScene: Game
   numberOfPlayers: 1
   numberOfPlayerUnits: 1

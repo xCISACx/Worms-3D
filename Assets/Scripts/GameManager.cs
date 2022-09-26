@@ -308,9 +308,6 @@ public class GameManager : MonoBehaviour
         
         UIReferences.currentPlayerText.text = "Current Player: " + (currentPlayerIndex + 1);
         UIReferences.currentUnitText.text = "Current Unit: " + (_currentPlayer.currentUnitIndex + 1);
-        
-        turnTimer = defaultTurnTime;
-        startTurnTimer = true;
 
         for (int i = 0; i < GameManager.Instance.playerList.Count; i++)
         {
@@ -347,7 +344,16 @@ public class GameManager : MonoBehaviour
 
             _currentPlayer.currentUnit.highlighted = true;
         }
-            
+
         //Debug.Log(_currentPlayer);
+    }
+    
+    public void SpawnDamagePopUp(Transform parent, Vector3 offset, int damage)
+    {
+        var damagePrefab = Instantiate(UIReferences.DamagePopUpPrefab, Vector3.zero, Quaternion.identity);
+        damagePrefab.transform.SetParent(parent);
+        damagePrefab.transform.localPosition = Vector3.zero + offset;
+        damagePrefab.GetComponent<DamagePopUpBehaviour>().initialPosition = damagePrefab.transform.localPosition;
+        damagePrefab.GetComponent<DamagePopUpBehaviour>().DamageText.text = "- " + damage;
     }
 }

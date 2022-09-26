@@ -55,6 +55,9 @@ public class ProjectileBehaviour : MonoBehaviour
         
         else if (other.gameObject.CompareTag("Unit"))
         {
+            GameManager.Instance.firstPersonCamera.Follow = other.transform;
+            GameManager.Instance.firstPersonCamera.LookAt = other.transform;
+            
             origin = other.gameObject.GetComponent<Collider>().ClosestPointOnBounds(transform.position);
             
             if (explosive && !spawnedExplosion)

@@ -13,4 +13,5 @@ public class UIReferences : MonoBehaviour
     public GameObject WinCanvas;
     public TMP_Text WinCanvasText;
     public Image ChargeBar;
+    public GameObject DamagePopUpPrefab;
 }
