@@ -66,7 +66,7 @@ public class MenuManager : MonoBehaviour
         var newVolume = Mathf.Log10(value) * 20f;
         Debug.Log("new master volume: " + newVolume);
         
-        //for some reason Unity runs this method when the scene updates and GameManager's instance is not set by then so this is a hacky fix
+        // for some reason Unity runs this method when the scene updates and GameManager's instance is not set by then so this is a hacky fix
         if (GameManager.Instance)
         {
             GameManager.Instance.AudioMixer.SetFloat("masterVolume", newVolume);

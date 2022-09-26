@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0bbacdcf1b0ab4b48ac63a39f6a2c7ca, type: 3}
-  m_Name: Ammo Pickup
+  m_Name: Health Pickup
   m_EditorClassIdentifier: 
   model: {fileID: 0}
-  ammoAmount: 10
-  healthAmount: 0
+  ammoAmount: 0
+  healthAmount: 10
   armourAmount: 0
   weapon: {fileID: 0}

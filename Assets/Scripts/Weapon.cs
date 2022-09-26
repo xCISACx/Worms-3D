@@ -18,6 +18,7 @@ public class Weapon : ScriptableObject
     public GameObject ammoPrefab;
     public int damage;
     public Vector3 shootingForce;
+    public Vector3 maxShootingForce;
     public float accuracy;
 
     public WeaponBehaviour.Direction shootingDirection;

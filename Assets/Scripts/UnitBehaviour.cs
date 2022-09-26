@@ -276,8 +276,10 @@ public class UnitBehaviour : MonoBehaviour
         float horizontal = Input.GetAxis ("Mouse X") * aimSpeed;
 
         var target = weaponSlot.transform;
+        var target2 = transform;
         
-        target.transform.Rotate(-vertical, horizontal, 0);
+        target.transform.Rotate(-vertical, 0, 0);
+        target2.transform.Rotate(0, horizontal, 0);
         //target.transform.rotation = Quaternion.Euler(Camera.main.transform.eulerAngles.x, Camera.main.transform.eulerAngles.y + 180,Camera.main.transform.eulerAngles.z);
 
         /*Vector3 rot = target.localRotation.eulerAngles; TODO: FIX CLAMPING NOT WORKING
@@ -451,7 +453,9 @@ public class UnitBehaviour : MonoBehaviour
         weaponScript.user = this.gameObject;
 
         weaponScript.weaponModel = selectedWeapon.model;
-        weaponScript.shootForce = selectedWeapon.shootingForce;
+        weaponScript.defaultShootForce = selectedWeapon.shootingForce;
+        weaponScript.currentShootForce = selectedWeapon.shootingForce;
+        weaponScript.maxShootForce = selectedWeapon.maxShootingForce;
         weaponScript.projectilePrefab = selectedWeapon.ammoPrefab;
         weaponScript.projectilePrefab.GetComponent<ProjectileBehaviour>().damage = selectedWeapon.damage;
         weaponScript.shootingDirection = selectedWeapon.shootingDirection;

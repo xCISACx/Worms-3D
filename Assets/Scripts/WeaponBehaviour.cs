@@ -26,9 +26,13 @@ public class WeaponBehaviour : MonoBehaviour
     public GameObject weaponModel;
     public Transform weaponModelParent;
     public Transform shootPoint;
-    [SerializeField] public Vector3 shootForce;
+    public Transform lookPoint;
+    [SerializeField] public Vector3 defaultShootForce;
+    [SerializeField] public Vector3 currentShootForce;
+    [SerializeField] public Vector3 maxShootForce;
     public CinemachineVirtualCamera FPSCamera;
     public LineRenderer lineRenderer;
+    public bool charging = false;
     
     public PlayerInput playerInput;
     
@@ -47,17 +51,30 @@ public class WeaponBehaviour : MonoBehaviour
     {
         if (user.GetComponent<UnitBehaviour>().canAct)
         {
-            if (Input.GetMouseButtonDown(0))
+            if (GameManager.Instance.PlayerControls.Player.Fire.inProgress)
             {
-                //Shoot();
+                ChargeShot();
             }
-
-            if (GameManager.Instance.PlayerControls.Player.Fire.triggered)
+            
+            if (GameManager.Instance.PlayerControls.Player.Fire.WasReleasedThisFrame())
             {
                 Shoot();
             }
         }
     }
+
+    private void ChargeShot()
+    {
+        var newShootForceX = currentShootForce.x += 0.1f;
+        var newShootForceY = currentShootForce.y += 0.1f;
+        newShootForceX = Mathf.Clamp(newShootForceX, defaultShootForce.x, maxShootForce.x);
+        newShootForceY = Mathf.Clamp(newShootForceY, defaultShootForce.y, maxShootForce.y);
+        currentShootForce = new Vector3(newShootForceX, newShootForceY, 0);
+        Debug.Log("charging " + newShootForceX + " | " + newShootForceY + " | " + currentShootForce);
+        var barValue = Mathf.InverseLerp(defaultShootForce.magnitude, maxShootForce.magnitude, currentShootForce.magnitude);
+        GameManager.Instance.UIReferences.ChargeBar.fillAmount = barValue;
+    }
+
     private void Shoot()
     {
         var newProjectile = Instantiate(projectilePrefab, shootPoint.position, Quaternion.identity);
@@ -66,14 +83,14 @@ public class WeaponBehaviour : MonoBehaviour
         switch (shootingDirection)
         {
             case Direction.Forward:
-                newProjectile.GetComponent<Rigidbody>().AddForce(shootPoint.forward * shootForce.x, ForceMode.Impulse);
+                newProjectile.GetComponent<Rigidbody>().AddForce(shootPoint.forward * currentShootForce.x, ForceMode.Impulse);
                 break;
             case Direction.Up:
-                newProjectile.GetComponent<Rigidbody>().AddForce(shootPoint.up * shootForce.y, ForceMode.Impulse);
+                newProjectile.GetComponent<Rigidbody>().AddForce(shootPoint.up * currentShootForce.y, ForceMode.Impulse);
                 break;
             case Direction.Diagonal:
                 newProjectile.GetComponent<Rigidbody>()
-                    .AddForce((shootPoint.forward * shootForce.x / 2) + (shootPoint.up * shootForce.y / 2),
+                    .AddForce((shootPoint.forward * currentShootForce.x / 2) + (shootPoint.up * currentShootForce.y / 2),
                         ForceMode.Impulse);
                 break;
         }
@@ -93,6 +110,8 @@ public class WeaponBehaviour : MonoBehaviour
         //Debug.Log("shoot");
         user.GetComponent<UnitBehaviour>().shotsFiredDuringRound++;
         user.GetComponent<UnitBehaviour>().canAct = false;
+        currentShootForce = defaultShootForce;
+        GameManager.Instance.UIReferences.ChargeBar.fillAmount = 0;
         GameManager.Instance.firstPersonCamera.Follow = newProjectile.transform;
         GameManager.Instance.firstPersonCamera.LookAt = newProjectile.transform;
         Destroy(newProjectile.gameObject, 10f);

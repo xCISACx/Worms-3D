@@ -337,8 +337,12 @@ public class GameManager : MonoBehaviour
 
             if (_currentPlayer.currentUnit.currentWeaponObject)
             {
-                firstPersonCamera = _currentPlayer.currentUnit.currentWeaponObject.GetComponent<WeaponBehaviour>().FPSCamera;
-                firstPersonCamera = _currentPlayer.currentUnit.currentWeaponObject.GetComponent<WeaponBehaviour>().FPSCamera;   
+                var currentWeaponScript = _currentPlayer.currentUnit.currentWeaponObject.GetComponent<WeaponBehaviour>();
+                firstPersonCamera = currentWeaponScript.FPSCamera;
+                firstPersonCamera = currentWeaponScript.FPSCamera;
+                firstPersonCamera.Follow = null;
+                firstPersonCamera.transform.position = currentWeaponScript.shootPoint.transform.position;
+                firstPersonCamera.LookAt = currentWeaponScript.lookPoint.transform;
             }
 
             _currentPlayer.currentUnit.highlighted = true;

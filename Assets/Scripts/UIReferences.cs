@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class UIReferences : MonoBehaviour
 {
@@ -11,4 +12,5 @@ public class UIReferences : MonoBehaviour
     public GlobalHPBehaviour GlobalHPBarParent;
     public GameObject WinCanvas;
     public TMP_Text WinCanvasText;
+    public Image ChargeBar;
 }

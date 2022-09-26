@@ -17,5 +17,6 @@ MonoBehaviour:
   ammoPrefab: {fileID: 7926522421175382475, guid: b15f321068190a0479093c1c480dc696, type: 3}
   damage: 45
   shootingForce: {x: 100, y: 100, z: 0}
+  maxShootingForce: {x: 200, y: 200, z: 0}
   accuracy: 90
   shootingDirection: 0

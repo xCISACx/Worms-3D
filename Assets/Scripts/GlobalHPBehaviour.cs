@@ -21,9 +21,13 @@ public class GlobalHPBehaviour : MonoBehaviour
     {
         if (GameManager.Instance.AlivePlayers.Count > 0 && !initialisedColours)
         {
-            for (int i = 0; i < GameManager.Instance.AlivePlayers.Count; i++)
+            HPBars = GetComponentsInChildren<Image>(true);
+            
+            for (int i = 0; i < GameManager.Instance.playerList.Count; i++)
             {
                 HPBars[i].color = GameManager.Instance.playerList[i].unitList[0].PlayerColour;
+                HPBars[i].gameObject.SetActive(true);
+
                 initialisedColours = true;
             }
         }
