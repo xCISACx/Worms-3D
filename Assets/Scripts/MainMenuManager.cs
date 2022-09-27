@@ -47,9 +47,9 @@ public class MainMenuManager : MonoBehaviour
 
             for (int j = 0; j < numberOfPlayerUnits; j++)
             {
-                var xPos = UnityEngine.Random.Range(-120, 120f);
-                var zPos = UnityEngine.Random.Range(-120, 120f);
-                var yPos = UnityEngine.Random.Range(0, 50f);
+                var xPos = UnityEngine.Random.Range(-25, 25f);
+                var zPos = UnityEngine.Random.Range(-25, 25f);
+                var yPos = UnityEngine.Random.Range(10f, 50f);
                 
                 var newUnit = Instantiate(UnitPrefab, map.GetComponentInChildren<MeshRenderer>().bounds.ClosestPoint(new Vector3(xPos, 0, zPos)), Quaternion.identity);
 

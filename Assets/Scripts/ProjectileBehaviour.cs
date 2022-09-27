@@ -37,9 +37,7 @@ public class ProjectileBehaviour : MonoBehaviour
             
             if (explosive && !spawnedExplosion)
             {
-                Instantiate(ExplosionPrefab, 
-                    origin,
-                    Quaternion.identity);
+                Instantiate(ExplosionPrefab, origin, Quaternion.identity);
                 ApplyKnockback(origin);
                 ApplySplashDamage(origin);
                 //other.GetComponent<TerrainDamager>().ApplyDamage(origin, TerrainDamageConfig, 1.0f);
@@ -62,9 +60,7 @@ public class ProjectileBehaviour : MonoBehaviour
             
             if (explosive && !spawnedExplosion)
             {
-                Instantiate(ExplosionPrefab, 
-                    origin,
-                    Quaternion.identity);
+                Instantiate(ExplosionPrefab, origin, Quaternion.identity);
                 ApplyKnockback(origin);
                 ApplySplashDamage(origin);
                 //TODO: Deal more damage closer to explosion center.
