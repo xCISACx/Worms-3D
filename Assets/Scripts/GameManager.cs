@@ -9,6 +9,7 @@ using TMPro;
 using Unity.Collections;
 using UnityEngine;
 using UnityEngine.Audio;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 
@@ -105,18 +106,18 @@ public class GameManager : MonoBehaviour
         {
             if (PlayerControls.Player.ChangeTurn.triggered && _currentPlayer.canChangeTurn)
             {
-                NextTurn(false);
+                NextTurn();
             }
         
-            if (!_currentPlayer.roundUnitPicked && PlayerControls.Player.ChangeUnit.triggered)
+            /*if (!_currentPlayer.roundUnitPicked && PlayerControls.Player.ChangeUnit.triggered)
             {
                 ChangeUnit();
-            }
+            }*/
 
-            if (PlayerControls.Player.PickUnit.triggered)
+            /*if (PlayerControls.Player.PickUnit.triggered)
             {
                 PickUnit();
-            }
+            }*/
 
             if (startTurnTimer)
             {
@@ -125,7 +126,7 @@ public class GameManager : MonoBehaviour
 
             if (turnTimer <= 0f)
             {
-                NextTurn(false);
+                StartCoroutine(WaitForTurnToEnd());
             }
             
             if (UIReferences)
@@ -160,6 +161,7 @@ public class GameManager : MonoBehaviour
     
     public IEnumerator WaitForTurnToEnd()
     {
+        startTurnTimer = false;
         Debug.Log("waiting for turn to end");
         _currentPlayer.currentUnit.canAct = false;
         //_currentPlayer.currentUnit = _currentPlayer.unitList[0];
@@ -169,7 +171,7 @@ public class GameManager : MonoBehaviour
         if (changeTurnFlag)
         {
             Debug.Log("coroutine turn end");
-            NextTurn(false);
+            NextTurn();
         }
     }
 
@@ -212,43 +214,48 @@ public class GameManager : MonoBehaviour
         initDone = false;
     }
 
-    private void ChangeUnit()
+    private void ChangeUnit(InputAction.CallbackContext ctx)
     {
-        mainCamera.m_XAxis.m_InputAxisName = "Mouse X";
-        mainCamera.m_YAxis.m_InputAxisName = "Mouse Y";
+        if (!_currentPlayer.roundUnitPicked)
+        {
+            mainCamera.m_XAxis.m_InputAxisName = "Mouse X";
+            mainCamera.m_YAxis.m_InputAxisName = "Mouse Y";
         
-        _currentPlayer.currentUnit.highlighted = false;
-        //Debug.Log("previous unit: " + _currentPlayer.currentUnit);
-        _currentPlayer.currentUnit.canMove = false;
-        _currentPlayer.currentUnit.canAct = false;
-        _currentPlayer.currentUnit.canSwitchWeapon = false;
+            _currentPlayer.currentUnit.highlighted = false;
+            //Debug.Log("previous unit: " + _currentPlayer.currentUnit);
+            _currentPlayer.currentUnit.canMove = false;
+            _currentPlayer.currentUnit.canAct = false;
+            _currentPlayer.currentUnit.canSwitchWeapon = false;
         
-        _currentPlayer = playerList[currentPlayerIndex];
-        _currentPlayer.currentUnitIndex++;
-        _currentPlayer.currentUnitIndex %= _currentPlayer.unitList.Count;
-        _currentPlayer.currentUnit = _currentPlayer.unitList[_currentPlayer.currentUnitIndex];
+            _currentPlayer = playerList[currentPlayerIndex];
+            _currentPlayer.currentUnitIndex++;
+            _currentPlayer.currentUnitIndex %= _currentPlayer.unitList.Count;
+            _currentPlayer.currentUnit = _currentPlayer.unitList[_currentPlayer.currentUnitIndex];
         
-        //Debug.Log("new unit: " + _currentPlayer.currentUnit);
+            //Debug.Log("new unit: " + _currentPlayer.currentUnit);
         
-        mainCamera.Follow = _currentPlayer.currentUnit.transform;
-        mainCamera.LookAt = _currentPlayer.currentUnit.transform;
+            mainCamera.Follow = _currentPlayer.currentUnit.transform;
+            mainCamera.LookAt = _currentPlayer.currentUnit.transform;
 
-        UIReferences.currentUnitText.text = "Current Unit: " + (_currentPlayer.currentUnitIndex + 1);
-        _currentPlayer.currentUnit.highlighted = true;
-        _currentPlayer.currentUnit.canAim = false;
+            UIReferences.currentUnitText.text = "Current Unit: " + (_currentPlayer.currentUnitIndex + 1);
+            _currentPlayer.currentUnit.highlighted = true;
+        }
     }
 
-    private void PickUnit()
+    private void PickUnit(InputAction.CallbackContext ctx)
     {
-        _currentPlayer.unitPickedFlag = true;
-        _currentPlayer.roundUnitPicked = true;
-        _currentPlayer.currentUnit.canMove = true;
-        _currentPlayer.currentUnit.highlighted = false;
-        _currentPlayer.currentUnit.canAct = true;
-        _currentPlayer.currentUnit.canSwitchWeapon = true;
+        if (!_currentPlayer.roundUnitPicked)
+        {
+            _currentPlayer.currentUnit.highlighted = false;
+            _currentPlayer.unitPickedFlag = true;
+            _currentPlayer.roundUnitPicked = true;
+            _currentPlayer.currentUnit.canMove = true;
+            _currentPlayer.currentUnit.canAct = true;
+            _currentPlayer.currentUnit.canSwitchWeapon = true;
 
-        turnTimer = defaultTurnTime;
-        startTurnTimer = true;
+            turnTimer = defaultTurnTime;
+            startTurnTimer = true;    
+        }
     }
 
     void Init()
@@ -267,19 +274,24 @@ public class GameManager : MonoBehaviour
 
         UIReferences = FindObjectOfType<UIReferences>();
         UIReferences.WinCanvas.SetActive(false);
+        
         UIReferences.currentPlayerText.text = "Current Player: " + (currentPlayerIndex + 1);
+        
         UIReferences.currentUnitText.text = "Current Unit: " + (_currentPlayer.currentUnitIndex + 1);
         
         playerList[currentPlayerIndex].canPlay = true;
         playerList[currentPlayerIndex].turnStarted = true;
+        
         _currentPlayer.currentUnit.highlighted = true;
-        _currentPlayer.currentUnit.canAim = false;
+
+        PlayerControls.Player.ChangeUnit.started += ChangeUnit;
+        PlayerControls.Player.PickUnit.started += PickUnit;
         
         //Debug.Log(_currentPlayer);
         initDone = true;
     }
 
-    public void NextTurn(bool selfdeath)
+    public void NextTurn()
     {
         Debug.Log("next turn");
         changeTurnFlag = false;
@@ -296,13 +308,12 @@ public class GameManager : MonoBehaviour
         _currentPlayer.currentUnit.shotsFiredDuringRound = 0; // reset the shots of the previous player's unit before switching to the next player   
 
         startTurnTimer = false;
+        turnTimer = defaultTurnTime;
         
         currentPlayerIndex++;
         currentPlayerIndex %= playerList.Count;
         
         _currentPlayer = playerList[currentPlayerIndex];
-
-        _currentPlayer.currentUnit.canAim = false;
 
         _currentPlayer.roundUnitPicked = false;
         
@@ -335,10 +346,14 @@ public class GameManager : MonoBehaviour
             if (_currentPlayer.currentUnit.currentWeaponObject)
             {
                 var currentWeaponScript = _currentPlayer.currentUnit.currentWeaponObject.GetComponent<WeaponBehaviour>();
+                
                 firstPersonCamera = currentWeaponScript.FPSCamera;
                 firstPersonCamera = currentWeaponScript.FPSCamera;
+                
                 firstPersonCamera.Follow = null;
+                
                 firstPersonCamera.transform.position = currentWeaponScript.shootPoint.transform.position;
+                
                 firstPersonCamera.LookAt = currentWeaponScript.lookPoint.transform;
             }
 

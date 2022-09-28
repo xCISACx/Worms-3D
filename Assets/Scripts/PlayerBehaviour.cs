@@ -8,6 +8,15 @@ public class PlayerBehaviour : MonoBehaviour
 {
     public string PlayerName;
     public int playerIndex = 0;
+
+    enum CurrentPhase
+    {
+        Waiting,
+        UnitSelection,
+        UnitAction,
+        TurnEnd
+    }
+    
     public bool canPlay;
     public bool turnStarted;
     public bool unitPickedFlag;

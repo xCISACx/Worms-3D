@@ -39,7 +39,7 @@ public class MainMenuManager : MonoBehaviour
 
         for (int i = 0; i < numberOfPlayers; i++)
         {
-            var newPlayer = Instantiate(PlayerPrefab, new Vector3(0, 0, 0), Quaternion.identity);
+            var newPlayer = Instantiate(PlayerPrefab, new Vector3(0, 50f, 0), Quaternion.identity);
             newPlayer.name = "Player " + (i + 1);
             var playerScript = newPlayer.GetComponent<PlayerBehaviour>();
             
@@ -49,9 +49,15 @@ public class MainMenuManager : MonoBehaviour
             {
                 var xPos = UnityEngine.Random.Range(-25, 25f);
                 var zPos = UnityEngine.Random.Range(-25, 25f);
-                var yPos = UnityEngine.Random.Range(10f, 50f);
+                var yPos = UnityEngine.Random.Range(50f, 100f);
                 
-                var newUnit = Instantiate(UnitPrefab, map.GetComponentInChildren<MeshRenderer>().bounds.ClosestPoint(new Vector3(xPos, 0, zPos)), Quaternion.identity);
+                /*var newUnit = Instantiate(UnitPrefab, 
+                    map.GetComponentInChildren<MeshRenderer>().bounds.ClosestPoint(new Vector3(xPos, yPos + 10f, zPos)), 
+                    Quaternion.identity);*/
+                
+                var newUnit = Instantiate(UnitPrefab, 
+                    new Vector3(xPos, yPos + 10f, zPos),
+                    Quaternion.identity);
 
                 newUnit.transform.SetParent(newPlayer.transform);
                 playerScript.unitList.Add(newUnit.GetComponent<UnitBehaviour>());

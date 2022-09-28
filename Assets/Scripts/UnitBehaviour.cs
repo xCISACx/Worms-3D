@@ -17,52 +17,90 @@ public class UnitBehaviour : MonoBehaviour
         Player4
     }
 
+    [Header("Player Stats")] 
+    
+    public PlayerBehaviour Player;
     public PlayerNumber Owner;
     public Color PlayerColour;
-    public PlayerBehaviour Player;
     
+    [Header("Unit Conditions")] 
+    
+    public bool matchInitDone = false;
+    
+    public bool grounded = false;
     public bool canMove;
     public bool canAct;
-    public bool canSwitchWeapon;
-    public bool highlighted;
-    public bool matchInitDone = false;
+    
+    public bool highlighted = false;
+
+    [Header("Unit Stats")]
     
     public int MaxHealth = 100;
     public int CurrentHealth = 100;
-    public TMP_Text HealthText;
-    
+
+    [SerializeField] private float jumpForce;
+
     public int shotsFiredDuringRound;
+
+    [Header("Unit References")]
     
     [SerializeField] private Transform camera;
-    [SerializeField] private Vector3 movementVector;
-    [SerializeField] private Vector3 movementDirection;
-    [SerializeField] private Vector3 lastPosition;
+    
+    [SerializeField] private TMP_Text HealthText;
+    
+    [SerializeField] private GameObject SelectionArrow;
+    
+    private Rigidbody rigidbody;
 
+    [Header("Movement Values")]
+
+    private Vector2 movementValue;
+    private Vector3 movementVector;
+    private Vector3 movementDirection;
+    
+    [SerializeField] float movementSpeed;
+    [SerializeField] float airMovementSpeed;
+    
+    [Header("Ground Check")]
+    
+    [SerializeField] private float groundCheckDistance = 1.6f;
+    [SerializeField] private float groundCheckRadius = 0.4f;
+    [SerializeField] private LayerMask GroundLayerMask;
+    
+    [Header("Movement Limits")]
+
+    private Vector3 turnStartPosition;
+    private Vector3 lastPosition;
+    
     private float distanceMovedX;
     private float distanceMovedZ;
+                                          
     [SerializeField] private float distanceMoved;
-    private Rigidbody rigidbody;
-    [SerializeField] float movementSpeed;
     [SerializeField] private float maxMoveDistance = 30f;
-    private Vector3 turnStartPosition;
-    [SerializeField] private float jumpForce;
-    private float horizontalInput;
-    private float verticalInput;
-    [SerializeField] private GameObject SelectionArrow;
-    [SerializeField] private bool currentWeaponSelected;
-    [SerializeField] private Weapon selectedWeapon;
-    [SerializeField] private int selectedWeaponIndex;
-    public GameObject currentWeaponObject;
+    
+    [Header("Weapon")]
+    
+    public bool canSwitchWeapon;
+    private bool currentWeaponSelected;
     [SerializeField] private Transform weaponSlot;
     [SerializeField] private GameObject WeaponParentPrefab;
-    [SerializeField] private Vector2 movementValue;
-    public float fallDamageToTake;
-    public bool countFallDamage = false;
-    public bool grounded = false;
+    [SerializeField] private Weapon selectedWeapon;
+    [SerializeField] private int selectedWeaponIndex;
+    [SerializeField] public GameObject currentWeaponObject;
 
-    public Transform FPSTarget;
-    public bool canAim;
-    public bool canTakeDamage;
+    [Header("Fall Damage")]
+    
+    [SerializeField] public bool canTakeDamage;
+    [SerializeField] private float fallDamageToTake;
+    [SerializeField] private bool countFallDamage = false;
+
+    [Header("Slope Handling")]
+    
+    [SerializeField] float maxSlopeAngle;
+
+    [SerializeField] private float slopeCheckDistance;
+    private RaycastHit slopeHit;
+    [SerializeField] private LayerMask SlopeMask;
 
     // Start is called before the first frame update
     void Start()
@@ -100,6 +138,8 @@ public class UnitBehaviour : MonoBehaviour
                 
                 GameManager.Instance.PlayerControls.Player.Move.performed += ctx => movementValue = ctx.ReadValue<Vector2>();
                 GameManager.Instance.PlayerControls.Player.Move.canceled += ctx => movementValue = ctx.ReadValue<Vector2>();
+
+                GameManager.Instance.PlayerControls.Player.Jump.started += Jump;
                 
                 matchInitDone = true;
             }
@@ -108,7 +148,7 @@ public class UnitBehaviour : MonoBehaviour
             {
                 Player = transform.parent.GetComponent<PlayerBehaviour>();
             }
-            
+
             if (Player.turnStarted)
             {
                 InitTurn();
@@ -123,10 +163,10 @@ public class UnitBehaviour : MonoBehaviour
             {
                 if (canAct)
                 {
-                    if (grounded && GameManager.Instance.PlayerControls.Player.Jump.triggered)
+                    /*if (grounded && GameManager.Instance.PlayerControls.Player.Jump.triggered)
                     {
                         Jump();
-                    }
+                    }*/
 
                     if (GameManager.Instance.PlayerControls.Player.EquipWeapon.triggered && currentWeaponSelected && !currentWeaponObject)
                     {
@@ -145,30 +185,16 @@ public class UnitBehaviour : MonoBehaviour
 
             SelectionArrow.SetActive(highlighted);   
         }
-    }
 
-    private void InitUnit()
-    {
-        //Debug.Log("initialising unit " + this.gameObject.name);
-        turnStartPosition = transform.position;
-        lastPosition = transform.position;
-        distanceMovedX = 0f;
-        distanceMovedZ = 0f;
-        distanceMoved = 0f;
-        Player.unitPickedFlag = false;
-    }
+        grounded = Physics.CheckSphere(transform.position - new Vector3(0, groundCheckDistance, 0), groundCheckRadius, GroundLayerMask);
+        Collider[] hitColliders = Physics.OverlapSphere(transform.position - new Vector3(0, groundCheckDistance, 0), groundCheckRadius, GroundLayerMask);
+        //if (hitColliders[0].
+        // check grounded normal to check if the touched object is not a wall
+        
 
-    private void InitTurn()
-    {
-        //SpawnedSphere = Instantiate(SpherePrefab, turnStartPosition, Quaternion.identity);
-        //SpawnedSphere.transform.localScale = new Vector3(maxMoveDistance * 2, maxMoveDistance * 2, maxMoveDistance * 2);
-        //Destroy(SpawnedSphere.gameObject, GameManager.Instance.defaultTurnTime);
-        Player.canChangeTurn = true;
-        Player.turnStarted = false;
-        canMove = true;
-        canSwitchWeapon = true;
+        //Debug.DrawLine(transform.localPosition, transform.position - Vector3.down * 10f, Color.red);
     }
-
+    
     private void FixedUpdate()
     {
         if (GameManager.Instance.matchStarted)
@@ -201,8 +227,6 @@ public class UnitBehaviour : MonoBehaviour
                     else
                     {
                         StopWeaponAiming();
-                        GameManager.Instance.mainCamera.m_XAxis.m_InputAxisName = "Mouse X";
-                        GameManager.Instance.mainCamera.m_YAxis.m_InputAxisName = "Mouse Y";
                     }
                 }
             }
@@ -214,7 +238,7 @@ public class UnitBehaviour : MonoBehaviour
                 
                 if (GameManager.Instance.AlivePlayers.Count > 1)
                 {
-                    Debug.Log("can't act " + GameManager.Instance._currentPlayer.currentUnit);
+                    //Debug.Log("can't act " + GameManager.Instance._currentPlayer.currentUnit);
                     StartCoroutine(GameManager.Instance.WaitForTurnToEnd());
                 }
             }
@@ -229,7 +253,7 @@ public class UnitBehaviour : MonoBehaviour
             {
                 countFallDamage = true;
                 
-                Debug.Log(rigidbody.velocity);
+                //Debug.Log(rigidbody.velocity);
                 
                 if (countFallDamage)
                 {
@@ -237,29 +261,62 @@ public class UnitBehaviour : MonoBehaviour
                 }
             }
         }
+
+        rigidbody.useGravity = !OnSlope();
     }
 
-    private void OnCollisionEnter(Collision collision)
+    private void InitUnit()
     {
-        if (collision.gameObject.CompareTag("Ground"))
-        {
-            countFallDamage = false;
-
-            if (canTakeDamage && fallDamageToTake >= GameManager.Instance.fallDamageTreshold)
-            {
-                TakeDamage((int) fallDamageToTake);
-                GameManager.Instance.SpawnDamagePopUp(transform, new Vector3(0, 2f, 0),  (int) fallDamageToTake);
-            }
-            fallDamageToTake = 0;
-        }
+        //Debug.Log("initialising unit " + this.gameObject.name);
+        turnStartPosition = transform.position;
+        lastPosition = transform.position;
+        distanceMovedX = 0f;
+        distanceMovedZ = 0f;
+        distanceMoved = 0f;
+        Player.unitPickedFlag = false;
     }
-    
-    private void OnCollisionStay (Collision collision)
+
+    private void InitTurn()
     {
-        if (collision.gameObject.CompareTag("Ground"))
+        //SpawnedSphere = Instantiate(SpherePrefab, turnStartPosition, Quaternion.identity);
+        //SpawnedSphere.transform.localScale = new Vector3(maxMoveDistance * 2, maxMoveDistance * 2, maxMoveDistance * 2);
+        //Destroy(SpawnedSphere.gameObject, GameManager.Instance.defaultTurnTime);
+        Player.canChangeTurn = true;
+        Player.turnStarted = false;
+        canMove = true;
+        canSwitchWeapon = true;
+    }
+
+    public void Move()
+    {
+        movementVector = new Vector3(movementValue.x, 0, movementValue.y);
+        
+        movementDirection = camera.forward * movementValue.y + camera.right  * movementValue.x;
+
+        //Debug.Log(OnSlope());
+
+        if (grounded && !OnSlope())
         {
-            countFallDamage = false;
+            movementDirection = movementDirection * movementSpeed;
+            movementDirection.y = 0f;
+
+            rigidbody.velocity = new Vector3(movementDirection.x, rigidbody.velocity.y, movementDirection.z);
         }
+        else if (grounded && OnSlope())
+        {
+            movementDirection = GetSlopeMoveDirection() * movementSpeed;
+            movementDirection.y = 0f;
+
+            rigidbody.velocity = new Vector3(movementDirection.x, rigidbody.velocity.y, movementDirection.z);
+        }
+        else if (!grounded && !OnSlope())
+        {
+            movementDirection = movementDirection * airMovementSpeed;
+            movementDirection.y = 0f;
+            
+            rigidbody.velocity = new Vector3(movementDirection.x, rigidbody.velocity.y, movementDirection.z);
+        }
+        //Debug.Log(rigidbody.velocity);
     }
 
     private void HandleWeaponAiming()
@@ -295,27 +352,21 @@ public class UnitBehaviour : MonoBehaviour
         GameManager.Instance.mainCamera.m_XAxis.m_InputAxisName = "Mouse X";
         GameManager.Instance.mainCamera.m_YAxis.m_InputAxisName = "Mouse Y";
     }
-    
-    float ClampAngle(float angle, float from, float to)
-    {
-        // accepts e.g. -80, 80
-        if (angle < 0f) angle = 360 + angle;
-        if (angle > 180f) return Mathf.Max(angle, 360+from);
-        return Mathf.Min(angle, to);
-    }
 
     private void LimitTotalMovement()
     {
         if (movementVector != Vector3.zero)
         {
             //We separate the distance moved on the X and Z axes so we don't count distance moved in the Y axis.
+
+            var position = transform.position;
             
-            distanceMovedX += Mathf.Abs((transform.position.x - lastPosition.x));
-            distanceMovedZ += Mathf.Abs((transform.position.z - lastPosition.z));
+            distanceMovedX += Mathf.Abs((position.x - lastPosition.x));
+            distanceMovedZ += Mathf.Abs((position.z - lastPosition.z));
+            
             distanceMoved = distanceMovedX + distanceMovedZ;
-            lastPosition = transform.position;
-            //Debug.Log(distanceMovedX);
-            //Debug.Log(distanceMovedZ);
+            
+            lastPosition = position;
         }
 
         //If we go over the move distance limit, stop movement
@@ -331,20 +382,45 @@ public class UnitBehaviour : MonoBehaviour
     {
         if (movementVector != Vector3.zero)
         {
-            Vector3 targetDirection = Vector3.zero;
+            /*Vector3 targetDirection = Vector3.zero;
 
             targetDirection = camera.forward * movementValue.y;
             targetDirection = targetDirection + camera.right * movementValue.x;
             targetDirection.Normalize();
-            targetDirection.y = 0f;
+            targetDirection.y = 0f;*/
             
-            Quaternion targetRotation = Quaternion.LookRotation(targetDirection, Vector3.up);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 5f * Time.deltaTime);
+            float targetAngle = Mathf.Atan2(movementValue.x, movementValue.y) * Mathf.Rad2Deg + camera.eulerAngles.y;
             
+            Quaternion targetRotation = Quaternion.Euler(transform.rotation.x, targetAngle, transform.rotation.z);
+            
+            transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * 5f);
+            
+            /*Quaternion targetRotation = Quaternion.LookRotation(targetDirection, Vector3.up);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 5f * Time.deltaTime);*/
         }
     }
 
-    private void LimitMovement()
+    private bool OnSlope()
+    {
+        if (Physics.Raycast(transform.position, Vector3.down, out slopeHit, slopeCheckDistance, SlopeMask))
+        {
+            float angle = Vector3.Angle(Vector3.up, slopeHit.normal);
+            //Debug.Log(slopeHit.normal);
+            //Debug.DrawRay(transform.position, Vector3.down * slopeCheckDistance, Color.red);
+            //Debug.Log(angle);
+            rigidbody.AddForce(slopeHit.normal * -Physics.gravity.magnitude);
+            return angle < maxSlopeAngle && angle != 0;
+        }
+
+        return false;
+    }
+
+    Vector3 GetSlopeMoveDirection()
+    {
+        return Vector3.ProjectOnPlane(movementDirection, slopeHit.normal).normalized;
+    }
+
+    private void LimitMovementWithinRange()
     {
         if (movementVector != Vector3.zero)
         {
@@ -363,32 +439,18 @@ public class UnitBehaviour : MonoBehaviour
         
     }
 
-    public void ReadMovementValues(InputAction.CallbackContext context)
+    private void Jump(InputAction.CallbackContext ctx)
     {
-        movementValue = context.ReadValue<Vector2>();
-    }
-
-    public void Move()
-    {
-        movementVector = new Vector3(movementValue.x, 0, movementValue.y);
-        
-        movementDirection = camera.forward * movementValue.y;
-        movementDirection = movementDirection + camera.right * movementValue.x;
-        movementDirection.Normalize();
-        movementDirection.y = 0f;
-        movementDirection = movementDirection * movementSpeed;
-        rigidbody.velocity = new Vector3(movementDirection.x, rigidbody.velocity.y, movementDirection.z);
-        //Debug.Log(rigidbody.velocity);
-    }
-
-    private void Jump()
-    {
+        if (Player.canPlay && canAct && grounded)
+        {
+            rigidbody.AddForce(Vector3.up * jumpForce);
+        }
         //rigidbody.velocity += new Vector3(rigidbody.velocity.x, jumpForce, rigidbody.velocity.z);
-        rigidbody.AddForce(Vector3.up * jumpForce);
     }
 
     public void TakeDamage(int damage)
     {
+        Debug.Log("take damage " + damage);
         CurrentHealth -= damage;
         canTakeDamage = false;
         HealthText.text = CurrentHealth.ToString();
@@ -406,10 +468,10 @@ public class UnitBehaviour : MonoBehaviour
     {
         if (Player.currentUnit == this && Player.unitList.Count > 0)
         {
-            Debug.Log("unit killed itself");
-            Debug.Log("suicide turn end");
+            //Debug.Log("unit killed itself");
+            //Debug.Log("suicide turn end");
             Player.currentUnit = Player.unitList[(Player.currentUnitIndex + 1) % Player.unitList.Count];
-            GameManager.Instance.NextTurn(true);
+            GameManager.Instance.NextTurn();
         }
 
         if (Player.unitList.Count == 1) //If this was the player's last unit
@@ -425,20 +487,26 @@ public class UnitBehaviour : MonoBehaviour
 
     private void EquipWeapon()
     {
-        if (weaponSlot.childCount > 0) //destroy weapon if one already exists
+        if (weaponSlot.childCount > 0) //destroy weapon if one already exists in the weapon slot
         {
             Destroy(weaponSlot.GetChild(0).gameObject);
         }
         
+        // Instantiate a new weapon parent
+        
         var newWeaponParentObject = Instantiate(WeaponParentPrefab, weaponSlot.transform.position, weaponSlot.transform.rotation);
+        
+        // Set the currentWeaponObject variable to the instantiated weapon parent
         
         currentWeaponObject = newWeaponParentObject;
         
         var weaponScript = currentWeaponObject.GetComponent<WeaponBehaviour>();
         
+        // Parent the newWeaponParentObject to the weaponSlot transform
+        
         newWeaponParentObject.transform.SetParent(weaponSlot);
         
-        weaponScript.user = this.gameObject;
+        weaponScript.user = gameObject;
 
         weaponScript.weaponModel = selectedWeapon.model;
         weaponScript.defaultShootForce = selectedWeapon.shootingForce;
@@ -463,7 +531,33 @@ public class UnitBehaviour : MonoBehaviour
         //GameManager.Instance.firstPersonCamera.LookAt = weaponScript.shootPoint;
 
         newWeapon.transform.SetParent(weaponScript.weaponModelParent);
+    }
+    
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Ground"))
+        {
+            countFallDamage = false;
 
-        canAim = true;
+            if (canTakeDamage && fallDamageToTake >= GameManager.Instance.fallDamageTreshold)
+            {
+                TakeDamage((int) fallDamageToTake);
+                GameManager.Instance.SpawnDamagePopUp(transform, new Vector3(0, 2f, 0),  (int) fallDamageToTake);
+            }
+            fallDamageToTake = 0;
+        }
+    }
+    
+    private void OnCollisionStay (Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Ground"))
+        {
+            countFallDamage = false;
+        }
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.DrawSphere(transform.position - new Vector3(0, groundCheckDistance, 0), groundCheckRadius);
     }
 }
