@@ -34,6 +34,7 @@ public class PlayerBehaviour : MonoBehaviour
         if (GameManager.Instance.matchStarted)
         {
             currentUnit = unitList[0];
+            GameManager.Instance.SetCurrentUnitEvent.Invoke(currentUnit);
         }
     }
 
@@ -42,6 +43,7 @@ public class PlayerBehaviour : MonoBehaviour
         if (!currentUnit && unitList.Count > 0)
         {
             currentUnit = unitList[0];
+            GameManager.Instance.SetCurrentUnitEvent.Invoke(currentUnit);
         }
     }
 

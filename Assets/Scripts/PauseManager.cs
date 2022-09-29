@@ -20,7 +20,7 @@ public class PauseManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (GameManager.Instance.PlayerControls.Player.Pause.triggered)
+        if (InputManager.Instance.PlayerControls.Player.Pause.triggered)
         {
             TogglePause();
         }

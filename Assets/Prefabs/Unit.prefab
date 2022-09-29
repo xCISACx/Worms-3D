@@ -1149,6 +1149,7 @@ Transform:
   - {fileID: 1263182303730563694}
   - {fileID: 3236598924244742763}
   - {fileID: 7352225966078001277}
+  - {fileID: 2233211438500966393}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1180,20 +1181,23 @@ MonoBehaviour:
   Player: {fileID: 0}
   Owner: 0
   PlayerColour: {r: 1, g: 0, b: 0, a: 1}
+  canMove: 0
   matchInitDone: 0
   grounded: 1
-  canMove: 0
-  canAct: 0
+  jumping: 0
   highlighted: 0
   MaxHealth: 100
   CurrentHealth: 100
-  jumpForce: 650
+  jumpForce: 13
+  forwardJumpForce: 350
   shotsFiredDuringRound: 0
   camera: {fileID: 0}
   HealthText: {fileID: 9213076887394555852}
   SelectionArrow: {fileID: 6706881824450330711}
+  WallCollider: {fileID: 7312635680150939741}
+  movementValue: {x: 0, y: 0}
   movementSpeed: 10
-  airMovementSpeed: 5
+  airMovementSpeed: 0
   groundCheckDistance: 1.6
   groundCheckRadius: 0.4
   GroundLayerMask:
@@ -1202,17 +1206,21 @@ MonoBehaviour:
   distanceMoved: 0
   maxMoveDistance: 1000
   canSwitchWeapon: 0
+  currentWeaponSelected: 0
   weaponSlot: {fileID: 6706881824310305739}
   WeaponParentPrefab: {fileID: 4260267504412137361, guid: b4b69d7fe949fcd41bcd2dc408d8e439, type: 3}
   selectedWeapon: {fileID: 11400000, guid: c17af4ba3a3f5a74fa3f64806cba367d, type: 2}
   selectedWeaponIndex: 0
   currentWeaponObject: {fileID: 0}
   canTakeDamage: 0
+  fallDamageToTake: 0
+  countFallDamage: 0
   maxSlopeAngle: 50
-  slopeCheckDistance: 3
+  slopeCheckDistance: 4
   SlopeMask:
     serializedVersion: 2
     m_Bits: 256
+  fallMultiplier: 4
 --- !u!54 &6706881825711459461
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1342,6 +1350,14 @@ MonoBehaviour:
       m_Calls: []
     m_ActionId: 58104816-23e0-45a7-8a12-dddceae18b90
     m_ActionName: Player/AimWeaponLock[/Mouse/rightButton]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 5fccdee2-46e5-48bc-83a3-bfd2f7d06373
+    m_ActionName: Player/DoubleJump[/Keyboard/space]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 06860bfa-dbbd-4575-ba9f-5bb51960a662
+    m_ActionName: Player/HighJump[/Keyboard/space]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: Keyboard&Mouse
   m_DefaultActionMap: Player
@@ -1354,13 +1370,73 @@ CapsuleCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6706881825711459467}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 635af5e470639f344bd5e305fe502582, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
   m_Radius: 0.6
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: -0.5, z: 0}
+--- !u!1 &7312635680150939741
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2233211438500966393}
+  - component: {fileID: 1892824093698078467}
+  - component: {fileID: 4368569290463938305}
+  m_Layer: 6
+  m_Name: WallCollider
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &2233211438500966393
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7312635680150939741}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6706881825711459460}
+  m_RootOrder: 7
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!136 &1892824093698078467
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7312635680150939741}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  m_Radius: 0.75
+  m_Height: 2.27
+  m_Direction: 1
+  m_Center: {x: 0, y: -0.44, z: 0}
+--- !u!114 &4368569290463938305
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7312635680150939741}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 528d2bfcba037d74ea9b2d18f7db9d37, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Unit: {fileID: 6706881825711459467}
 --- !u!1001 &7026428999434168214
 PrefabInstance:
   m_ObjectHideFlags: 0

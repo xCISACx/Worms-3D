@@ -22,15 +22,17 @@ public class UnitBehaviour : MonoBehaviour
     public PlayerBehaviour Player;
     public PlayerNumber Owner;
     public Color PlayerColour;
+
+    [Header("Unit Conditions")]
     
-    [Header("Unit Conditions")] 
+    public bool canMove = false;
     
     public bool matchInitDone = false;
     
     public bool grounded = false;
-    public bool canMove;
-    public bool canAct;
     
+    public bool jumping = false;
+
     public bool highlighted = false;
 
     [Header("Unit Stats")]
@@ -39,6 +41,7 @@ public class UnitBehaviour : MonoBehaviour
     public int CurrentHealth = 100;
 
     [SerializeField] private float jumpForce;
+    [SerializeField] private float forwardJumpForce;
 
     public int shotsFiredDuringRound;
 
@@ -49,12 +52,14 @@ public class UnitBehaviour : MonoBehaviour
     [SerializeField] private TMP_Text HealthText;
     
     [SerializeField] private GameObject SelectionArrow;
+
+    [SerializeField] private GameObject WallCollider;
     
     private Rigidbody rigidbody;
 
     [Header("Movement Values")]
 
-    private Vector2 movementValue;
+    public Vector2 movementValue;
     private Vector3 movementVector;
     private Vector3 movementDirection;
     
@@ -81,11 +86,11 @@ public class UnitBehaviour : MonoBehaviour
     [Header("Weapon")]
     
     public bool canSwitchWeapon;
-    private bool currentWeaponSelected;
+    public bool currentWeaponSelected;
     [SerializeField] private Transform weaponSlot;
     [SerializeField] private GameObject WeaponParentPrefab;
-    [SerializeField] private Weapon selectedWeapon;
-    [SerializeField] private int selectedWeaponIndex;
+    [SerializeField] public Weapon selectedWeapon;
+    [SerializeField] public int selectedWeaponIndex;
     [SerializeField] public GameObject currentWeaponObject;
 
     [Header("Fall Damage")]
@@ -101,6 +106,7 @@ public class UnitBehaviour : MonoBehaviour
     [SerializeField] private float slopeCheckDistance;
     private RaycastHit slopeHit;
     [SerializeField] private LayerMask SlopeMask;
+    [SerializeField] private float fallMultiplier = 4f;
 
     // Start is called before the first frame update
     void Start()
@@ -135,12 +141,7 @@ public class UnitBehaviour : MonoBehaviour
                 var meshRenderer = GetComponentInChildren<MeshRenderer>();
                 meshRenderer.material.color = PlayerColour;
                 //Debug.Log("changed colour");
-                
-                GameManager.Instance.PlayerControls.Player.Move.performed += ctx => movementValue = ctx.ReadValue<Vector2>();
-                GameManager.Instance.PlayerControls.Player.Move.canceled += ctx => movementValue = ctx.ReadValue<Vector2>();
 
-                GameManager.Instance.PlayerControls.Player.Jump.started += Jump;
-                
                 matchInitDone = true;
             }
 
@@ -149,45 +150,12 @@ public class UnitBehaviour : MonoBehaviour
                 Player = transform.parent.GetComponent<PlayerBehaviour>();
             }
 
-            if (Player.turnStarted)
-            {
-                InitTurn();
-            }
-
-            if (Player.unitPickedFlag && Player.currentUnit == this)
-            {
-                InitUnit();
-            }
-
-            if (Player.canPlay)
-            {
-                if (canAct)
-                {
-                    /*if (grounded && GameManager.Instance.PlayerControls.Player.Jump.triggered)
-                    {
-                        Jump();
-                    }*/
-
-                    if (GameManager.Instance.PlayerControls.Player.EquipWeapon.triggered && currentWeaponSelected && !currentWeaponObject)
-                    {
-                        this.EquipWeapon();
-                    }
-
-                    if (GameManager.Instance.PlayerControls.Player.ChangeWeapon.triggered && canSwitchWeapon)
-                    {
-                        selectedWeaponIndex++;
-                        selectedWeaponIndex = selectedWeaponIndex % Player.WeaponInventory.Count;
-                        selectedWeapon = Player.WeaponInventory[selectedWeaponIndex];
-                        EquipWeapon();
-                    }
-                }
-            }
-
             SelectionArrow.SetActive(highlighted);   
         }
 
         grounded = Physics.CheckSphere(transform.position - new Vector3(0, groundCheckDistance, 0), groundCheckRadius, GroundLayerMask);
-        Collider[] hitColliders = Physics.OverlapSphere(transform.position - new Vector3(0, groundCheckDistance, 0), groundCheckRadius, GroundLayerMask);
+        
+        //Collider[] hitColliders = Physics.OverlapSphere(transform.position - new Vector3(0, groundCheckDistance, 0), groundCheckRadius, GroundLayerMask);
         //if (hitColliders[0].
         // check grounded normal to check if the touched object is not a wall
         
@@ -199,38 +167,6 @@ public class UnitBehaviour : MonoBehaviour
     {
         if (GameManager.Instance.matchStarted)
         {
-            if (Player.canPlay)
-            {
-                if (canAct)
-                {
-                    if (canMove)
-                    {
-                        Move();
-                        LimitTotalMovement();
-                    }
-                    else
-                    {
-                        movementVector = new Vector3(movementValue.x, 0, movementValue.y);
-                        rigidbody.velocity = new Vector3(0f, rigidbody.velocity.y, 0f);
-                    }
-                    //We can't move but can still rotate for aiming purposes
-                    
-                    RotateWithMovement();
-                    
-                    //only aim if the unit has a weapon equipped
-                    
-                    if (GameManager.Instance.PlayerControls.Player.AimWeaponLock.inProgress && currentWeaponObject)
-                    {
-                        GameManager.Instance.firstPersonCamera = currentWeaponObject.GetComponent<WeaponBehaviour>().FPSCamera;
-                        HandleWeaponAiming();
-                    }
-                    else
-                    {
-                        StopWeaponAiming();
-                    }
-                }
-            }
-
             if (shotsFiredDuringRound >= 1)
             {
                 canSwitchWeapon = false;
@@ -246,7 +182,12 @@ public class UnitBehaviour : MonoBehaviour
             if (!grounded && rigidbody.velocity.y <= 0f)
             {
                 //Debug.Log("going down");
-                rigidbody.velocity += Vector3.up * Physics.gravity.y * (5f - 1) * Time.deltaTime;
+                rigidbody.velocity += Vector3.up * Physics.gravity.y * fallMultiplier * Time.deltaTime;
+            }
+
+            if (!grounded && jumping)
+            {
+                rigidbody.AddForce(transform.forward * forwardJumpForce);
             }
 
             if (!grounded && rigidbody.velocity.y < 0f)
@@ -265,9 +206,11 @@ public class UnitBehaviour : MonoBehaviour
         rigidbody.useGravity = !OnSlope();
     }
 
-    private void InitUnit()
+    public void InitUnit()
     {
         //Debug.Log("initialising unit " + this.gameObject.name);
+        canTakeDamage = true;
+        WallCollider.SetActive(false);
         turnStartPosition = transform.position;
         lastPosition = transform.position;
         distanceMovedX = 0f;
@@ -276,11 +219,8 @@ public class UnitBehaviour : MonoBehaviour
         Player.unitPickedFlag = false;
     }
 
-    private void InitTurn()
+    public void InitTurn()
     {
-        //SpawnedSphere = Instantiate(SpherePrefab, turnStartPosition, Quaternion.identity);
-        //SpawnedSphere.transform.localScale = new Vector3(maxMoveDistance * 2, maxMoveDistance * 2, maxMoveDistance * 2);
-        //Destroy(SpawnedSphere.gameObject, GameManager.Instance.defaultTurnTime);
         Player.canChangeTurn = true;
         Player.turnStarted = false;
         canMove = true;
@@ -289,41 +229,49 @@ public class UnitBehaviour : MonoBehaviour
 
     public void Move()
     {
-        movementVector = new Vector3(movementValue.x, 0, movementValue.y);
+        if (canMove)
+        {
+            movementVector = new Vector3(movementValue.x, 0, movementValue.y);
         
-        movementDirection = camera.forward * movementValue.y + camera.right  * movementValue.x;
+            movementDirection = camera.forward * movementValue.y + camera.right  * movementValue.x;
 
-        //Debug.Log(OnSlope());
+            //Debug.Log(OnSlope());
 
-        if (grounded && !OnSlope())
-        {
-            movementDirection = movementDirection * movementSpeed;
-            movementDirection.y = 0f;
+            if (grounded && !OnSlope())
+            {
+                movementDirection = movementDirection * movementSpeed;
+                movementDirection.y = 0f;
 
-            rigidbody.velocity = new Vector3(movementDirection.x, rigidbody.velocity.y, movementDirection.z);
-        }
-        else if (grounded && OnSlope())
-        {
-            movementDirection = GetSlopeMoveDirection() * movementSpeed;
-            movementDirection.y = 0f;
+                rigidbody.velocity = new Vector3(movementDirection.x, rigidbody.velocity.y, movementDirection.z);
+            }
+            else if (grounded && OnSlope())
+            {
+                movementDirection = GetSlopeMoveDirection() * movementSpeed;
+                movementDirection.y = 0f;
 
-            rigidbody.velocity = new Vector3(movementDirection.x, rigidbody.velocity.y, movementDirection.z);
-        }
-        else if (!grounded && !OnSlope())
-        {
-            movementDirection = movementDirection * airMovementSpeed;
-            movementDirection.y = 0f;
+                rigidbody.velocity = new Vector3(movementDirection.x, rigidbody.velocity.y, movementDirection.z);
+            }
+            else if (!grounded && !OnSlope())
+            {
+                movementDirection = movementDirection * airMovementSpeed;
+                movementDirection.y = 0f;
             
-            rigidbody.velocity = new Vector3(movementDirection.x, rigidbody.velocity.y, movementDirection.z);
+                rigidbody.velocity = new Vector3(movementDirection.x, rigidbody.velocity.y, movementDirection.z);
+            }
+            //Debug.Log(rigidbody.velocity);
         }
-        //Debug.Log(rigidbody.velocity);
+        else
+        {
+            rigidbody.velocity = new Vector3(0, rigidbody.velocity.y, 0);
+        }
+        
     }
 
-    private void HandleWeaponAiming()
+    public void HandleWeaponAiming()
     {
         GameManager.Instance.firstPersonCamera.Priority = 100;
 
-        GameManager.Instance.Reticle.GetComponent<Image>().enabled = true;
+        GameManager.Instance.UIReferences.Reticle.GetComponent<Image>().enabled = true;
         
         //remove Cinemachine mouse input strings so we can't move the camera
         GameManager.Instance.mainCamera.m_XAxis.m_InputAxisName = string.Empty;
@@ -340,20 +288,20 @@ public class UnitBehaviour : MonoBehaviour
         target2.transform.Rotate(0, horizontal, 0);
     }
 
-    private void StopWeaponAiming()
+    public void StopWeaponAiming()
     {
         if (GameManager.Instance.firstPersonCamera)
         {
             GameManager.Instance.firstPersonCamera.Priority = 0;   
         }
 
-        GameManager.Instance.Reticle.GetComponent<Image>().enabled = false;
+        GameManager.Instance.UIReferences.Reticle.GetComponent<Image>().enabled = false;
         
         GameManager.Instance.mainCamera.m_XAxis.m_InputAxisName = "Mouse X";
         GameManager.Instance.mainCamera.m_YAxis.m_InputAxisName = "Mouse Y";
     }
 
-    private void LimitTotalMovement()
+    public void LimitTotalMovement()
     {
         if (movementVector != Vector3.zero)
         {
@@ -378,25 +326,15 @@ public class UnitBehaviour : MonoBehaviour
         }
     }
 
-    private void RotateWithMovement()
+    public void RotateWithMovement()
     {
         if (movementVector != Vector3.zero)
         {
-            /*Vector3 targetDirection = Vector3.zero;
-
-            targetDirection = camera.forward * movementValue.y;
-            targetDirection = targetDirection + camera.right * movementValue.x;
-            targetDirection.Normalize();
-            targetDirection.y = 0f;*/
-            
             float targetAngle = Mathf.Atan2(movementValue.x, movementValue.y) * Mathf.Rad2Deg + camera.eulerAngles.y;
             
             Quaternion targetRotation = Quaternion.Euler(transform.rotation.x, targetAngle, transform.rotation.z);
             
             transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * 5f);
-            
-            /*Quaternion targetRotation = Quaternion.LookRotation(targetDirection, Vector3.up);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 5f * Time.deltaTime);*/
         }
     }
 
@@ -439,13 +377,56 @@ public class UnitBehaviour : MonoBehaviour
         
     }
 
-    private void Jump(InputAction.CallbackContext ctx)
+    public void Jump(int jumpType)
     {
-        if (Player.canPlay && canAct && grounded)
+        if (grounded && canMove)
         {
-            rigidbody.AddForce(Vector3.up * jumpForce);
+            jumping = true;
+            switch (jumpType)
+            {
+                case 0:
+                    //rigidbody.AddForce(Vector3.up * jumpForce + transform.forward * (forwardJumpForce), ForceMode.Impulse);
+                    rigidbody.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+                    break;
+                case 1:
+                    rigidbody.AddForce(Vector3.up * (jumpForce * 2) + transform.forward * (forwardJumpForce), ForceMode.Impulse);
+                    break;
+                case 2:
+                    rigidbody.AddForce(Vector3.up * (jumpForce * 2), ForceMode.Impulse);
+                    break;
+            }
+
+            //rigidbody.velocity = new Vector3(rigidbody.velocity.x, jumpForce, rigidbody.velocity.z);
+            
+            WallCollider.SetActive(true);
+            grounded = false;
         }
         //rigidbody.velocity += new Vector3(rigidbody.velocity.x, jumpForce, rigidbody.velocity.z);
+    }
+    
+    public void DoubleJump()
+    {
+        if (grounded)
+        {
+            rigidbody.AddForce(Vector3.up * (jumpForce * 2) + transform.forward * (jumpForce / 2), ForceMode.Impulse);
+            //rigidbody.velocity = new Vector3(rigidbody.velocity.x, jumpForce * 2, rigidbody.velocity.z);
+            
+            WallCollider.SetActive(true);
+            grounded = false;
+        }
+        //rigidbody.velocity += new Vector3(rigidbody.velocity.x, jumpForce, rigidbody.velocity.z);
+    }
+
+    public void HighJump()
+    {
+        if (grounded)
+        {
+            rigidbody.AddForce(Vector3.up * (jumpForce * 2), ForceMode.Impulse);
+            //rigidbody.velocity = new Vector3(rigidbody.velocity.x, jumpForce * 2, rigidbody.velocity.z);
+            
+            WallCollider.SetActive(true);
+            grounded = false;
+        }
     }
 
     public void TakeDamage(int damage)
@@ -471,6 +452,7 @@ public class UnitBehaviour : MonoBehaviour
             //Debug.Log("unit killed itself");
             //Debug.Log("suicide turn end");
             Player.currentUnit = Player.unitList[(Player.currentUnitIndex + 1) % Player.unitList.Count];
+            GameManager.Instance.SetCurrentUnitEvent.Invoke(Player.currentUnit);
             GameManager.Instance.NextTurn();
         }
 
@@ -485,8 +467,13 @@ public class UnitBehaviour : MonoBehaviour
         Destroy(gameObject);
     }
 
-    private void EquipWeapon()
+    public void EquipWeapon()
     {
+        /*if (!currentWeaponSelected || currentWeaponObject || !canSwitchWeapon)
+        {
+            return;
+        }*/
+
         if (weaponSlot.childCount > 0) //destroy weapon if one already exists in the weapon slot
         {
             Destroy(weaponSlot.GetChild(0).gameObject);
@@ -519,7 +506,7 @@ public class UnitBehaviour : MonoBehaviour
         var newWeapon = Instantiate(weaponScript.weaponModel, newWeaponParentObject.transform.position,
             newWeaponParentObject.transform.rotation);
 
-        weaponScript.shootPoint.localPosition = newWeapon.GetComponent<ModelProperties>().ShootPoint.localPosition;
+        weaponScript.shootPoint.position = newWeapon.GetComponent<ModelProperties>().ShootPoint.position;
         weaponScript.lineRenderer.transform.position = weaponScript.shootPoint.position;
         weaponScript.FPSCamera.transform.position = weaponScript.shootPoint.position;
         
@@ -535,14 +522,17 @@ public class UnitBehaviour : MonoBehaviour
     
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Ground"))
+        if (collision.gameObject.CompareTag("Ground") || collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
         {
+            jumping = false;
+            WallCollider.SetActive(false);
             countFallDamage = false;
 
             if (canTakeDamage && fallDamageToTake >= GameManager.Instance.fallDamageTreshold)
             {
-                TakeDamage((int) fallDamageToTake);
-                GameManager.Instance.SpawnDamagePopUp(transform, new Vector3(0, 2f, 0),  (int) fallDamageToTake);
+                TakeDamage((int) (fallDamageToTake - GameManager.Instance.fallDamageTreshold));
+
+                StartCoroutine(GameManager.Instance.WaitForTurnToEnd());
             }
             fallDamageToTake = 0;
         }
@@ -550,7 +540,7 @@ public class UnitBehaviour : MonoBehaviour
     
     private void OnCollisionStay (Collision collision)
     {
-        if (collision.gameObject.CompareTag("Ground"))
+        if (collision.gameObject.CompareTag("Ground") || collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
         {
             countFallDamage = false;
         }

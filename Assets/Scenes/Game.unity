@@ -663,6 +663,7 @@ MonoBehaviour:
   WinCanvasText: {fileID: 1995974000}
   ChargeBar: {fileID: 955459281}
   DamagePopUpPrefab: {fileID: 5353392602512573696, guid: ac61b6c92193fe04cacfe650d1800014, type: 3}
+  Reticle: {fileID: 675091454}
 --- !u!4 &101681361
 Transform:
   m_ObjectHideFlags: 0
@@ -959,7 +960,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_CollideAgainst:
     serializedVersion: 2
-    m_Bits: 1
+    m_Bits: 385
   m_IgnoreTag: Unit
   m_TransparentLayers:
     serializedVersion: 2

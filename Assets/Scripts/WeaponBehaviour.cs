@@ -49,71 +49,79 @@ public class WeaponBehaviour : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (user.GetComponent<UnitBehaviour>().canAct)
+        /*if (InputManager.Instance.PlayerControls.Player.Fire.inProgress)
         {
-            if (GameManager.Instance.PlayerControls.Player.Fire.inProgress)
-            {
-                ChargeShot();
-            }
-            
-            if (GameManager.Instance.PlayerControls.Player.Fire.WasReleasedThisFrame())
-            {
-                Shoot();
-            }
-        }
-    }
-
-    private void ChargeShot()
-    {
-        var newShootForceX = currentShootForce.x += 0.1f;
-        var newShootForceY = currentShootForce.y += 0.1f;
-        newShootForceX = Mathf.Clamp(newShootForceX, defaultShootForce.x, maxShootForce.x);
-        newShootForceY = Mathf.Clamp(newShootForceY, defaultShootForce.y, maxShootForce.y);
-        currentShootForce = new Vector3(newShootForceX, newShootForceY, 0);
-        Debug.Log("charging " + newShootForceX + " | " + newShootForceY + " | " + currentShootForce);
-        var barValue = Mathf.InverseLerp(defaultShootForce.magnitude, maxShootForce.magnitude, currentShootForce.magnitude);
-        GameManager.Instance.UIReferences.ChargeBar.fillAmount = barValue;
-    }
-
-    private void Shoot()
-    {
-        var newProjectile = Instantiate(projectilePrefab, shootPoint.position, Quaternion.identity);
-        Physics.IgnoreCollision(newProjectile.GetComponent<Collider>(), user.GetComponent<Collider>());
-
-        switch (shootingDirection)
-        {
-            case Direction.Forward:
-                newProjectile.GetComponent<Rigidbody>().AddForce(shootPoint.forward * currentShootForce.x, ForceMode.Impulse);
-                break;
-            case Direction.Up:
-                newProjectile.GetComponent<Rigidbody>().AddForce(shootPoint.up * currentShootForce.y, ForceMode.Impulse);
-                break;
-            case Direction.Diagonal:
-                newProjectile.GetComponent<Rigidbody>()
-                    .AddForce((shootPoint.forward * currentShootForce.x / 2) + (shootPoint.up * currentShootForce.y / 2),
-                        ForceMode.Impulse);
-                break;
+            ChargeShot();
         }
         
-        /*switch (shootingDirection)
+        if (InputManager.Instance.PlayerControls.Player.Fire.WasReleasedThisFrame())
         {
-            case Direction.Forward:
-                GetComponent<TrajectoryLine>().DrawStraightTrajectory(shootForce, new Vector3(0, 0), shootPoint); //bugged, won't rotate properly
-                break;
-            case Direction.Diagonal:
-                GetComponent<TrajectoryLine>().DrawCurvedTrajectory(shootForce, new Vector3(0, 0)); //bugged, doesn't work
-                break;
+            Shoot();
         }*/
+    }
 
-        lineRenderer.transform.rotation = transform.localRotation;
+    public void ChargeShot()
+    {
+        if (GameManager.Instance._currentPlayer.roundUnitPicked
+            && GameManager.Instance._currentPlayer.currentUnit == user.GetComponent<UnitBehaviour>()
+            && GameManager.Instance._currentPlayer.currentUnit.shotsFiredDuringRound < 1)
+        {
+            var newShootForceX = currentShootForce.x += 0.1f;
+            var newShootForceY = currentShootForce.y += 0.1f;
+            newShootForceX = Mathf.Clamp(newShootForceX, defaultShootForce.x, maxShootForce.x);
+            newShootForceY = Mathf.Clamp(newShootForceY, defaultShootForce.y, maxShootForce.y);
+            currentShootForce = new Vector3(newShootForceX, newShootForceY, 0);
+            Debug.Log("charging " + newShootForceX + " | " + newShootForceY + " | " + currentShootForce);
+            var barValue = Mathf.InverseLerp(defaultShootForce.magnitude, maxShootForce.magnitude, currentShootForce.magnitude);
+            GameManager.Instance.UIReferences.ChargeBar.fillAmount = barValue;
+        }
+    }
 
-        //Debug.Log("shoot");
-        user.GetComponent<UnitBehaviour>().shotsFiredDuringRound++;
-        user.GetComponent<UnitBehaviour>().canAct = false;
-        currentShootForce = defaultShootForce;
-        GameManager.Instance.UIReferences.ChargeBar.fillAmount = 0;
-        GameManager.Instance.firstPersonCamera.Follow = newProjectile.transform;
-        GameManager.Instance.firstPersonCamera.LookAt = newProjectile.transform;
-        Destroy(newProjectile.gameObject, 10f);
+    public void Shoot()
+    {
+
+        if (GameManager.Instance._currentPlayer.roundUnitPicked
+            && GameManager.Instance._currentPlayer.currentUnit == user.GetComponent<UnitBehaviour>()
+            && GameManager.Instance._currentPlayer.currentUnit.shotsFiredDuringRound < 1)
+        {
+            var newProjectile = Instantiate(projectilePrefab, shootPoint.position, Quaternion.identity);
+            Physics.IgnoreCollision(newProjectile.GetComponent<Collider>(), user.GetComponent<Collider>());
+
+            switch (shootingDirection)
+            {
+                case Direction.Forward:
+                    newProjectile.GetComponent<Rigidbody>().AddForce(shootPoint.forward * currentShootForce.x, ForceMode.Impulse);
+                    break;
+                case Direction.Up:
+                    newProjectile.GetComponent<Rigidbody>().AddForce(shootPoint.up * currentShootForce.y, ForceMode.Impulse);
+                    break;
+                case Direction.Diagonal:
+                    newProjectile.GetComponent<Rigidbody>()
+                        .AddForce((shootPoint.forward * currentShootForce.x / 2) + (shootPoint.up * currentShootForce.y / 2),
+                            ForceMode.Impulse);
+                    break;
+            }
+        
+            /*switch (shootingDirection)
+            {
+                case Direction.Forward:
+                    GetComponent<TrajectoryLine>().DrawStraightTrajectory(shootForce, new Vector3(0, 0), shootPoint); //bugged, won't rotate properly
+                    break;
+                case Direction.Diagonal:
+                    GetComponent<TrajectoryLine>().DrawCurvedTrajectory(shootForce, new Vector3(0, 0)); //bugged, doesn't work
+                    break;
+            }*/
+
+            lineRenderer.transform.rotation = transform.localRotation;
+
+            //Debug.Log("shoot");
+            user.GetComponent<UnitBehaviour>().shotsFiredDuringRound++;
+            //user.GetComponent<UnitBehaviour>().canAct = false;
+            currentShootForce = defaultShootForce;
+            GameManager.Instance.UIReferences.ChargeBar.fillAmount = 0;
+            GameManager.Instance.firstPersonCamera.Follow = newProjectile.transform;
+            GameManager.Instance.firstPersonCamera.LookAt = newProjectile.transform;
+            Destroy(newProjectile.gameObject, 10f);
+        }
     }
 }

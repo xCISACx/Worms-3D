@@ -9,6 +9,7 @@ using TMPro;
 using Unity.Collections;
 using UnityEngine;
 using UnityEngine.Audio;
+using UnityEngine.Events;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
@@ -38,9 +39,10 @@ public class GameManager : MonoBehaviour
     public AudioSource SFXSource;
     public MenuManager MenuManager;
     public Canvas SettingsPopup;
-    public Worms3D PlayerControls;
-    public GameObject Reticle;
+    //public Worms3D PlayerControls;
     public int fallDamageTreshold;
+    public UnityEvent<PlayerBehaviour> SetCurrentPlayerEvent = new UnityEvent<PlayerBehaviour>();
+    public UnityEvent<UnitBehaviour> SetCurrentUnitEvent = new UnityEvent<UnitBehaviour>();
 
     private void Awake()
     {
@@ -83,17 +85,6 @@ public class GameManager : MonoBehaviour
         Screen.fullScreen = prefs.fullscreen;
     }
 
-    private void OnEnable()
-    {
-        PlayerControls = new Worms3D();
-        PlayerControls.Enable();
-    }
-
-    private void OnDisable()
-    {
-        PlayerControls?.Disable();
-    }
-
     // Update is called once per frame
     void Update()
     {
@@ -104,10 +95,22 @@ public class GameManager : MonoBehaviour
         
         if (matchStarted)
         {
-            if (PlayerControls.Player.ChangeTurn.triggered && _currentPlayer.canChangeTurn)
+            //s_currentPlayer.currentUnit.movementValue = PlayerControls.Player.Move.ReadValue<Vector2>();
+
+            /*if (PlayerControls.Player.ChangeTurn.triggered && _currentPlayer.canChangeTurn)
             {
                 NextTurn();
             }
+
+            if (_currentPlayer.turnStarted)
+            {
+                _currentPlayer.currentUnit.InitTurn();
+            }
+            
+            if (_currentPlayer.unitPickedFlag)
+            {
+                _currentPlayer.currentUnit.InitUnit();
+            }*/
         
             /*if (!_currentPlayer.roundUnitPicked && PlayerControls.Player.ChangeUnit.triggered)
             {
@@ -151,20 +154,20 @@ public class GameManager : MonoBehaviour
                 }   
             }
             
-            /*if ((!mainCamera.Follow || !mainCamera.LookAt) && (_currentPlayer.currentUnit.transform && !gameOver))
+            if ((!mainCamera.Follow || !mainCamera.LookAt) && (_currentPlayer.currentUnit.transform && !gameOver))
             {
                 mainCamera.Follow = _currentPlayer.currentUnit.transform;
                 mainCamera.LookAt = _currentPlayer.currentUnit.transform;
-            }*/
+            }
         }
     }
     
     public IEnumerator WaitForTurnToEnd()
     {
+        _currentPlayer.currentUnit.canMove = false;
         startTurnTimer = false;
         Debug.Log("waiting for turn to end");
-        _currentPlayer.currentUnit.canAct = false;
-        //_currentPlayer.currentUnit = _currentPlayer.unitList[0];
+        //_currentPlayer.currentUnit.canAct = false;
         changeTurnFlag = true;
 
         yield return new WaitForSeconds(3);
@@ -181,7 +184,7 @@ public class GameManager : MonoBehaviour
         UIReferences.WinCanvas.SetActive(true);
         UIReferences.WinCanvasText.text = AlivePlayers[0].name + " WINS!";
 
-        if (PlayerControls.Player.PickUnit.triggered)
+        if (Input.GetKeyDown(KeyCode.F))
         {
             ResetGame();
             
@@ -196,7 +199,7 @@ public class GameManager : MonoBehaviour
         UIReferences.WinCanvas.SetActive(true);
         UIReferences.WinCanvasText.text = "It's a tie!";
 
-        if (PlayerControls.Player.PickUnit.triggered)
+        if (Input.GetKeyDown(KeyCode.F))
         {
             ResetGame();
             SceneManager.LoadScene(0);
@@ -214,7 +217,7 @@ public class GameManager : MonoBehaviour
         initDone = false;
     }
 
-    private void ChangeUnit(InputAction.CallbackContext ctx)
+    public void ChangeUnit()
     {
         if (!_currentPlayer.roundUnitPicked)
         {
@@ -224,13 +227,16 @@ public class GameManager : MonoBehaviour
             _currentPlayer.currentUnit.highlighted = false;
             //Debug.Log("previous unit: " + _currentPlayer.currentUnit);
             _currentPlayer.currentUnit.canMove = false;
-            _currentPlayer.currentUnit.canAct = false;
+            //_currentPlayer.currentUnit.canAct = false;
             _currentPlayer.currentUnit.canSwitchWeapon = false;
         
             _currentPlayer = playerList[currentPlayerIndex];
             _currentPlayer.currentUnitIndex++;
             _currentPlayer.currentUnitIndex %= _currentPlayer.unitList.Count;
             _currentPlayer.currentUnit = _currentPlayer.unitList[_currentPlayer.currentUnitIndex];
+            
+            SetCurrentPlayerEvent.Invoke(_currentPlayer);
+            SetCurrentUnitEvent.Invoke(_currentPlayer.currentUnit);
         
             //Debug.Log("new unit: " + _currentPlayer.currentUnit);
         
@@ -242,7 +248,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void PickUnit(InputAction.CallbackContext ctx)
+    public void PickUnit()
     {
         if (!_currentPlayer.roundUnitPicked)
         {
@@ -250,8 +256,11 @@ public class GameManager : MonoBehaviour
             _currentPlayer.unitPickedFlag = true;
             _currentPlayer.roundUnitPicked = true;
             _currentPlayer.currentUnit.canMove = true;
-            _currentPlayer.currentUnit.canAct = true;
+            _currentPlayer.currentUnit.canTakeDamage = true;
+            //_currentPlayer.currentUnit.canAct = true;
             _currentPlayer.currentUnit.canSwitchWeapon = true;
+            
+            SetCurrentUnitEvent.Invoke(_currentPlayer.currentUnit);
 
             turnTimer = defaultTurnTime;
             startTurnTimer = true;    
@@ -264,9 +273,12 @@ public class GameManager : MonoBehaviour
 
         currentPlayerIndex = 0;
         _currentPlayer = playerList[currentPlayerIndex];
+        _currentPlayer.currentUnit = _currentPlayer.unitList[0];
+        _currentPlayer.canChangeTurn = true;
         
-        Reticle = GameObject.FindWithTag("Reticle");
-        
+        SetCurrentPlayerEvent.Invoke(_currentPlayer);
+        SetCurrentUnitEvent.Invoke(_currentPlayer.currentUnit);
+
         mainCamera = FindObjectOfType<CinemachineFreeLook>();
 
         mainCamera.Follow = _currentPlayer.currentUnit.transform;
@@ -284,8 +296,11 @@ public class GameManager : MonoBehaviour
         
         _currentPlayer.currentUnit.highlighted = true;
 
-        PlayerControls.Player.ChangeUnit.started += ChangeUnit;
+        //PlayerControls.Player.ChangeUnit.started += ChangeUnit;
+
+        /*PlayerControls.Player.Jump.started += _currentPlayer.currentUnit.Jump;
         PlayerControls.Player.PickUnit.started += PickUnit;
+        PlayerControls.Player.Fire.started += _currentPlayer.currentUnit.EquipWeapon;*/
         
         //Debug.Log(_currentPlayer);
         initDone = true;
@@ -312,28 +327,33 @@ public class GameManager : MonoBehaviour
         
         currentPlayerIndex++;
         currentPlayerIndex %= playerList.Count;
-        
+
         _currentPlayer = playerList[currentPlayerIndex];
+        
+        SetCurrentPlayerEvent.Invoke(_currentPlayer);
 
         _currentPlayer.roundUnitPicked = false;
         
         UIReferences.currentPlayerText.text = "Current Player: " + (currentPlayerIndex + 1);
         UIReferences.currentUnitText.text = "Current Unit: " + (_currentPlayer.currentUnitIndex + 1);
 
-        for (int i = 0; i < GameManager.Instance.playerList.Count; i++)
+        for (int i = 0; i < playerList.Count; i++)
         {
             if (i == currentPlayerIndex)
             {
                 playerList[i].canPlay = true;
                 playerList[i].currentUnit.canMove = true;
                 playerList[i].turnStarted = true;
+                playerList[i].canChangeTurn = true;
             }
             else
             {
                 playerList[i].canPlay = false;
                 playerList[i].currentUnit.canMove = false;
                 playerList[i].turnStarted = false;
+                playerList[i].canChangeTurn = false;
             }
+            
             playerList[i].currentUnit.canTakeDamage = true;
         }
         

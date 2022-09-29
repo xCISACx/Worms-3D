@@ -118,6 +118,24 @@ public partial class @Worms3D : IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
+                    ""name"": ""DoubleJump"",
+                    ""type"": ""Button"",
+                    ""id"": ""5fccdee2-46e5-48bc-83a3-bfd2f7d06373"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": ""MultiTap"",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""HighJump"",
+                    ""type"": ""Button"",
+                    ""id"": ""06860bfa-dbbd-4575-ba9f-5bb51960a662"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": ""Hold"",
+                    ""initialStateCheck"": false
+                },
+                {
                     ""name"": ""SwitchUnit"",
                     ""type"": ""Button"",
                     ""id"": ""f589bdc9-d75a-4cbb-ba56-4ffeed369848"",
@@ -541,6 +559,50 @@ public partial class @Worms3D : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": ""Gamepad"",
                     ""action"": ""AimWeaponLock"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b91d874c-8f9c-4c87-b5ca-88a3f7ea727a"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""DoubleJump"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""9f892014-8bd2-4cab-ab3b-d491d40c4707"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""DoubleJump"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c18c5bbe-0835-4555-b732-419592be8965"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""HighJump"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c4959360-8b3f-4443-bc5d-f79b00e40cb8"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""HighJump"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1138,6 +1200,8 @@ public partial class @Worms3D : IInputActionCollection2, IDisposable
         m_Player_AimWeaponLock = m_Player.FindAction("AimWeaponLock", throwIfNotFound: true);
         m_Player_PickUnit = m_Player.FindAction("PickUnit", throwIfNotFound: true);
         m_Player_Jump = m_Player.FindAction("Jump", throwIfNotFound: true);
+        m_Player_DoubleJump = m_Player.FindAction("DoubleJump", throwIfNotFound: true);
+        m_Player_HighJump = m_Player.FindAction("HighJump", throwIfNotFound: true);
         m_Player_SwitchUnit = m_Player.FindAction("SwitchUnit", throwIfNotFound: true);
         m_Player_Pause = m_Player.FindAction("Pause", throwIfNotFound: true);
         // UI
@@ -1221,6 +1285,8 @@ public partial class @Worms3D : IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_AimWeaponLock;
     private readonly InputAction m_Player_PickUnit;
     private readonly InputAction m_Player_Jump;
+    private readonly InputAction m_Player_DoubleJump;
+    private readonly InputAction m_Player_HighJump;
     private readonly InputAction m_Player_SwitchUnit;
     private readonly InputAction m_Player_Pause;
     public struct PlayerActions
@@ -1237,6 +1303,8 @@ public partial class @Worms3D : IInputActionCollection2, IDisposable
         public InputAction @AimWeaponLock => m_Wrapper.m_Player_AimWeaponLock;
         public InputAction @PickUnit => m_Wrapper.m_Player_PickUnit;
         public InputAction @Jump => m_Wrapper.m_Player_Jump;
+        public InputAction @DoubleJump => m_Wrapper.m_Player_DoubleJump;
+        public InputAction @HighJump => m_Wrapper.m_Player_HighJump;
         public InputAction @SwitchUnit => m_Wrapper.m_Player_SwitchUnit;
         public InputAction @Pause => m_Wrapper.m_Player_Pause;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
@@ -1278,6 +1346,12 @@ public partial class @Worms3D : IInputActionCollection2, IDisposable
                 @Jump.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnJump;
                 @Jump.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnJump;
                 @Jump.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnJump;
+                @DoubleJump.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDoubleJump;
+                @DoubleJump.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDoubleJump;
+                @DoubleJump.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDoubleJump;
+                @HighJump.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnHighJump;
+                @HighJump.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnHighJump;
+                @HighJump.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnHighJump;
                 @SwitchUnit.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSwitchUnit;
                 @SwitchUnit.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSwitchUnit;
                 @SwitchUnit.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSwitchUnit;
@@ -1318,6 +1392,12 @@ public partial class @Worms3D : IInputActionCollection2, IDisposable
                 @Jump.started += instance.OnJump;
                 @Jump.performed += instance.OnJump;
                 @Jump.canceled += instance.OnJump;
+                @DoubleJump.started += instance.OnDoubleJump;
+                @DoubleJump.performed += instance.OnDoubleJump;
+                @DoubleJump.canceled += instance.OnDoubleJump;
+                @HighJump.started += instance.OnHighJump;
+                @HighJump.performed += instance.OnHighJump;
+                @HighJump.canceled += instance.OnHighJump;
                 @SwitchUnit.started += instance.OnSwitchUnit;
                 @SwitchUnit.performed += instance.OnSwitchUnit;
                 @SwitchUnit.canceled += instance.OnSwitchUnit;
@@ -1490,6 +1570,8 @@ public partial class @Worms3D : IInputActionCollection2, IDisposable
         void OnAimWeaponLock(InputAction.CallbackContext context);
         void OnPickUnit(InputAction.CallbackContext context);
         void OnJump(InputAction.CallbackContext context);
+        void OnDoubleJump(InputAction.CallbackContext context);
+        void OnHighJump(InputAction.CallbackContext context);
         void OnSwitchUnit(InputAction.CallbackContext context);
         void OnPause(InputAction.CallbackContext context);
     }
