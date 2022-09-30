@@ -31,7 +31,7 @@ public class ProjectileBehaviour : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.CompareTag("Environment") || other.gameObject.CompareTag("Ground"))
+        if (other.gameObject.CompareTag("Environment") || other.gameObject.CompareTag("Wall"))
         {
             origin = other.gameObject.GetComponent<Collider>().ClosestPointOnBounds(transform.position);
             
@@ -41,6 +41,32 @@ public class ProjectileBehaviour : MonoBehaviour
                 ApplyKnockback(origin);
                 ApplySplashDamage(origin);
                 //other.GetComponent<TerrainDamager>().ApplyDamage(origin, TerrainDamageConfig, 1.0f);
+                spawnedExplosion = true;
+                Destroy(gameObject);
+            }
+            else
+            {
+                Destroy(gameObject);
+                //TODO: Destroy environment?
+            }
+        }
+
+        if (other.gameObject.CompareTag("Ground"))
+        {
+            origin = other.gameObject.GetComponent<Collider>().ClosestPointOnBounds(transform.position);
+
+            if (explosive && !spawnedExplosion)
+            {
+                Instantiate(ExplosionPrefab, origin, Quaternion.identity);
+                ApplyKnockback(origin);
+                ApplySplashDamage(origin);
+                var origin1 = transform.position;
+                var localOrigin = transform.InverseTransformPoint(transform.position);
+                //Debug.Log("origin: " + origin1);
+                //Debug.Log("origin: " + localOrigin);
+                //Debug.Log("local position: " + transform.localPosition);
+                //other.GetComponent<TerrainDamager>().ApplyDamage(origin, TerrainDamageConfig, 1.0f);
+                other.gameObject.GetComponent<TerrainBehaviour>().DestroyTerrain(origin1, explosionRadius);
                 spawnedExplosion = true;
                 Destroy(gameObject);
             }
@@ -109,7 +135,7 @@ public class ProjectileBehaviour : MonoBehaviour
             }
         }
     }
-    
+
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.red;

@@ -241,7 +241,7 @@ GameObject:
   - component: {fileID: 6229997274632158226}
   m_Layer: 6
   m_Name: Weapon Parent
-  m_TagString: Untagged
+  m_TagString: Weapon
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -291,6 +291,7 @@ MonoBehaviour:
   maxShootForce: {x: 0, y: 0, z: 0}
   FPSCamera: {fileID: 3814268495298545999}
   lineRenderer: {fileID: 1209461737350313463}
+  chargeSpeed: 0.5
   charging: 0
   playerInput: {fileID: 0}
   fire:

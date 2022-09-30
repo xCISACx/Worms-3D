@@ -43,6 +43,7 @@ public class GameManager : MonoBehaviour
     public int fallDamageTreshold;
     public UnityEvent<PlayerBehaviour> SetCurrentPlayerEvent = new UnityEvent<PlayerBehaviour>();
     public UnityEvent<UnitBehaviour> SetCurrentUnitEvent = new UnityEvent<UnitBehaviour>();
+    public UnityEvent<PlayerBehaviour> PlayerDiedEvent = new UnityEvent<PlayerBehaviour>();
 
     private void Awake()
     {
@@ -154,7 +155,7 @@ public class GameManager : MonoBehaviour
                 }   
             }
             
-            if ((!mainCamera.Follow || !mainCamera.LookAt) && (_currentPlayer.currentUnit.transform && !gameOver))
+            if (!gameOver && (!mainCamera.Follow || !mainCamera.LookAt) && (_currentPlayer.currentUnit.transform))
             {
                 mainCamera.Follow = _currentPlayer.currentUnit.transform;
                 mainCamera.LookAt = _currentPlayer.currentUnit.transform;
@@ -276,6 +277,8 @@ public class GameManager : MonoBehaviour
         _currentPlayer.currentUnit = _currentPlayer.unitList[0];
         _currentPlayer.canChangeTurn = true;
         
+        PlayerDiedEvent.AddListener(OnPlayerDied);
+
         SetCurrentPlayerEvent.Invoke(_currentPlayer);
         SetCurrentUnitEvent.Invoke(_currentPlayer.currentUnit);
 
@@ -304,6 +307,25 @@ public class GameManager : MonoBehaviour
         
         //Debug.Log(_currentPlayer);
         initDone = true;
+    }
+
+    private void OnPlayerDied(PlayerBehaviour player)
+    {
+        playerList.Remove(player);
+
+        var barToDestroy = UIReferences.GlobalHPBarParent.HPBars[currentPlayerIndex];
+        
+        UIReferences.GlobalHPBarParent.HPBars.RemoveAt(currentPlayerIndex);
+        
+        Destroy(barToDestroy.gameObject);
+        
+        if (playerList.Count > 0)
+        {
+            currentPlayerIndex++;
+            currentPlayerIndex %= playerList.Count;   
+        }
+        
+        _currentPlayer = playerList[currentPlayerIndex];
     }
 
     public void NextTurn()

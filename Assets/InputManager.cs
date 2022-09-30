@@ -32,7 +32,7 @@ public class InputManager : MonoBehaviour
 
     private void OnDisable()
     {
-        PlayerControls?.Disable();
+        PlayerControls.Disable();
     }
     
     // Start is called before the first frame update
@@ -80,21 +80,7 @@ public class InputManager : MonoBehaviour
                 }
             }
 
-            /*if (canMove)
-            {
-                Move();
-                LimitTotalMovement();
-            }
-            else
-            {
-                movementVector = new Vector3(movementValue.x, 0, movementValue.y);
-                rigidbody.velocity = new Vector3(0f, rigidbody.velocity.y, 0f);
-            }
-            //We can't move but can still rotate for aiming purposes
-                    
-            RotateWithMovement();
-                    
-            //only aim if the unit has a weapon equipped*/
+            // Had to use Update for inputs that require holding since they can't be hooked up on Awake()
                     
             if (PlayerControls.Player.AimWeaponLock.inProgress && _currentUnit.currentWeaponObject)
             {
@@ -123,18 +109,17 @@ public class InputManager : MonoBehaviour
 
     void InitControls()
     {
-        PlayerControls.Player.Jump.canceled += MakeUnitJump;
-        PlayerControls.Player.DoubleJump.performed += MakeUnitDoubleJump;
-        PlayerControls.Player.HighJump.performed += MakeUnitHighJump;
-        PlayerControls.Player.HighJump.canceled -= MakeUnitJump;
+        PlayerControls.Player.Jump.started += MakeUnitJump;
+        //PlayerControls.Player.DoubleJump.performed += MakeUnitDoubleJump;
+        //PlayerControls.Player.HighJump.performed += MakeUnitHighJump;
         //PlayerControls.Player.EquipWeapon.started += MakeUnitEquipWeapon;
         //PlayerControls.Player.ChangeWeapon.started += MakeUnitChangeWeapon;
         PlayerControls.Player.PickUnit.started += PickUnit;
         PlayerControls.Player.ChangeUnit.started += ChangeUnit;
         PlayerControls.Player.ChangeTurn.started += ChangeTurn;
 
-        PlayerControls.Player.Fire.performed += MakeUnitStartCharging;
-        PlayerControls.Player.Fire.canceled += MakeUnitShoot;
+        //PlayerControls.Player.Fire.performed += MakeUnitStartCharging;
+        //PlayerControls.Player.Fire.canceled += MakeUnitShoot;
 
         controlsInitialised = true;
     }
@@ -142,19 +127,16 @@ public class InputManager : MonoBehaviour
     void MakeUnitJump(InputAction.CallbackContext ctx)
     {
         _currentUnit.Jump(0);
-        Debug.Log("jumping");
     }
     
     void MakeUnitDoubleJump(InputAction.CallbackContext ctx)
     {
         _currentUnit.Jump(1);
-        Debug.Log("double jumping");
     }
     
     void MakeUnitHighJump(InputAction.CallbackContext ctx)
     {
         _currentUnit.Jump(2);
-        Debug.Log("high jumping");
     }
 
     void MakeUnitAim()

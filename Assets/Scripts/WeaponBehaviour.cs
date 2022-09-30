@@ -32,6 +32,7 @@ public class WeaponBehaviour : MonoBehaviour
     [SerializeField] public Vector3 maxShootForce;
     public CinemachineVirtualCamera FPSCamera;
     public LineRenderer lineRenderer;
+    [SerializeField] float chargeSpeed;
     public bool charging = false;
     
     public PlayerInput playerInput;
@@ -49,7 +50,7 @@ public class WeaponBehaviour : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        /*if (InputManager.Instance.PlayerControls.Player.Fire.inProgress)
+        if (InputManager.Instance.PlayerControls.Player.Fire.inProgress)
         {
             ChargeShot();
         }
@@ -57,7 +58,7 @@ public class WeaponBehaviour : MonoBehaviour
         if (InputManager.Instance.PlayerControls.Player.Fire.WasReleasedThisFrame())
         {
             Shoot();
-        }*/
+        }
     }
 
     public void ChargeShot()
@@ -66,12 +67,16 @@ public class WeaponBehaviour : MonoBehaviour
             && GameManager.Instance._currentPlayer.currentUnit == user.GetComponent<UnitBehaviour>()
             && GameManager.Instance._currentPlayer.currentUnit.shotsFiredDuringRound < 1)
         {
-            var newShootForceX = currentShootForce.x += 0.1f;
-            var newShootForceY = currentShootForce.y += 0.1f;
+            var newShootForceX = currentShootForce.x += chargeSpeed;
+            var newShootForceY = currentShootForce.y += chargeSpeed;
+            
             newShootForceX = Mathf.Clamp(newShootForceX, defaultShootForce.x, maxShootForce.x);
             newShootForceY = Mathf.Clamp(newShootForceY, defaultShootForce.y, maxShootForce.y);
+            
             currentShootForce = new Vector3(newShootForceX, newShootForceY, 0);
+            
             Debug.Log("charging " + newShootForceX + " | " + newShootForceY + " | " + currentShootForce);
+            
             var barValue = Mathf.InverseLerp(defaultShootForce.magnitude, maxShootForce.magnitude, currentShootForce.magnitude);
             GameManager.Instance.UIReferences.ChargeBar.fillAmount = barValue;
         }

@@ -32,6 +32,8 @@ public class UnitBehaviour : MonoBehaviour
     public bool grounded = false;
     
     public bool jumping = false;
+    
+    public bool highJumping = false;
 
     public bool highlighted = false;
 
@@ -41,6 +43,8 @@ public class UnitBehaviour : MonoBehaviour
     public int CurrentHealth = 100;
 
     [SerializeField] private float jumpForce;
+    [SerializeField] private float doubleJumpForce;
+    [SerializeField] private float highJumpForce;
     [SerializeField] private float forwardJumpForce;
 
     public int shotsFiredDuringRound;
@@ -54,6 +58,8 @@ public class UnitBehaviour : MonoBehaviour
     [SerializeField] private GameObject SelectionArrow;
 
     [SerializeField] private GameObject WallCollider;
+
+    [SerializeField] private MeshRenderer meshRenderer;
     
     private Rigidbody rigidbody;
 
@@ -138,8 +144,10 @@ public class UnitBehaviour : MonoBehaviour
         {
             if (!matchInitDone)
             {
-                var meshRenderer = GetComponentInChildren<MeshRenderer>();
                 meshRenderer.material.color = PlayerColour;
+                
+                Player.GlobalTeamHP += MaxHealth;
+
                 //Debug.Log("changed colour");
 
                 matchInitDone = true;
@@ -184,8 +192,10 @@ public class UnitBehaviour : MonoBehaviour
                 //Debug.Log("going down");
                 rigidbody.velocity += Vector3.up * Physics.gravity.y * fallMultiplier * Time.deltaTime;
             }
+            
+            // Add the forward force to regular and double jumping, but not high jumping
 
-            if (!grounded && jumping)
+            if (!grounded && jumping && !highJumping)
             {
                 rigidbody.AddForce(transform.forward * forwardJumpForce);
             }
@@ -381,18 +391,23 @@ public class UnitBehaviour : MonoBehaviour
     {
         if (grounded && canMove)
         {
-            jumping = true;
             switch (jumpType)
             {
                 case 0:
                     //rigidbody.AddForce(Vector3.up * jumpForce + transform.forward * (forwardJumpForce), ForceMode.Impulse);
                     rigidbody.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+                    jumping = true;
+                    Debug.Log("jumping");
                     break;
                 case 1:
-                    rigidbody.AddForce(Vector3.up * (jumpForce * 2) + transform.forward * (forwardJumpForce), ForceMode.Impulse);
+                    rigidbody.AddForce(Vector3.up * doubleJumpForce, ForceMode.Impulse);
+                    jumping = true;
+                    Debug.Log("double jumping");
                     break;
                 case 2:
-                    rigidbody.AddForce(Vector3.up * (jumpForce * 2), ForceMode.Impulse);
+                    rigidbody.AddForce(Vector3.up * highJumpForce, ForceMode.Impulse);
+                    highJumping = true;
+                    Debug.Log("high jumping");
                     break;
             }
 
@@ -435,7 +450,7 @@ public class UnitBehaviour : MonoBehaviour
         CurrentHealth -= damage;
         canTakeDamage = false;
         HealthText.text = CurrentHealth.ToString();
-        GameManager.Instance.UIReferences.GlobalHPBarParent.UpdateBar((int) Owner);
+        Player.UpdateBar();
         GameManager.Instance.SpawnDamagePopUp(transform, new Vector3(0, 2f, 0), damage);
 
         if (CurrentHealth <= 0)
@@ -459,14 +474,18 @@ public class UnitBehaviour : MonoBehaviour
         if (Player.unitList.Count == 1) //If this was the player's last unit
         {
             GameManager.Instance.AlivePlayers.Remove(Player);
+            Debug.Log("removing player");
+            Player.SelfDestruct();
         }
         
         Player.unitList.Remove(this);
         GameManager.Instance.unitList.Remove(this);
 
-        Destroy(gameObject);
+        Destroy(gameObject, 1f);
     }
 
+    //todo: SEPARATE BLOCKS INTO FUNCTIONS
+    
     public void EquipWeapon()
     {
         /*if (!currentWeaponSelected || currentWeaponObject || !canSwitchWeapon)
@@ -495,6 +514,8 @@ public class UnitBehaviour : MonoBehaviour
         
         weaponScript.user = gameObject;
 
+        //TODO: Make this
+        //weaponScript.Init(selectedWeapon);
         weaponScript.weaponModel = selectedWeapon.model;
         weaponScript.defaultShootForce = selectedWeapon.shootingForce;
         weaponScript.currentShootForce = selectedWeapon.shootingForce;
@@ -525,6 +546,7 @@ public class UnitBehaviour : MonoBehaviour
         if (collision.gameObject.CompareTag("Ground") || collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
         {
             jumping = false;
+            highJumping = false;
             WallCollider.SetActive(false);
             countFallDamage = false;
 

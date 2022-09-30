@@ -1,13 +1,13 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Image = UnityEngine.UI.Image;
 
 public class GlobalHPBehaviour : MonoBehaviour
 {
-    public Image[] HPBars;
-    public int GlobalTeamHP = 0;
+    public List<Image> HPBars;
 
     private bool initialisedColours = false;
     // Start is called before the first frame update
@@ -21,10 +21,14 @@ public class GlobalHPBehaviour : MonoBehaviour
     {
         if (GameManager.Instance.AlivePlayers.Count > 0 && !initialisedColours)
         {
-            HPBars = GetComponentsInChildren<Image>(true);
-            
+            var allBars = GetComponentsInChildren<Image>(true).ToList();
+
             for (int i = 0; i < GameManager.Instance.playerList.Count; i++)
             {
+                HPBars.Add(allBars[i]);
+
+                GameManager.Instance.playerList[i].TeamHPBar = HPBars[i];
+                
                 HPBars[i].color = GameManager.Instance.playerList[i].unitList[0].PlayerColour;
                 HPBars[i].gameObject.SetActive(true);
 
@@ -35,39 +39,6 @@ public class GlobalHPBehaviour : MonoBehaviour
 
     private void Awake()
     {
-        HPBars = GetComponentsInChildren<Image>();
-    }
-
-    public void UpdateBar(int playerIndex)
-    {
-        GlobalTeamHP = 0;
-        
-        var unitList = GameManager.Instance.playerList[playerIndex].unitList;
-        
-        for (int j = 0; j < unitList.Count; j++)
-        {
-            var unitScript = unitList[j].GetComponent<UnitBehaviour>();
-
-            GlobalTeamHP += unitScript.CurrentHealth;
-            //Debug.Log(GlobalTeamHP);
-        }
-        
-        GlobalTeamHP /= GameManager.Instance.NumberOfStartingUnits;
-        
-        //Debug.Log(GlobalTeamHP);
-        
-        /*for (int i = 0; i < GameManager.Instance.playerList.Count; i++)
-        {
-            for (int j = 0; j < GameManager.Instance.playerList[i].unitList.Count; j++)
-            {
-                var unitScript = GameManager.Instance.playerList[i].unitList[j].GetComponent<UnitBehaviour>();
-
-                GlobalTeamHP += unitScript.CurrentHealth;
-                GlobalTeamHP /= GameManager.Instance.playerList[i].unitList.Count;
-            }
-        }*/
-
-        HPBars[playerIndex].fillAmount = GlobalTeamHP / 100f;
-
+        HPBars = GetComponentsInChildren<Image>().ToList();
     }
 }

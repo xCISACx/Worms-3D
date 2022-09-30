@@ -44,9 +44,9 @@ GameObject:
   - component: {fileID: 8887958327176403470}
   - component: {fileID: 7996047190639769434}
   - component: {fileID: 2835779650849007487}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Bazooka
-  m_TagString: Untagged
+  m_TagString: Weapon
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

@@ -14,6 +14,7 @@ TagManager:
   - SFX Slider
   - Ground
   - Wall
+  - Weapon
   layers:
   - Default
   - TransparentFX
@@ -24,7 +25,7 @@ TagManager:
   - Unit
   - Environment
   - Ground
-  - 
+  - Weapon
   - 
   - 
   - 

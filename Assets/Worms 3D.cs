@@ -51,7 +51,7 @@ public partial class @Worms3D : IInputActionCollection2, IDisposable
                     ""id"": ""8b720192-34d2-4afc-af1e-487c05e8bf3d"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
-                    ""interactions"": """",
+                    ""interactions"": ""Hold,Press(behavior=1)"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -123,7 +123,7 @@ public partial class @Worms3D : IInputActionCollection2, IDisposable
                     ""id"": ""5fccdee2-46e5-48bc-83a3-bfd2f7d06373"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
-                    ""interactions"": ""MultiTap"",
+                    ""interactions"": """",
                     ""initialStateCheck"": false
                 },
                 {
@@ -132,7 +132,7 @@ public partial class @Worms3D : IInputActionCollection2, IDisposable
                     ""id"": ""06860bfa-dbbd-4575-ba9f-5bb51960a662"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
-                    ""interactions"": ""Hold"",
+                    ""interactions"": """",
                     ""initialStateCheck"": false
                 },
                 {
@@ -403,7 +403,7 @@ public partial class @Worms3D : IInputActionCollection2, IDisposable
                     ""path"": ""<Keyboard>/tab"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Gamepad;Keyboard&Mouse"",
+                    ""groups"": ""Keyboard&Mouse"",
                     ""action"": ""ChangeUnit"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -414,7 +414,7 @@ public partial class @Worms3D : IInputActionCollection2, IDisposable
                     ""path"": ""<Gamepad>/rightShoulder"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Keyboard&Mouse;Gamepad"",
+                    ""groups"": ""Gamepad"",
                     ""action"": ""ChangeUnit"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -425,7 +425,7 @@ public partial class @Worms3D : IInputActionCollection2, IDisposable
                     ""path"": ""<Keyboard>/f"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Gamepad"",
+                    ""groups"": ""Keyboard&Mouse"",
                     ""action"": ""PickUnit"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -436,7 +436,7 @@ public partial class @Worms3D : IInputActionCollection2, IDisposable
                     ""path"": ""<Gamepad>/buttonWest"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Keyboard&Mouse"",
+                    ""groups"": ""Gamepad"",
                     ""action"": ""PickUnit"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -469,7 +469,7 @@ public partial class @Worms3D : IInputActionCollection2, IDisposable
                     ""path"": ""<Keyboard>/tab"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Gamepad"",
+                    ""groups"": ""Keyboard&Mouse"",
                     ""action"": ""SwitchUnit"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -480,7 +480,7 @@ public partial class @Worms3D : IInputActionCollection2, IDisposable
                     ""path"": ""<Gamepad>/buttonNorth"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Keyboard&Mouse"",
+                    ""groups"": ""Gamepad"",
                     ""action"": ""SwitchUnit"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -491,7 +491,7 @@ public partial class @Worms3D : IInputActionCollection2, IDisposable
                     ""path"": ""<Keyboard>/escape"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Gamepad"",
+                    ""groups"": ""Keyboard&Mouse"",
                     ""action"": ""Pause"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -502,7 +502,7 @@ public partial class @Worms3D : IInputActionCollection2, IDisposable
                     ""path"": ""<Gamepad>/start"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Keyboard&Mouse"",
+                    ""groups"": ""Gamepad"",
                     ""action"": ""Pause"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -513,7 +513,7 @@ public partial class @Worms3D : IInputActionCollection2, IDisposable
                     ""path"": ""<Keyboard>/ctrl"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Gamepad"",
+                    ""groups"": ""Keyboard&Mouse"",
                     ""action"": ""ChangeWeapon"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -524,7 +524,7 @@ public partial class @Worms3D : IInputActionCollection2, IDisposable
                     ""path"": ""<Gamepad>/leftShoulder"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Keyboard&Mouse"",
+                    ""groups"": ""Gamepad"",
                     ""action"": ""ChangeWeapon"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -535,7 +535,7 @@ public partial class @Worms3D : IInputActionCollection2, IDisposable
                     ""path"": ""<Mouse>/middleButton"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Gamepad"",
+                    ""groups"": ""Keyboard&Mouse"",
                     ""action"": ""EquipWeapon"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -546,7 +546,7 @@ public partial class @Worms3D : IInputActionCollection2, IDisposable
                     ""path"": ""<Gamepad>/buttonEast"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Keyboard&Mouse"",
+                    ""groups"": ""Gamepad"",
                     ""action"": ""EquipWeapon"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -557,7 +557,7 @@ public partial class @Worms3D : IInputActionCollection2, IDisposable
                     ""path"": ""<Mouse>/rightButton"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Gamepad"",
+                    ""groups"": ""Keyboard&Mouse"",
                     ""action"": ""AimWeaponLock"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -568,7 +568,7 @@ public partial class @Worms3D : IInputActionCollection2, IDisposable
                     ""path"": ""<Keyboard>/space"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Gamepad"",
+                    ""groups"": ""Keyboard&Mouse"",
                     ""action"": ""DoubleJump"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -579,7 +579,7 @@ public partial class @Worms3D : IInputActionCollection2, IDisposable
                     ""path"": ""<Gamepad>/buttonSouth"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Keyboard&Mouse"",
+                    ""groups"": ""Gamepad"",
                     ""action"": ""DoubleJump"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -590,7 +590,7 @@ public partial class @Worms3D : IInputActionCollection2, IDisposable
                     ""path"": ""<Keyboard>/space"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Gamepad"",
+                    ""groups"": ""Keyboard&Mouse"",
                     ""action"": ""HighJump"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -601,7 +601,7 @@ public partial class @Worms3D : IInputActionCollection2, IDisposable
                     ""path"": ""<Gamepad>/buttonSouth"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Keyboard&Mouse"",
+                    ""groups"": ""Gamepad"",
                     ""action"": ""HighJump"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false

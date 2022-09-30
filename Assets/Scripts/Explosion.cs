@@ -20,6 +20,8 @@ public class Explosion : MonoBehaviour
 
     private void Awake()
     {
-        
+        var particleSystem = GetComponentInChildren<ParticleSystem>();
+        particleSystem.Play();
+        Destroy(gameObject, particleSystem.main.duration);
     }
 }
