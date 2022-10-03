@@ -1217,6 +1217,7 @@ MonoBehaviour:
   selectedWeaponIndex: 0
   currentWeaponObject: {fileID: 0}
   canTakeDamage: 0
+  canTakeFallDamage: 0
   fallDamageToTake: 0
   countFallDamage: 0
   maxSlopeAngle: 50
@@ -1237,7 +1238,7 @@ Rigidbody:
   m_Drag: 0
   m_AngularDrag: 0.05
   m_UseGravity: 1
-  m_IsKinematic: 0
+  m_IsKinematic: 1
   m_Interpolate: 1
   m_Constraints: 112
   m_CollisionDetection: 1

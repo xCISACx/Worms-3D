@@ -37,20 +37,14 @@ public class TerrainBehaviour : MonoBehaviour
         for (int i = 0; i < newVertices.Length; i++)
         {
             origin = new Vector3(origin.x, newVertices[i].y, origin.z);
-            //origin = transform.InverseTransformPoint(origin);
-            float hitDistance1 = Vector3.Distance(newVertices[i], origin);
-            Debug.Log("origin: " + origin);
-            //Debug.Log(newVertices[i]);
-            //Vector3 hitDistance = (newVertices[i] - origin) / radius;
-            
-            var fallOff = curve.Evaluate(hitDistance1);
-            
-            Debug.Log(hitDistance1);
-            //Debug.Log(hitDistance.sqrMagnitude);*/
+            float hitDistance = Vector3.Distance(newVertices[i], origin);
 
-            if (hitDistance1 < radius)
+            //var fallOff = curve.Evaluate(hitDistance1);
+            
+
+            if (hitDistance < radius)
             {
-                Debug.Log("less than radius");
+                //Debug.Log("less than radius");
                 newVertices[i] += Vector3.down * 1f;
             }
         }

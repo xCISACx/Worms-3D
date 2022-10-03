@@ -102,8 +102,11 @@ public class UnitBehaviour : MonoBehaviour
     [Header("Fall Damage")]
     
     [SerializeField] public bool canTakeDamage;
+    [SerializeField] public bool canTakeFallDamage;
     [SerializeField] private float fallDamageToTake;
     [SerializeField] private bool countFallDamage = false;
+
+    public bool beingKnockedBack = false;
 
     [Header("Slope Handling")]
     
@@ -146,7 +149,7 @@ public class UnitBehaviour : MonoBehaviour
             {
                 meshRenderer.material.color = PlayerColour;
                 
-                Player.GlobalTeamHP += MaxHealth;
+                //Player.GlobalTeamHP += MaxHealth;
 
                 //Debug.Log("changed colour");
 
@@ -179,12 +182,6 @@ public class UnitBehaviour : MonoBehaviour
             {
                 canSwitchWeapon = false;
                 Player.canChangeTurn = false;
-                
-                if (GameManager.Instance.AlivePlayers.Count > 1)
-                {
-                    //Debug.Log("can't act " + GameManager.Instance._currentPlayer.currentUnit);
-                    StartCoroutine(GameManager.Instance.WaitForTurnToEnd());
-                }
             }
 
             if (!grounded && rigidbody.velocity.y <= 0f)
@@ -448,6 +445,7 @@ public class UnitBehaviour : MonoBehaviour
     {
         Debug.Log("take damage " + damage);
         CurrentHealth -= damage;
+        CurrentHealth = Mathf.Clamp(CurrentHealth, 0, 100);
         canTakeDamage = false;
         HealthText.text = CurrentHealth.ToString();
         Player.UpdateBar();
@@ -455,7 +453,7 @@ public class UnitBehaviour : MonoBehaviour
 
         if (CurrentHealth <= 0)
         {
-            StartCoroutine(GameManager.Instance.WaitForTurnToEnd());
+            GameManager.Instance.StartNextTurn();
             Die();
         }
     }
@@ -464,21 +462,35 @@ public class UnitBehaviour : MonoBehaviour
     {
         if (Player.currentUnit == this && Player.unitList.Count > 0)
         {
-            //Debug.Log("unit killed itself");
+            Debug.Log("unit killed itself");
             //Debug.Log("suicide turn end");
-            Player.currentUnit = Player.unitList[(Player.currentUnitIndex + 1) % Player.unitList.Count];
+            
+            GameManager.Instance.NextUnit();
+            
+            //Player.currentUnit = Player.unitList[(Player.currentUnitIndex + 1) % Player.unitList.Count];
+            
+            GameManager.Instance.NextPlayer();
+            
+            GameManager.Instance.SetCurrentPlayerValues();
+
             GameManager.Instance.SetCurrentUnitEvent.Invoke(Player.currentUnit);
-            GameManager.Instance.NextTurn();
+            
+            GameManager.Instance.StartNextTurn();
         }
 
         if (Player.unitList.Count == 1) //If this was the player's last unit
         {
             GameManager.Instance.AlivePlayers.Remove(Player);
+            
             Debug.Log("removing player");
+            
             Player.SelfDestruct();
+            
+            GameManager.Instance.StartNextTurn();
         }
         
         Player.unitList.Remove(this);
+        
         GameManager.Instance.unitList.Remove(this);
 
         Destroy(gameObject, 1f);
@@ -513,16 +525,8 @@ public class UnitBehaviour : MonoBehaviour
         newWeaponParentObject.transform.SetParent(weaponSlot);
         
         weaponScript.user = gameObject;
-
-        //TODO: Make this
-        //weaponScript.Init(selectedWeapon);
-        weaponScript.weaponModel = selectedWeapon.model;
-        weaponScript.defaultShootForce = selectedWeapon.shootingForce;
-        weaponScript.currentShootForce = selectedWeapon.shootingForce;
-        weaponScript.maxShootForce = selectedWeapon.maxShootingForce;
-        weaponScript.projectilePrefab = selectedWeapon.ammoPrefab;
-        weaponScript.projectilePrefab.GetComponent<ProjectileBehaviour>().damage = selectedWeapon.damage;
-        weaponScript.shootingDirection = selectedWeapon.shootingDirection;
+        
+        weaponScript.Init(selectedWeapon);
 
         var newWeapon = Instantiate(weaponScript.weaponModel, newWeaponParentObject.transform.position,
             newWeaponParentObject.transform.rotation);
@@ -540,7 +544,21 @@ public class UnitBehaviour : MonoBehaviour
 
         newWeapon.transform.SetParent(weaponScript.weaponModelParent);
     }
-    
+
+    public void SetHighlight()
+    {
+        if (GameManager.Instance._currentPlayer.currentUnit == this)
+        {
+            highlighted = true;
+        }
+        else
+        {
+            highlighted = false;
+        }
+        
+        SelectionArrow.SetActive(highlighted);
+    }
+
     private void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.CompareTag("Ground") || collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
@@ -550,13 +568,21 @@ public class UnitBehaviour : MonoBehaviour
             WallCollider.SetActive(false);
             countFallDamage = false;
 
-            if (canTakeDamage && fallDamageToTake >= GameManager.Instance.fallDamageTreshold)
+            Debug.Log("setting kinematic to true ground");
+
+            if (canTakeFallDamage && fallDamageToTake >= GameManager.Instance.fallDamageTreshold)
             {
                 TakeDamage((int) (fallDamageToTake - GameManager.Instance.fallDamageTreshold));
 
-                StartCoroutine(GameManager.Instance.WaitForTurnToEnd());
+                GameManager.Instance.StartNextTurn();
             }
             fallDamageToTake = 0;
+
+            if (beingKnockedBack)
+            {
+                rigidbody.isKinematic = true;
+                beingKnockedBack = false;
+            }
         }
     }
     

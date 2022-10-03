@@ -35,11 +35,20 @@ public class ProjectileBehaviour : MonoBehaviour
         {
             origin = other.gameObject.GetComponent<Collider>().ClosestPointOnBounds(transform.position);
             
+            var unit = other.GetComponent<UnitBehaviour>();
+                
+            if (unit)
+            {
+                unit.beingKnockedBack = true;
+                Debug.Log("being knocked back");
+            }
+            
             if (explosive && !spawnedExplosion)
             {
                 Instantiate(ExplosionPrefab, origin, Quaternion.identity);
                 ApplyKnockback(origin);
                 ApplySplashDamage(origin);
+
                 //other.GetComponent<TerrainDamager>().ApplyDamage(origin, TerrainDamageConfig, 1.0f);
                 spawnedExplosion = true;
                 Destroy(gameObject);
@@ -54,12 +63,21 @@ public class ProjectileBehaviour : MonoBehaviour
         if (other.gameObject.CompareTag("Ground"))
         {
             origin = other.gameObject.GetComponent<Collider>().ClosestPointOnBounds(transform.position);
+            
+            var unit = other.GetComponent<UnitBehaviour>();
+                
+            if (unit)
+            {
+                unit.beingKnockedBack = true;
+                Debug.Log("being knocked back");
+            }
 
             if (explosive && !spawnedExplosion)
             {
                 Instantiate(ExplosionPrefab, origin, Quaternion.identity);
                 ApplyKnockback(origin);
                 ApplySplashDamage(origin);
+
                 var origin1 = transform.position;
                 var localOrigin = transform.InverseTransformPoint(transform.position);
                 //Debug.Log("origin: " + origin1);
@@ -84,11 +102,20 @@ public class ProjectileBehaviour : MonoBehaviour
             
             origin = other.gameObject.GetComponent<Collider>().ClosestPointOnBounds(transform.position);
             
+            var unit = other.GetComponent<UnitBehaviour>();
+                
+            if (unit)
+            {
+                unit.beingKnockedBack = true;
+                Debug.Log("being knocked back");
+            }
+            
             if (explosive && !spawnedExplosion)
             {
                 Instantiate(ExplosionPrefab, origin, Quaternion.identity);
                 ApplyKnockback(origin);
                 ApplySplashDamage(origin);
+
                 //TODO: Deal more damage closer to explosion center.
                 spawnedExplosion = true;
                 Destroy(gameObject);
@@ -104,7 +131,7 @@ public class ProjectileBehaviour : MonoBehaviour
     private void ApplySplashDamage(Vector3 pos)
     {
         Debug.Log("Applying Splash Damage");
-        Collider[] colliders = Physics.OverlapSphere(transform.position, explosionRadius, layerMask);
+        Collider[] colliders = Physics.OverlapSphere(pos, explosionRadius, layerMask);
 
         foreach (Collider collider in colliders)
         {
@@ -121,15 +148,18 @@ public class ProjectileBehaviour : MonoBehaviour
     private void ApplyKnockback(Vector3 pos)
     {
         Debug.Log("Applying Knockback");
-        Collider[] colliders = Physics.OverlapSphere(transform.position, explosionRadius, layerMask);
+        Collider[] colliders = Physics.OverlapSphere(pos, explosionRadius, layerMask);
 
         foreach (Collider collider in colliders)
         {
             Debug.Log(collider.gameObject.name);
             Rigidbody rb = collider.GetComponent<Rigidbody>();
-            
+            UnitBehaviour unit = collider.GetComponent<UnitBehaviour>();
+
             if (rb != null)
             {
+                rb.isKinematic = false;
+                Debug.Log("setting kinematic to false knockback");
                 rb.AddExplosionForce(explosionForce, transform.position, explosionRadius, upwardsModifier);
                 Debug.Log("adding explosion force");
             }

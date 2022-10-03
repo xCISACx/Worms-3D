@@ -10,6 +10,7 @@ public class GlobalHPBehaviour : MonoBehaviour
     public List<Image> HPBars;
 
     private bool initialisedColours = false;
+    
     // Start is called before the first frame update
     void Start()
     {

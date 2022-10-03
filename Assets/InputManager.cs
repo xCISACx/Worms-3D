@@ -32,7 +32,7 @@ public class InputManager : MonoBehaviour
 
     private void OnDisable()
     {
-        PlayerControls.Disable();
+        //PlayerControls.Disable();
     }
     
     // Start is called before the first frame update
@@ -54,15 +54,7 @@ public class InputManager : MonoBehaviour
                 InitControls();
             }
 
-            /*if (_currentPlayer)
-            {
-                if (PlayerControls.Player.ChangeTurn.triggered && _currentPlayer.canChangeTurn)
-                {
-                    GameManager.Instance.NextTurn();
-                } 
-            }  */
-
-            if (_currentPlayer && _currentPlayer.roundUnitPicked)
+            if (_currentPlayer && _currentUnit &&  _currentPlayer.roundUnitPicked)
             {
                 _currentUnit.movementValue = PlayerControls.Player.Move.ReadValue<Vector2>();
                 _currentUnit.Move();

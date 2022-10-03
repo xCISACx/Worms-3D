@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -27,6 +28,7 @@ public class PlayerBehaviour : MonoBehaviour
     public UnitBehaviour currentUnit;
     public int currentUnitIndex = 0;
     public bool roundUnitPicked;
+    private bool initialisationDone;
 
     public List<Weapon> WeaponInventory;
 
@@ -40,12 +42,18 @@ public class PlayerBehaviour : MonoBehaviour
         {
             currentUnit = unitList[0];
             GameManager.Instance.SetCurrentUnitEvent.Invoke(currentUnit);
-            //add each unit's HP and divide by 4
         }
     }
 
     private void Update()
     {
+        if (!initialisationDone)
+        {
+            UpdateBar();
+            
+            initialisationDone = true;
+        }
+        
         if (!currentUnit && unitList.Count > 0)
         {
             currentUnit = unitList[0];
@@ -66,31 +74,20 @@ public class PlayerBehaviour : MonoBehaviour
     
     public void UpdateBar()
     {
+        GlobalTeamHP = 0;
+        
+        Debug.Log("Updating Health Bar for " + gameObject.name);
+        
         for (int j = 0; j < unitList.Count; j++)
         {
             var unitScript = unitList[j].GetComponent<UnitBehaviour>();
 
             GlobalTeamHP += unitScript.CurrentHealth;
-            
-            //Debug.Log(GlobalTeamHP);
         }
         
         GlobalTeamHP /= GameManager.Instance.NumberOfStartingUnits;
-        
-        //Debug.Log(GlobalTeamHP);
-        
-        /*for (int i = 0; i < GameManager.Instance.playerList.Count; i++)
-        {
-            for (int j = 0; j < GameManager.Instance.playerList[i].unitList.Count; j++)
-            {
-                var unitScript = GameManager.Instance.playerList[i].unitList[j].GetComponent<UnitBehaviour>();
 
-                GlobalTeamHP += unitScript.CurrentHealth;
-                GlobalTeamHP /= GameManager.Instance.playerList[i].unitList.Count;
-            }
-        }*/
-
-        TeamHPBar.fillAmount = GlobalTeamHP / 100f;
+        TeamHPBar.fillAmount = Mathf.InverseLerp(0, 100, GlobalTeamHP);
 
     }
 }

@@ -39,7 +39,7 @@ public class MainMenuManager : MonoBehaviour
 
         for (int i = 0; i < numberOfPlayers; i++)
         {
-            var newPlayer = Instantiate(PlayerPrefab, new Vector3(0, 50f, 0), Quaternion.identity);
+            var newPlayer = Instantiate(PlayerPrefab, new Vector3(0, 0, 0), Quaternion.identity);
             newPlayer.name = "Player " + (i + 1);
             var playerScript = newPlayer.GetComponent<PlayerBehaviour>();
             
@@ -47,21 +47,36 @@ public class MainMenuManager : MonoBehaviour
 
             for (int j = 0; j < numberOfPlayerUnits; j++)
             {
-                var xPos = UnityEngine.Random.Range(-25, 25f);
-                var zPos = UnityEngine.Random.Range(-25, 25f);
-                var yPos = UnityEngine.Random.Range(50f, 100f);
+                var closestPoint = GenerateSpawnPoint();
                 
-                /*var newUnit = Instantiate(UnitPrefab, 
-                    map.GetComponentInChildren<MeshRenderer>().bounds.ClosestPoint(new Vector3(xPos, yPos + 10f, zPos)), 
-                    Quaternion.identity);*/
+                Debug.Log(closestPoint);
+
+                var newUnit = SpawnUnitAtLocation(closestPoint);
                 
-                var newUnit = Instantiate(UnitPrefab, 
-                    new Vector3(xPos, yPos + 10f, zPos),
-                    Quaternion.identity);
+                //Collider[] collisionWithUnit = Physics.OverlapSphere(closestPoint, 5f, LayerMask.GetMask("Unit"));
+
+                //GameObject newUnit = null;
+                
+                //closestPoint = GenerateSpawnPoint();
+                
+                
+
+                /*while (collisionWithUnit.Length != 0)
+                {
+                    closestPoint = GenerateSpawnPoint();
+                    
+                    collisionWithUnit = Physics.OverlapSphere(closestPoint, 5f, LayerMask.GetMask("Unit"));
+                }
+
+                SpawnUnitAtLocation(closestPoint);*/
 
                 newUnit.transform.SetParent(newPlayer.transform);
                 playerScript.unitList.Add(newUnit.GetComponent<UnitBehaviour>());
-                
+
+                /*var newUnit = Instantiate(UnitPrefab, 
+                    new Vector3(xPos, yPos + 10f, zPos),
+                    Quaternion.identity);*/
+
                 var unitScript = newUnit.GetComponent<UnitBehaviour>();
                 unitScript.enabled = true;
                 unitScript.Owner = (UnitBehaviour.PlayerNumber) i;
@@ -70,7 +85,7 @@ public class MainMenuManager : MonoBehaviour
                 ColorUtility.TryParseHtmlString(PlayerColours[i], out color);
                 unitScript.PlayerColour = color;
                 
-                newUnit.name = unitScript.Owner.ToString() + " Unit " + (j + 1);
+                newUnit.name = unitScript.Owner + " Unit " + (j + 1);
                 
                 GameManager.Instance.unitList.Add(newUnit.GetComponent<UnitBehaviour>());
             }
@@ -83,7 +98,52 @@ public class MainMenuManager : MonoBehaviour
         GameManager.Instance.matchStarted = true;
         SceneManager.UnloadSceneAsync(currentScene);
     }
-    
+
+    private GameObject SpawnUnitAtLocation(Vector3 closestPoint)
+    {
+        var newUnit = Instantiate(UnitPrefab, closestPoint, Quaternion.identity);
+
+        return newUnit;
+    }
+
+    private Vector3 GenerateSpawnPoint()
+    {
+        UnityEngine.Random.InitState(DateTime.Now.Millisecond);
+        
+        var xPos = UnityEngine.Random.Range(-27f, 27f);
+        var zPos = UnityEngine.Random.Range(-27f, 27f);
+        var yPos = UnityEngine.Random.Range(0f, 10f);
+
+        Vector3 spawnPoint = new Vector3(xPos, yPos, zPos);
+
+        float unitRadius = UnitPrefab.GetComponent<Collider>().bounds.extents.x;
+
+        var minDistance = float.PositiveInfinity;
+        
+        var closestPointToCollider = Vector3.zero;
+
+        foreach (var collider in map.GetComponentsInChildren<MeshCollider>())
+        {
+            if (collider.convex)
+            {
+                var closestPointToPosition = collider.ClosestPoint(spawnPoint);
+            
+                if (Vector3.Distance(spawnPoint, closestPointToPosition) < minDistance)
+                {
+                    minDistance = Vector3.Distance(spawnPoint, closestPointToPosition);
+                
+                    closestPointToCollider = closestPointToPosition;
+                    
+                    closestPointToCollider.y += 1.5f;
+                    
+                    Debug.Log(closestPointToCollider);
+                }   
+            }
+        }
+
+        return closestPointToCollider;
+    }
+
     private void Awake()
     {
         ColourHParent = GameObject.Find("ColourHParent");

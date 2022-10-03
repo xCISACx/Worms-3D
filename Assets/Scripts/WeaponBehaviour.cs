@@ -61,6 +61,17 @@ public class WeaponBehaviour : MonoBehaviour
         }
     }
 
+    public void Init(Weapon selectedWeapon)
+    {
+        weaponModel = selectedWeapon.model;
+        defaultShootForce = selectedWeapon.shootingForce;
+        currentShootForce = selectedWeapon.shootingForce;
+        maxShootForce = selectedWeapon.maxShootingForce;
+        projectilePrefab = selectedWeapon.ammoPrefab;
+        projectilePrefab.GetComponent<ProjectileBehaviour>().damage = selectedWeapon.damage;
+        shootingDirection = selectedWeapon.shootingDirection;
+    }
+
     public void ChargeShot()
     {
         if (GameManager.Instance._currentPlayer.roundUnitPicked
@@ -126,6 +137,16 @@ public class WeaponBehaviour : MonoBehaviour
             GameManager.Instance.UIReferences.ChargeBar.fillAmount = 0;
             GameManager.Instance.firstPersonCamera.Follow = newProjectile.transform;
             GameManager.Instance.firstPersonCamera.LookAt = newProjectile.transform;
+            
+            if (GameManager.Instance.AlivePlayers.Count > 1)
+            {
+                //Debug.Log("can't act " + GameManager.Instance._currentPlayer.currentUnit);
+                
+                //TODO: Fix turn starting twice if unit kills itself and shoots an enemy
+                
+                GameManager.Instance.ShotFiredEvent.Invoke();
+            }
+            
             Destroy(newProjectile.gameObject, 10f);
         }
     }
