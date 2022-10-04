@@ -142,7 +142,7 @@ public class WeaponBehaviour : MonoBehaviour
             {
                 //Debug.Log("can't act " + GameManager.Instance._currentPlayer.currentUnit);
                 
-                //TODO: Fix turn starting twice if unit kills itself and shoots an enemy
+                //TODO: Fix turn starting twice if unit shoots an enemy and kills them/itself
                 
                 GameManager.Instance.ShotFiredEvent.Invoke();
             }

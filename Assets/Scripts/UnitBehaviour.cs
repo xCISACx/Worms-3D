@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Playables;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(Rigidbody))]
@@ -105,6 +106,7 @@ public class UnitBehaviour : MonoBehaviour
     [SerializeField] public bool canTakeFallDamage;
     [SerializeField] private float fallDamageToTake;
     [SerializeField] private bool countFallDamage = false;
+    [SerializeField] public float TimeSpentGrounded;
 
     public bool beingKnockedBack = false;
 
@@ -394,17 +396,17 @@ public class UnitBehaviour : MonoBehaviour
                     //rigidbody.AddForce(Vector3.up * jumpForce + transform.forward * (forwardJumpForce), ForceMode.Impulse);
                     rigidbody.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
                     jumping = true;
-                    Debug.Log("jumping");
+                    //Debug.Log("jumping");
                     break;
                 case 1:
                     rigidbody.AddForce(Vector3.up * doubleJumpForce, ForceMode.Impulse);
                     jumping = true;
-                    Debug.Log("double jumping");
+                    //Debug.Log("double jumping");
                     break;
                 case 2:
                     rigidbody.AddForce(Vector3.up * highJumpForce, ForceMode.Impulse);
                     highJumping = true;
-                    Debug.Log("high jumping");
+                    //Debug.Log("high jumping");
                     break;
             }
 
@@ -443,52 +445,51 @@ public class UnitBehaviour : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
-        Debug.Log("take damage " + damage);
+        //Debug.Log("take damage " + damage);
         CurrentHealth -= damage;
         CurrentHealth = Mathf.Clamp(CurrentHealth, 0, 100);
         canTakeDamage = false;
         HealthText.text = CurrentHealth.ToString();
-        Player.UpdateBar();
+        
+        if (Player.TeamHPBar)
+        {
+            Player.UpdateBar();
+        }
+        
         GameManager.Instance.SpawnDamagePopUp(transform, new Vector3(0, 2f, 0), damage);
 
         if (CurrentHealth <= 0)
         {
-            GameManager.Instance.StartNextTurn();
             Die();
         }
     }
 
     public void Die()
     {
-        if (Player.currentUnit == this && Player.unitList.Count > 0)
+        //todo: not triggering when checking for count > 1, only count > 0
+        //todo: this is causing the game to skip a player when the current unit kills itself, going from player 1 to player 3
+
+        if (GameManager.Instance._currentPlayer == Player && Player.currentUnit == this && Player.unitList.Count > 0)
         {
-            Debug.Log("unit killed itself");
-            //Debug.Log("suicide turn end");
-            
+            Debug.LogWarning("unit killed itself");
+            Debug.LogWarning("suicide turn end");
+
             GameManager.Instance.NextUnit();
-            
+
             //Player.currentUnit = Player.unitList[(Player.currentUnitIndex + 1) % Player.unitList.Count];
-            
-            GameManager.Instance.NextPlayer();
-            
+
             GameManager.Instance.SetCurrentPlayerValues();
 
             GameManager.Instance.SetCurrentUnitEvent.Invoke(Player.currentUnit);
-            
+
             GameManager.Instance.StartNextTurn();
         }
 
-        if (Player.unitList.Count == 1) //If this was the player's last unit
+        if (GameManager.Instance._currentPlayer == Player && Player.currentUnit == this && Player.unitList.Count == 1)
         {
-            GameManager.Instance.AlivePlayers.Remove(Player);
-            
-            Debug.Log("removing player");
-            
-            Player.SelfDestruct();
-            
-            GameManager.Instance.StartNextTurn();
+            GameManager.Instance.SetSelfDestructed(true);
         }
-        
+
         Player.unitList.Remove(this);
         
         GameManager.Instance.unitList.Remove(this);
@@ -567,8 +568,9 @@ public class UnitBehaviour : MonoBehaviour
             highJumping = false;
             WallCollider.SetActive(false);
             countFallDamage = false;
+            TimeSpentGrounded++;
 
-            Debug.Log("setting kinematic to true ground");
+            //Debug.Log("setting kinematic to true ground");
 
             if (canTakeFallDamage && fallDamageToTake >= GameManager.Instance.fallDamageTreshold)
             {
@@ -578,10 +580,11 @@ public class UnitBehaviour : MonoBehaviour
             }
             fallDamageToTake = 0;
 
-            if (beingKnockedBack)
+            if (beingKnockedBack && TimeSpentGrounded > 1f)
             {
                 rigidbody.isKinematic = true;
                 beingKnockedBack = false;
+                Debug.LogWarning("set being knocked back to false");
             }
         }
     }

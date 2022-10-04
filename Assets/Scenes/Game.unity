@@ -1123,7 +1123,7 @@ GameObject:
   - component: {fileID: 342565341}
   - component: {fileID: 342565340}
   m_Layer: 5
-  m_Name: HPBar 1 (3)
+  m_Name: HPBar 4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4266,7 +4266,7 @@ GameObject:
   - component: {fileID: 1095768185}
   - component: {fileID: 1095768184}
   m_Layer: 5
-  m_Name: HPBar 1 (2)
+  m_Name: HPBar 3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5549,7 +5549,7 @@ GameObject:
   - component: {fileID: 1606122424}
   - component: {fileID: 1606122423}
   m_Layer: 5
-  m_Name: HPBar 1 (1)
+  m_Name: HPBar 2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

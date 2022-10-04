@@ -18,5 +18,5 @@ MonoBehaviour:
   damage: 45
   shootingForce: {x: 100, y: 100, z: 0}
   maxShootingForce: {x: 200, y: 200, z: 0}
-  accuracy: 90
+  accuracy: 100
   shootingDirection: 0

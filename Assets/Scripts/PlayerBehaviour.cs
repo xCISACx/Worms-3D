@@ -10,7 +10,7 @@ using UnityEngine.UI;
 public class PlayerBehaviour : MonoBehaviour
 {
     public string PlayerName;
-    public int playerIndex = 0;
+    public int OriginalPlayerIndex = 0;
 
     enum CurrentPhase
     {
@@ -34,6 +34,8 @@ public class PlayerBehaviour : MonoBehaviour
 
     public int GlobalTeamHP = 0;
     public Image TeamHPBar;
+
+    public bool SelfDestructed;
 
     // Start is called before the first frame update
     void Start()
@@ -69,7 +71,6 @@ public class PlayerBehaviour : MonoBehaviour
     public void SelfDestruct()
     {
         GameManager.Instance.PlayerDiedEvent.Invoke(this);
-        Destroy(gameObject, 2f);
     }
     
     public void UpdateBar()
@@ -88,6 +89,10 @@ public class PlayerBehaviour : MonoBehaviour
         GlobalTeamHP /= GameManager.Instance.NumberOfStartingUnits;
 
         TeamHPBar.fillAmount = Mathf.InverseLerp(0, 100, GlobalTeamHP);
+    }
 
+    private void OnDestroy()
+    {
+        Debug.Log(gameObject.name + " died");
     }
 }

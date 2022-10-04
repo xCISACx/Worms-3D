@@ -16,33 +16,20 @@ public class ProjectileBehaviour : MonoBehaviour
     [SerializeField] private TerrainDamageConfig TerrainDamageConfig;
     [SerializeField] private bool spawnedExplosion = false;
 
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     private void OnTriggerEnter(Collider other)
     {
+        var unit = other.GetComponent<UnitBehaviour>();
+                
+        if (unit)
+        {
+            unit.beingKnockedBack = true;
+            Debug.LogWarning("set being knocked back to true");
+        }
+        
         if (other.gameObject.CompareTag("Environment") || other.gameObject.CompareTag("Wall"))
         {
             origin = other.gameObject.GetComponent<Collider>().ClosestPointOnBounds(transform.position);
-            
-            var unit = other.GetComponent<UnitBehaviour>();
-                
-            if (unit)
-            {
-                unit.beingKnockedBack = true;
-                Debug.Log("being knocked back");
-            }
-            
+
             if (explosive && !spawnedExplosion)
             {
                 Instantiate(ExplosionPrefab, origin, Quaternion.identity);
@@ -56,21 +43,12 @@ public class ProjectileBehaviour : MonoBehaviour
             else
             {
                 Destroy(gameObject);
-                //TODO: Destroy environment?
             }
         }
 
         if (other.gameObject.CompareTag("Ground"))
         {
             origin = other.gameObject.GetComponent<Collider>().ClosestPointOnBounds(transform.position);
-            
-            var unit = other.GetComponent<UnitBehaviour>();
-                
-            if (unit)
-            {
-                unit.beingKnockedBack = true;
-                Debug.Log("being knocked back");
-            }
 
             if (explosive && !spawnedExplosion)
             {
@@ -91,7 +69,6 @@ public class ProjectileBehaviour : MonoBehaviour
             else
             {
                 Destroy(gameObject);
-                //TODO: Destroy environment?
             }
         }
         
@@ -101,15 +78,7 @@ public class ProjectileBehaviour : MonoBehaviour
             GameManager.Instance.firstPersonCamera.LookAt = other.transform;
             
             origin = other.gameObject.GetComponent<Collider>().ClosestPointOnBounds(transform.position);
-            
-            var unit = other.GetComponent<UnitBehaviour>();
-                
-            if (unit)
-            {
-                unit.beingKnockedBack = true;
-                Debug.Log("being knocked back");
-            }
-            
+
             if (explosive && !spawnedExplosion)
             {
                 Instantiate(ExplosionPrefab, origin, Quaternion.identity);
@@ -131,6 +100,7 @@ public class ProjectileBehaviour : MonoBehaviour
     private void ApplySplashDamage(Vector3 pos)
     {
         Debug.Log("Applying Splash Damage");
+        
         Collider[] colliders = Physics.OverlapSphere(pos, explosionRadius, layerMask);
 
         foreach (Collider collider in colliders)
@@ -148,6 +118,7 @@ public class ProjectileBehaviour : MonoBehaviour
     private void ApplyKnockback(Vector3 pos)
     {
         Debug.Log("Applying Knockback");
+        
         Collider[] colliders = Physics.OverlapSphere(pos, explosionRadius, layerMask);
 
         foreach (Collider collider in colliders)
@@ -161,6 +132,10 @@ public class ProjectileBehaviour : MonoBehaviour
                 rb.isKinematic = false;
                 Debug.Log("setting kinematic to false knockback");
                 rb.AddExplosionForce(explosionForce, transform.position, explosionRadius, upwardsModifier);
+                if (unit)
+                {
+                    unit.TimeSpentGrounded = 0;   
+                }
                 Debug.Log("adding explosion force");
             }
         }

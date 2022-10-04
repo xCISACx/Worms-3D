@@ -5590,6 +5590,7 @@ MonoBehaviour:
   prefs: {fileID: 11400000, guid: 4451aaddac13b404baf6e8d88a29eb39, type: 2}
   NumberOfStartingUnits: 1
   AlivePlayers: []
+  DeadPlayers: []
   UIReferences: {fileID: 0}
   matchStarted: 0
   initDone: 0
@@ -5609,7 +5610,7 @@ MonoBehaviour:
   SFXSource: {fileID: 593114255}
   MenuManager: {fileID: 0}
   SettingsPopup: {fileID: 0}
-  fallDamageTreshold: 30
+  fallDamageTreshold: 8
   SetCurrentPlayerEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -5625,6 +5626,7 @@ MonoBehaviour:
   ShotFiredEvent:
     m_PersistentCalls:
       m_Calls: []
+  PlayerQueue: []
 --- !u!4 &698354960
 Transform:
   m_ObjectHideFlags: 0

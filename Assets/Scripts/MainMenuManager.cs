@@ -42,8 +42,10 @@ public class MainMenuManager : MonoBehaviour
             var newPlayer = Instantiate(PlayerPrefab, new Vector3(0, 0, 0), Quaternion.identity);
             newPlayer.name = "Player " + (i + 1);
             var playerScript = newPlayer.GetComponent<PlayerBehaviour>();
+            playerScript.OriginalPlayerIndex = i;
             
             GameManager.Instance.playerList.Add(newPlayer.GetComponent<PlayerBehaviour>());
+            GameManager.Instance.PlayerQueue.Add(newPlayer.GetComponent<PlayerBehaviour>());
 
             for (int j = 0; j < numberOfPlayerUnits; j++)
             {

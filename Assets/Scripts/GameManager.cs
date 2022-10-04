@@ -20,6 +20,7 @@ public class GameManager : MonoBehaviour
     public Prefs prefs;
     public int NumberOfStartingUnits = 1;
     public List<PlayerBehaviour> AlivePlayers;
+    public List<PlayerBehaviour> DeadPlayers;
     public UIReferences UIReferences;
     public bool matchStarted = false;
     public bool initDone = false;
@@ -46,6 +47,10 @@ public class GameManager : MonoBehaviour
     public UnityEvent<PlayerBehaviour> PlayerDiedEvent = new UnityEvent<PlayerBehaviour>();
     public UnityEvent NextTurnEvent = new UnityEvent();
     public UnityEvent ShotFiredEvent = new UnityEvent();
+
+    public List<PlayerBehaviour> PlayerQueue = new List<PlayerBehaviour>();
+
+    private Coroutine _turnEndCoroutine = null;
 
     private void Awake()
     {
@@ -76,7 +81,7 @@ public class GameManager : MonoBehaviour
 
     private void LoadPrefs()
     {
-        Debug.Log("LOADING PREFERENCES...");
+        //Debug.Log("LOADING PREFERENCES...");
         
         prefs = Resources.Load<Prefs>("Prefs");
         
@@ -130,7 +135,7 @@ public class GameManager : MonoBehaviour
                 turnTimer -= Time.deltaTime;
             }
 
-            if (turnTimer <= 0f)
+            if (turnTimer <= 0f && !isTurnStarting)
             {
                 StartNextTurn();
             }
@@ -157,11 +162,11 @@ public class GameManager : MonoBehaviour
                 }   
             }
             
-            if (!gameOver && (!mainCamera.Follow || !mainCamera.LookAt) && (_currentPlayer.currentUnit.transform))
+            /*if (!gameOver && (!mainCamera.Follow || !mainCamera.LookAt) && (_currentPlayer.currentUnit.transform))
             {
                 mainCamera.Follow = _currentPlayer.currentUnit.transform;
                 mainCamera.LookAt = _currentPlayer.currentUnit.transform;
-            }
+            }*/
         }
     }
     
@@ -171,12 +176,14 @@ public class GameManager : MonoBehaviour
         
         startTurnTimer = false;
         
-        Debug.Log("waiting for turn to end");
+        //Debug.LogWarning("waiting for turn to end coroutine 5");
         
         //_currentPlayer.currentUnit.canAct = false;
 
         yield return new WaitForSeconds(3);
 
+        //Debug.LogWarning("3 seconds passed 6");
+        CheckForDeadPlayers();
         NextTurn();
     }
 
@@ -190,7 +197,7 @@ public class GameManager : MonoBehaviour
         {
             ResetGame();
             
-            Debug.Log("setting game over to false");
+            //Debug.Log("setting game over to false");
             SceneManager.LoadScene(0);
         }
     }
@@ -289,11 +296,11 @@ public class GameManager : MonoBehaviour
             
             _currentPlayer.currentUnit.GetComponent<Rigidbody>().isKinematic = false;
 
-            Debug.Log("setting kinematic to false pick");
+            //Debug.Log("setting kinematic to false pick");
 
             turnTimer = defaultTurnTime;
             
-            startTurnTimer = true;    
+            startTurnTimer = true;
         }
     }
     
@@ -346,7 +353,7 @@ public class GameManager : MonoBehaviour
         /*UIReferences = FindObjectOfType<UIReferences>();
         UIReferences.WinCanvas.SetActive(false);*/
         
-        UIReferences.currentPlayerText.text = "Current Player: " + (currentPlayerIndex + 1);
+        UIReferences.currentPlayerText.text = "Current Player: " + (_currentPlayer.OriginalPlayerIndex + 1);
         
         UIReferences.currentUnitText.text = "Current Unit: " + (_currentPlayer.currentUnitIndex + 1);
     }
@@ -364,41 +371,114 @@ public class GameManager : MonoBehaviour
 
     private void OnPlayerDied(PlayerBehaviour player)
     {
-        playerList.Remove(player);
-
-        var barToDestroy = UIReferences.GlobalHPBarParent.HPBars[currentPlayerIndex];
+        Debug.LogWarning(player, player);
         
-        UIReferences.GlobalHPBarParent.HPBars.RemoveAt(currentPlayerIndex);
+        var barToDestroy = player.TeamHPBar.gameObject;
+        
+        //Debug.Log(barToDestroy.name);
+
+        UIReferences.GlobalHPBarParent.HPBars.Remove(player.TeamHPBar);
         
         Destroy(barToDestroy.gameObject);
         
-        if (playerList.Count > 0)
+        //Debug.Log("Destroyed bar " + barToDestroy.name + " belonging to player " + (currentPlayerIndex + 1));
+        
+        AlivePlayers.Remove(player);
+            
+        Debug.Log("removing from alive players " + player);
+        
+        playerList.Remove(player);
+
+        Debug.Log("Removed from player list " + player);
+        
+        PlayerQueue.Remove(player);
+        
+        Debug.LogWarning("Removed from player queue " + player);
+        
+        Destroy(player.gameObject);
+
+        /*if (playerList.Count > 0)
         {
             NextPlayer();
-        }
+        }*/
         
-        _currentPlayer.currentUnit = _currentPlayer.unitList[0];
+        //_currentPlayer.currentUnit = _currentPlayer.unitList[0];
+        
+        //SetCurrentUnitEvent.Invoke(_currentPlayer.currentUnit);
     }
 
     public void StartNextTurn()
     {
+        //Debug.LogWarning("starting next turn flag 1 " + isTurnStarting);
+        
         if (!isTurnStarting)
         {
-            StartCoroutine(WaitForTurnToEnd());
+            //Debug.LogWarning("start next turn if 2 " + isTurnStarting);
+            
+            _turnEndCoroutine = StartCoroutine(WaitForTurnToEnd());
+            
+            //Debug.LogWarning("coroutine called if 3 " + isTurnStarting);
             
             isTurnStarting = true;
         }
+        else
+        {
+            //Debug.LogWarning("start next turn else 4 " + isTurnStarting);
+            
+            //StopCoroutine(_turnEndCoroutine);
+        }
+    }
+
+    public void CheckForDeadPlayers()
+    {
+        foreach (var player in playerList)
+        {
+            if (player.unitList.Count == 0) //If this was the current player's last unit
+            { 
+                DeadPlayers.Add(player);
+            }
+        }
+
+        foreach (var player in DeadPlayers)
+        {
+            if (player)
+            {
+                player.SelfDestruct(); //OnPlayerDied
+            }
+        }
+        
+        DeadPlayers.Clear();
     }
 
     public void NextTurn()
     {
+        Debug.Log("starting next turn");
+        
         InitTurn();
         
+        // Add the previous player to the end of the queue as they just finished their turn
+        
+        PlayerQueue.Add(_currentPlayer);
+        
+        // This shouldn't be necessary but the SelfDestruct fails to remove from the PlayerQueue
+
+        for (int i = 0; i < PlayerQueue.Count; i++)
+        {
+            var player = PlayerQueue[i];
+
+            if (player == null)
+            {
+                PlayerQueue.RemoveAt(i);
+            }
+        }
+
         NextPlayer();
         
+        CheckForDeadPlayers();
+
         SetCurrentPlayerValues();
 
-        MakeAllUnitsKinematic();
+        //MakeAllUnitsKinematic();
 
         if (_currentPlayer.unitList.Count > 0)
         {
@@ -418,6 +498,8 @@ public class GameManager : MonoBehaviour
 
             //_currentPlayer.currentUnit.SetHighlight();
         }
+        
+        InitUI();
 
         //Debug.Log(_currentPlayer);
     }
@@ -429,7 +511,12 @@ public class GameManager : MonoBehaviour
             unitList[i].GetComponent<Rigidbody>().isKinematic = true;
         }
         
-        Debug.Log("setting all to kinematic");
+        //Debug.Log("setting all to kinematic");
+    }
+
+    public void SetSelfDestructed(bool selfDestructed)
+    {
+        _currentPlayer.SelfDestructed = selfDestructed;
     }
 
     public void SetCurrentPlayerValues()
@@ -480,7 +567,7 @@ public class GameManager : MonoBehaviour
 
     public void InitTurn()
     {
-        Debug.Log("next turn");
+        //Debug.LogWarning("next turn init turn");
 
         _currentPlayer.canChangeTurn = false;
         
@@ -513,21 +600,30 @@ public class GameManager : MonoBehaviour
 
     public void NextPlayer()
     {
-        currentPlayerIndex++;
+        Debug.LogWarning("switching from player " + (currentPlayerIndex + 1) + " index: " + currentPlayerIndex);
+
+        if (!_currentPlayer.SelfDestructed)
+        {
+            PlayerQueue.RemoveAt(0);
+        }
+
+        _currentPlayer = PlayerQueue[0];
         
+        /*currentPlayerIndex++;
+
         currentPlayerIndex %= playerList.Count;
 
-        _currentPlayer = playerList[currentPlayerIndex];
+        _currentPlayer = playerList[currentPlayerIndex];*/
         
         SetCurrentPlayerEvent.Invoke(_currentPlayer);
+        
+        Debug.LogWarning("to player " + (currentPlayerIndex + 1) + " index: " + currentPlayerIndex);
 
         _currentPlayer.currentUnit.highlighted = true;
 
-        UIReferences.currentPlayerText.text = "Current Player: " + (currentPlayerIndex + 1);
+        InitUI();
         
-        UIReferences.currentUnitText.text = "Current Unit: " + (_currentPlayer.currentUnitIndex + 1);
-        
-        Debug.Log("Switching to player" + (currentPlayerIndex + 1));
+        Debug.LogWarning("UI Switching from player " + (_currentPlayer.OriginalPlayerIndex - 1) + " to player" + (_currentPlayer.OriginalPlayerIndex + 1));
     }
 
     public void InitCurrentPlayer()
@@ -546,9 +642,7 @@ public class GameManager : MonoBehaviour
         
         SetCurrentPlayerEvent.Invoke(_currentPlayer);
         
-        UIReferences.currentPlayerText.text = "Current Player: " + (currentPlayerIndex + 1);
-        
-        UIReferences.currentUnitText.text = "Current Unit: " + (_currentPlayer.currentUnitIndex + 1);
+        InitUI();
         
         Debug.Log("Switching to player" + (currentPlayerIndex + 1));
     }
