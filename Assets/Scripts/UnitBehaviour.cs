@@ -574,7 +574,7 @@ public class UnitBehaviour : MonoBehaviour
 
             if (canTakeFallDamage && fallDamageToTake >= GameManager.Instance.fallDamageTreshold)
             {
-                TakeDamage((int) (fallDamageToTake - GameManager.Instance.fallDamageTreshold));
+                TakeDamage(Mathf.FloorToInt(fallDamageToTake - GameManager.Instance.fallDamageTreshold));
 
                 GameManager.Instance.StartNextTurn();
             }

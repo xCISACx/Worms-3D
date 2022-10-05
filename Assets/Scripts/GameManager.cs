@@ -276,6 +276,8 @@ public class GameManager : MonoBehaviour
     {
         if (!_currentPlayer.roundUnitPicked)
         {
+            _currentPlayer.canChangeTurn = true;
+            
             _currentPlayer.currentUnit.highlighted = false;
             
             _currentPlayer.unitPickedFlag = true;

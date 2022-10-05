@@ -114,7 +114,7 @@ public class MainMenuManager : MonoBehaviour
         
         var xPos = UnityEngine.Random.Range(-27f, 27f);
         var zPos = UnityEngine.Random.Range(-27f, 27f);
-        var yPos = UnityEngine.Random.Range(0f, 10f);
+        var yPos = UnityEngine.Random.Range(0f, 50f);
 
         Vector3 spawnPoint = new Vector3(xPos, yPos, zPos);
 
@@ -124,9 +124,9 @@ public class MainMenuManager : MonoBehaviour
         
         var closestPointToCollider = Vector3.zero;
 
-        foreach (var collider in map.GetComponentsInChildren<MeshCollider>())
+        foreach (var collider in map.GetComponentsInChildren<Collider>())
         {
-            if (collider.convex)
+            if (collider.isTrigger)
             {
                 var closestPointToPosition = collider.ClosestPoint(spawnPoint);
             
@@ -136,7 +136,7 @@ public class MainMenuManager : MonoBehaviour
                 
                     closestPointToCollider = closestPointToPosition;
                     
-                    closestPointToCollider.y += 1.5f;
+                    closestPointToCollider.y += 1f;
                     
                     Debug.Log(closestPointToCollider);
                 }   
