@@ -154,7 +154,7 @@ public class MainMenuManager : MonoBehaviour
         GameManager.Instance.gameOver = false;
         GameManager.Instance.matchStarted = false;
         
-        PlayerColours = new string[1];
+        PlayerColours = new string[2];
         
         for (int i = 0; i < numberOfPlayers; i++)
         {
@@ -186,8 +186,8 @@ public class MainMenuManager : MonoBehaviour
     }
     public void SetNumberOfPlayers(int num)
     {
-        numberOfPlayers = num + 1;
-        PlayerColours = new string[num + 1];
+        numberOfPlayers = num + 2;
+        PlayerColours = new string[num + 2];
         
         //Add or remove colour selection containers according to number of players
         

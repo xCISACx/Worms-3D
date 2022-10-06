@@ -72,6 +72,8 @@ public class UnitBehaviour : MonoBehaviour
     
     [SerializeField] float movementSpeed;
     [SerializeField] float airMovementSpeed;
+
+    [SerializeField] private float turnRate;
     
     [Header("Ground Check")]
     
@@ -105,6 +107,7 @@ public class UnitBehaviour : MonoBehaviour
     [SerializeField] public bool canTakeDamage;
     [SerializeField] public bool canTakeFallDamage;
     [SerializeField] private float fallDamageToTake;
+    [SerializeField] private float fallHeight;
     [SerializeField] private bool countFallDamage = false;
     [SerializeField] public float TimeSpentGrounded;
 
@@ -118,6 +121,7 @@ public class UnitBehaviour : MonoBehaviour
     private RaycastHit slopeHit;
     [SerializeField] private LayerMask SlopeMask;
     [SerializeField] private float fallMultiplier = 4f;
+    [SerializeField] private bool wasGrounded;
 
     // Start is called before the first frame update
     void Start()
@@ -166,8 +170,6 @@ public class UnitBehaviour : MonoBehaviour
             SelectionArrow.SetActive(highlighted);   
         }
 
-        grounded = Physics.CheckSphere(transform.position - new Vector3(0, groundCheckDistance, 0), groundCheckRadius, GroundLayerMask);
-        
         //Collider[] hitColliders = Physics.OverlapSphere(transform.position - new Vector3(0, groundCheckDistance, 0), groundCheckRadius, GroundLayerMask);
         //if (hitColliders[0].
         // check grounded normal to check if the touched object is not a wall
@@ -180,6 +182,8 @@ public class UnitBehaviour : MonoBehaviour
     {
         if (GameManager.Instance.matchStarted)
         {
+            grounded = Physics.CheckSphere(transform.position - new Vector3(0, groundCheckDistance, 0), groundCheckRadius, GroundLayerMask);
+            
             if (shotsFiredDuringRound >= 1)
             {
                 canSwitchWeapon = false;
@@ -192,23 +196,27 @@ public class UnitBehaviour : MonoBehaviour
                 rigidbody.velocity += Vector3.up * Physics.gravity.y * fallMultiplier * Time.deltaTime;
             }
             
-            // Add the forward force to regular and double jumping, but not high jumping
+            // TODO: Add the forward force to regular and double jumping, but not high jumping
 
-            if (!grounded && jumping && !highJumping)
+            if (!grounded && jumping || highJumping)
             {
                 rigidbody.AddForce(transform.forward * forwardJumpForce);
             }
 
-            if (!grounded && rigidbody.velocity.y < 0f)
+            if (!grounded && Mathf.Abs(rigidbody.velocity.y) <= 0.5f)
             {
-                countFallDamage = true;
+                //countFallDamage = true;
                 
+                fallHeight = transform.position.y;
+                
+                Debug.Log("fall height: " + fallHeight);
+
                 //Debug.Log(rigidbody.velocity);
                 
-                if (countFallDamage)
+                /*if (countFallDamage)
                 {
                     fallDamageToTake += 0.3f;
-                }
+                }*/
             }
         }
 
@@ -343,7 +351,7 @@ public class UnitBehaviour : MonoBehaviour
             
             Quaternion targetRotation = Quaternion.Euler(transform.rotation.x, targetAngle, transform.rotation.z);
             
-            transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * 5f);
+            transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * turnRate);
         }
     }
 
@@ -396,17 +404,17 @@ public class UnitBehaviour : MonoBehaviour
                     //rigidbody.AddForce(Vector3.up * jumpForce + transform.forward * (forwardJumpForce), ForceMode.Impulse);
                     rigidbody.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
                     jumping = true;
-                    //Debug.Log("jumping");
+                    Debug.Log("jumping");
                     break;
                 case 1:
                     rigidbody.AddForce(Vector3.up * doubleJumpForce, ForceMode.Impulse);
                     jumping = true;
-                    //Debug.Log("double jumping");
+                    Debug.Log("double jumping");
                     break;
                 case 2:
                     rigidbody.AddForce(Vector3.up * highJumpForce, ForceMode.Impulse);
                     highJumping = true;
-                    //Debug.Log("high jumping");
+                    Debug.Log("high jumping");
                     break;
             }
 
@@ -417,38 +425,16 @@ public class UnitBehaviour : MonoBehaviour
         }
         //rigidbody.velocity += new Vector3(rigidbody.velocity.x, jumpForce, rigidbody.velocity.z);
     }
-    
-    public void DoubleJump()
-    {
-        if (grounded)
-        {
-            rigidbody.AddForce(Vector3.up * (jumpForce * 2) + transform.forward * (jumpForce / 2), ForceMode.Impulse);
-            //rigidbody.velocity = new Vector3(rigidbody.velocity.x, jumpForce * 2, rigidbody.velocity.z);
-            
-            WallCollider.SetActive(true);
-            grounded = false;
-        }
-        //rigidbody.velocity += new Vector3(rigidbody.velocity.x, jumpForce, rigidbody.velocity.z);
-    }
-
-    public void HighJump()
-    {
-        if (grounded)
-        {
-            rigidbody.AddForce(Vector3.up * (jumpForce * 2), ForceMode.Impulse);
-            //rigidbody.velocity = new Vector3(rigidbody.velocity.x, jumpForce * 2, rigidbody.velocity.z);
-            
-            WallCollider.SetActive(true);
-            grounded = false;
-        }
-    }
 
     public void TakeDamage(int damage)
     {
         //Debug.Log("take damage " + damage);
         CurrentHealth -= damage;
+        
         CurrentHealth = Mathf.Clamp(CurrentHealth, 0, 100);
+        
         canTakeDamage = false;
+        
         HealthText.text = CurrentHealth.ToString();
         
         if (Player.TeamHPBar)
@@ -466,9 +452,6 @@ public class UnitBehaviour : MonoBehaviour
 
     public void Die()
     {
-        //todo: not triggering when checking for count > 1, only count > 0
-        //todo: this is causing the game to skip a player when the current unit kills itself, going from player 1 to player 3
-
         if (GameManager.Instance._currentPlayer == Player && Player.currentUnit == this && Player.unitList.Count > 0)
         {
             Debug.LogWarning("unit killed itself");
@@ -533,7 +516,9 @@ public class UnitBehaviour : MonoBehaviour
             newWeaponParentObject.transform.rotation);
 
         weaponScript.shootPoint.position = newWeapon.GetComponent<ModelProperties>().ShootPoint.position;
+        
         weaponScript.lineRenderer.transform.position = weaponScript.shootPoint.position;
+        
         weaponScript.FPSCamera.transform.position = weaponScript.shootPoint.position;
         
         //weaponScript.user.GetComponent<UnitBehaviour>().FPSTarget = weaponScript.shootPoint;
@@ -572,12 +557,19 @@ public class UnitBehaviour : MonoBehaviour
 
             //Debug.Log("setting kinematic to true ground");
 
-            if (canTakeFallDamage && fallDamageToTake >= GameManager.Instance.fallDamageTreshold)
+            var landHeight = transform.position.y;
+            
+            var heightFallen = MathF.Abs(fallHeight - landHeight);
+
+            if (!grounded && canTakeFallDamage && heightFallen >= GameManager.Instance.fallDamageTreshold)
             {
-                TakeDamage(Mathf.FloorToInt(fallDamageToTake - GameManager.Instance.fallDamageTreshold));
+                Debug.Log("Taking fall damage");
+                
+                TakeDamage(Mathf.FloorToInt(heightFallen - GameManager.Instance.fallDamageTreshold));
 
                 GameManager.Instance.StartNextTurn();
             }
+            
             fallDamageToTake = 0;
 
             if (beingKnockedBack && TimeSpentGrounded > 1f)
