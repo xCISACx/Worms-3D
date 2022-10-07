@@ -193,7 +193,7 @@ public class GameManager : MonoBehaviour
         UIReferences.WinCanvas.SetActive(true);
         UIReferences.WinCanvasText.text = AlivePlayers[0].name + " WINS!";
 
-        if (Input.GetKeyDown(KeyCode.F))
+        if (InputManager.Instance.PlayerControls.Player.ResetGame.triggered)
         {
             ResetGame();
             

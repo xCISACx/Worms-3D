@@ -87,6 +87,15 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "ResetGame",
+                    "type": "Button",
+                    "id": "fdfe428e-cb6a-4718-839a-a3adc1e499a9",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "Jump",
                     "type": "Button",
                     "id": "41631dfb-4baf-470e-9c9d-2194c420f898",
@@ -581,6 +590,17 @@
                     "processors": "",
                     "groups": "Gamepad",
                     "action": "HighJump",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "de0c9308-c15c-461c-b188-a9d861d2e7bd",
+                    "path": "<Keyboard>/r",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "ResetGame",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
