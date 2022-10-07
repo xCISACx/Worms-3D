@@ -208,7 +208,7 @@ public class GameManager : MonoBehaviour
         UIReferences.WinCanvas.SetActive(true);
         UIReferences.WinCanvasText.text = "It's a tie!";
 
-        if (Input.GetKeyDown(KeyCode.F))
+        if (InputManager.Instance.PlayerControls.Player.ResetGame.triggered)
         {
             ResetGame();
             SceneManager.LoadScene(0);
