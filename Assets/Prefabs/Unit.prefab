@@ -1433,9 +1433,9 @@ MonoBehaviour:
   MaxHealth: 100
   CurrentHealth: 100
   _jumpForce: 8
-  _doubleJumpForce: 12
-  _highJumpForce: 12
-  _forwardJumpForce: 10
+  _doubleJumpForce: 10
+  _highJumpForce: 10
+  _forwardJumpForce: 200
   ShotsFiredDuringRound: 0
   _camera: {fileID: 0}
   _healthText: {fileID: 9213076887394555852}

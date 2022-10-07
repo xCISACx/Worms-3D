@@ -58,8 +58,11 @@ public class ProjectileBehaviour : MonoBehaviour
 
                 var origin = transform.position;
 
-                other.gameObject.GetComponent<TerrainBehaviour>().DestroyTerrain(origin, ExplosionRadius);
-                
+                if (other.gameObject.GetComponent<TerrainBehaviour>())
+                {
+                    other.gameObject.GetComponent<TerrainBehaviour>().DestroyTerrain(origin, ExplosionRadius);
+                }
+
                 _spawnedExplosion = true;
                 Destroy(gameObject);
             }
