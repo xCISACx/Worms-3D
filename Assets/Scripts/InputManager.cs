@@ -13,7 +13,7 @@ public class InputManager : MonoBehaviour
     
     [SerializeField] public Worms3D PlayerControls;
     
-    private bool controlsInitialised;
+    private bool _controlsInitialised;
     
     private void Awake()
     {
@@ -49,16 +49,16 @@ public class InputManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (GameManager.Instance.matchStarted)
+        if (GameManager.Instance.MatchStarted)
         {
-            if (!controlsInitialised)
+            if (!_controlsInitialised)
             {
                 InitControls();
             }
 
-            if (_currentPlayer && _currentUnit &&  _currentPlayer.roundUnitPicked)
+            if (_currentPlayer && _currentUnit &&  _currentPlayer.RoundUnitPicked)
             {
-                _currentUnit.movementValue = PlayerControls.Player.Move.ReadValue<Vector2>();
+                _currentUnit.MovementValue = PlayerControls.Player.Move.ReadValue<Vector2>();
                 
                 _currentUnit.Move();
                 
@@ -66,12 +66,12 @@ public class InputManager : MonoBehaviour
                 
                 _currentUnit.RotateWithMovement();
 
-                if (_currentPlayer.turnStarted)
+                if (_currentPlayer.TurnStarted)
                 {
                     _currentUnit.InitTurn();
                 }
             
-                if (_currentPlayer.unitPickedFlag)
+                if (_currentPlayer.UnitPickedFlag)
                 {
                     _currentUnit.InitUnit();
                 }
@@ -79,9 +79,9 @@ public class InputManager : MonoBehaviour
 
             // Had to use Update for inputs that require holding since they can't be hooked up on Awake()
                     
-            if (PlayerControls.Player.AimWeaponLock.inProgress && _currentUnit.currentWeaponObject)
+            if (PlayerControls.Player.AimWeaponLock.inProgress && _currentUnit.CurrentWeaponObject)
             {
-                GameManager.Instance.firstPersonCamera = _currentUnit.currentWeaponObject.GetComponent<WeaponBehaviour>().FPSCamera;
+                GameManager.Instance.FirstPersonCamera = _currentUnit.CurrentWeaponObject.GetComponent<WeaponBehaviour>().FPSCamera;
                 
                 MakeUnitAim();
             }
@@ -90,18 +90,18 @@ public class InputManager : MonoBehaviour
                 MakeUnitStopAiming();
             }
             
-            if (PlayerControls.Player.EquipWeapon.triggered && _currentUnit.currentWeaponSelected && !_currentUnit.currentWeaponObject)
+            if (PlayerControls.Player.EquipWeapon.triggered && _currentUnit.CurrentWeaponSelected && !_currentUnit.CurrentWeaponObject)
             {
                 _currentUnit.EquipWeapon();
             }
 
-            if (PlayerControls.Player.ChangeWeapon.triggered && _currentUnit.canSwitchWeapon)
+            if (PlayerControls.Player.ChangeWeapon.triggered && _currentUnit.CanSwitchWeapon)
             {
-                _currentUnit.selectedWeaponIndex++;
+                _currentUnit.SelectedWeaponIndex++;
                 
-                _currentUnit.selectedWeaponIndex = _currentUnit.selectedWeaponIndex % _currentPlayer.WeaponInventory.Count;
+                _currentUnit.SelectedWeaponIndex = _currentUnit.SelectedWeaponIndex % _currentPlayer.WeaponInventory.Count;
                 
-                _currentUnit.selectedWeapon = _currentPlayer.WeaponInventory[_currentUnit.selectedWeaponIndex];
+                _currentUnit.SelectedWeapon = _currentPlayer.WeaponInventory[_currentUnit.SelectedWeaponIndex];
                 
                 _currentUnit.EquipWeapon();
             }
@@ -122,7 +122,7 @@ public class InputManager : MonoBehaviour
         
         PlayerControls.Player.ChangeTurn.started += ChangeTurn;
 
-        controlsInitialised = true;
+        _controlsInitialised = true;
     }
 
     void MakeUnitJump(InputAction.CallbackContext ctx)
@@ -162,7 +162,7 @@ public class InputManager : MonoBehaviour
 
     void ChangeTurn(InputAction.CallbackContext ctx)
     {
-        if (_currentPlayer.canChangeTurn)
+        if (_currentPlayer.CanChangeTurn)
         {
             GameManager.Instance.NextTurn();   
         }

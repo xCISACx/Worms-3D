@@ -6,17 +6,17 @@ using UnityEngine;
 public class Prefs : ScriptableObject
 {
     [Header("Audio")] 
-    public float masterValue;
-    public float masterVolume;
-    public float musicValue;
-    public float musicVolume;
-    public float sfxValue;
-    public float sfxVolume;
+    public float MasterValue;
+    public float MasterVolume;
+    public float MusicValue;
+    public float MusicVolume;
+    public float SfxValue;
+    public float SfxVolume;
 
     [Header("Graphics")] 
-    public int resolutionIndex;
-    public int resolutionW;
-    public int resolutionH;
-    public bool fullscreen;
-    public FullScreenMode fullScreenMode;
+    public int ResolutionIndex;
+    public int ResolutionW;
+    public int ResolutionH;
+    public bool Fullscreen;
+    public FullScreenMode FullScreenMode;
 }

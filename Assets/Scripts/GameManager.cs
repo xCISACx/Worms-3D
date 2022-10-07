@@ -9,15 +9,15 @@ using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
-    public Prefs prefs;
+    public Prefs Prefs;
     public int NumberOfStartingUnits = 1;
     
     [Header("Player Lists")]
     
-    public List<PlayerBehaviour> playerList;
+    public List<PlayerBehaviour> PlayerList;
     public List<PlayerBehaviour> PlayerQueue = new List<PlayerBehaviour>();
     public List<PlayerBehaviour> AlivePlayers;
-    public List<UnitBehaviour> unitList;
+    public List<UnitBehaviour> UnitList;
     
     [Header("References")]
     
@@ -25,15 +25,15 @@ public class GameManager : MonoBehaviour
     
     public UIReferences UIReferences;
     
-    public CinemachineFreeLook mainCamera;
-    public CinemachineVirtualCamera firstPersonCamera;
+    public CinemachineFreeLook MainCamera;
+    public CinemachineVirtualCamera FirstPersonCamera;
     
-    public PlayerBehaviour _currentPlayer;
+    public PlayerBehaviour CurrentPlayer;
 
     public AudioMixer AudioMixer;
     
     public AudioSource MusicSource;
-    public AudioSource SFXSource;
+    public AudioSource SfxSource;
 
     [SerializeField] public WaterBehaviour Water;
     
@@ -42,28 +42,28 @@ public class GameManager : MonoBehaviour
     
     [Header("Conditions")]
     
-    public bool initDone = false;
+    public bool InitDone = false;
     
-    public bool matchStarted = false;
-    public bool gameOver = false;
+    public bool MatchStarted = false;
+    public bool GameOver = false;
     
-    public bool startTurnTimer;
-    public bool startEndTurnTimer;
-    public bool isTurnStarting;
+    public bool StartTurnTimer;
+    public bool StartEndTurnTimer;
+    public bool IsTurnStarting;
     
     [Header("Values")]
     
-    public int currentPlayerIndex;
+    public int CurrentPlayerIndex;
     
-    [SerializeField] private int turnNumber = 0;
+    [SerializeField] private int _turnNumber = 0;
     private float _defaultTurnTime = 60f;
     private float _defaultEndTurnTime = 3f;
-    public float _turnTimer = 60f;
+    public float TurnTimer = 60f;
     private float _endTurnTimer = 3f;
     
-    public int playersEliminatedDuringTurn = 0;
+    public int PlayersEliminatedDuringTurn = 0;
     
-    public int fallDamageTreshold;
+    public int FallDamageTreshold;
     
     [Header("Events")]
     
@@ -104,40 +104,40 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!initDone && playerList.Count > 0)
+        if (!InitDone && PlayerList.Count > 0)
         {
             Init();
         }
         
-        if (matchStarted)
+        if (MatchStarted)
         {
-            if (startTurnTimer)
+            if (StartTurnTimer)
             {
-                _turnTimer -= Time.deltaTime;
+                TurnTimer -= Time.deltaTime;
             }
 
-            if (_turnTimer <= 0f && !isTurnStarting)
+            if (TurnTimer <= 0f && !IsTurnStarting)
             {
                 StartNextTurn();
             }
             
-            if (startEndTurnTimer)
+            if (StartEndTurnTimer)
             {
                 _endTurnTimer -= Time.deltaTime;
             }
             
             if (UIReferences)
             {
-                UIReferences.timerText.text = _turnTimer.ToString("F0");
+                UIReferences.TimerText.text = TurnTimer.ToString("F0");
                 UIReferences.EndTurnTimerText.text = _endTurnTimer.ToString("F0");
             }
 
             if (AlivePlayers.Count <= 1)
             {
-                gameOver = true;
+                GameOver = true;
             }
 
-            if (gameOver)
+            if (GameOver)
             {
                 if (AlivePlayers.Count == 1)
                 {
@@ -155,29 +155,30 @@ public class GameManager : MonoBehaviour
     {
         //Debug.Log("LOADING PREFERENCES...");
         
-        prefs = Resources.Load<Prefs>("Prefs");
+        Prefs = Resources.Load<Prefs>("Prefs");
         
-        AudioMixer.SetFloat("masterVolume", prefs.masterVolume);
-        AudioMixer.SetFloat("musicVolume", prefs.musicVolume);
-        AudioMixer.SetFloat("sfxVolume", prefs.sfxVolume);
+        AudioMixer.SetFloat("masterVolume", Prefs.MasterVolume);
+        AudioMixer.SetFloat("musicVolume", Prefs.MusicVolume);
+        AudioMixer.SetFloat("sfxVolume", Prefs.SfxVolume);
         
-        Screen.SetResolution(prefs.resolutionW, prefs.resolutionH, prefs.fullScreenMode);
-        Screen.fullScreen = prefs.fullscreen;
+        Screen.SetResolution(Prefs.ResolutionW, Prefs.ResolutionH, Prefs.FullScreenMode);
+        Screen.fullScreen = Prefs.Fullscreen;
     }
 
     public IEnumerator WaitForTurnToEnd()
     {
-        _currentPlayer.currentUnit.canMove = false;
-        _currentPlayer.currentUnit.canShoot = false;
+        CurrentPlayer.CurrentUnit.CanMove = false;
+        CurrentPlayer.CurrentUnit.CanShoot = false;
         
-        startTurnTimer = false;
+        StartTurnTimer = false;
         
-        startEndTurnTimer = true;
+        StartEndTurnTimer = true;
         
         UIReferences.EndTurnTimerText.gameObject.SetActive(true);
 
         //Debug.Log("waiting for turn to end coroutine 5");
 
+        //yield return new WaitWhile(() => !CurrentPlayer.CurrentUnit.Grounded);
         yield return new WaitForSeconds(_defaultEndTurnTime);
 
         //Debug.LogWarning("3 seconds passed 6");
@@ -187,8 +188,8 @@ public class GameManager : MonoBehaviour
 
     private void Win()
     {
-        FollowCurrentUnit(AlivePlayers[0].currentUnit);
-        _currentPlayer.canPlay = false;
+        FollowCurrentUnit(AlivePlayers[0].CurrentUnit);
+        CurrentPlayer.CanPlay = false;
         UIReferences.WinCanvas.SetActive(true);
         UIReferences.WinCanvasText.text = AlivePlayers[0].name + " WINS!";
 
@@ -203,7 +204,7 @@ public class GameManager : MonoBehaviour
 
     private void Tie()
     {
-        _currentPlayer.canPlay = false;
+        CurrentPlayer.CanPlay = false;
         UIReferences.WinCanvas.SetActive(true);
         UIReferences.WinCanvasText.text = "It's a tie!";
 
@@ -216,22 +217,22 @@ public class GameManager : MonoBehaviour
 
     public void ResetGame()
     {
-        gameOver = false;
-        playersEliminatedDuringTurn = 0;
+        GameOver = false;
+        PlayersEliminatedDuringTurn = 0;
         
         StopAllCoroutines();
             
-        playerList.Clear();
-        unitList.Clear();
+        PlayerList.Clear();
+        UnitList.Clear();
         AlivePlayers.Clear();
         PlayerQueue.Clear();
             
-        initDone = false;
+        InitDone = false;
     }
 
     public void ChangeUnit()
     {
-        if (!_currentPlayer.roundUnitPicked)
+        if (!CurrentPlayer.RoundUnitPicked)
         {
             InitMainCamera();
 
@@ -243,7 +244,7 @@ public class GameManager : MonoBehaviour
 
             //SetUnitValues();
 
-            SetCurrentPlayerEvent.Invoke(_currentPlayer);
+            SetCurrentPlayerEvent.Invoke(CurrentPlayer);
 
             //Debug.Log("new unit: " + _currentPlayer.currentUnit);
             
@@ -255,44 +256,44 @@ public class GameManager : MonoBehaviour
 
     private void ResetUnit()
     {
-        _currentPlayer.currentUnit.highlighted = false;
+        CurrentPlayer.CurrentUnit.Highlighted = false;
         
-        _currentPlayer.currentUnit.canMove = false;
+        CurrentPlayer.CurrentUnit.CanMove = false;
         
-        _currentPlayer.currentUnit.canSwitchWeapon = false;
+        CurrentPlayer.CurrentUnit.CanSwitchWeapon = false;
     }
 
     public void PickUnit()
     {
-        if (!_currentPlayer.roundUnitPicked && !gameOver)
+        if (!CurrentPlayer.RoundUnitPicked && !GameOver)
         {
-            _currentPlayer.canChangeTurn = true;
+            CurrentPlayer.CanChangeTurn = true;
             
-            _currentPlayer.currentUnit.highlighted = false;
+            CurrentPlayer.CurrentUnit.Highlighted = false;
             
-            _currentPlayer.unitPickedFlag = true;
+            CurrentPlayer.UnitPickedFlag = true;
             
-            _currentPlayer.roundUnitPicked = true;
+            CurrentPlayer.RoundUnitPicked = true;
             
-            _currentPlayer.currentUnit.canMove = true;
+            CurrentPlayer.CurrentUnit.CanMove = true;
             
-            _currentPlayer.currentUnit.canTakeDamage = true;
+            CurrentPlayer.CurrentUnit.CanTakeDamage = true;
             
-            _currentPlayer.currentUnit.canTakeFallDamage = true;
+            CurrentPlayer.CurrentUnit.CanTakeFallDamage = true;
             
             //_currentPlayer.currentUnit.canAct = true;
             
-            _currentPlayer.currentUnit.canSwitchWeapon = true;
+            CurrentPlayer.CurrentUnit.CanSwitchWeapon = true;
             
-            SetCurrentUnitEvent.Invoke(_currentPlayer.currentUnit);
+            SetCurrentUnitEvent.Invoke(CurrentPlayer.CurrentUnit);
             
-            _currentPlayer.currentUnit.GetComponent<Rigidbody>().isKinematic = false;
+            CurrentPlayer.CurrentUnit.GetComponent<Rigidbody>().isKinematic = false;
 
             //Debug.Log("setting kinematic to false pick");
 
-            _turnTimer = _defaultTurnTime;
+            TurnTimer = _defaultTurnTime;
             
-            startTurnTimer = true;
+            StartTurnTimer = true;
         }
     }
 
@@ -300,13 +301,13 @@ public class GameManager : MonoBehaviour
 
     void Init()
     {
-        isTurnStarting = false;
+        IsTurnStarting = false;
 
         StopAllCoroutines();
 
         //_turnEndCoroutine = null;
 
-        gameOver = false;
+        GameOver = false;
 
         Cursor.lockState = CursorLockMode.Locked;
         
@@ -314,7 +315,7 @@ public class GameManager : MonoBehaviour
         
         UIReferences.WinCanvas.SetActive(false);
         
-        mainCamera = FindObjectOfType<CinemachineFreeLook>();
+        MainCamera = FindObjectOfType<CinemachineFreeLook>();
 
         Water = FindObjectOfType<WaterBehaviour>();
 
@@ -334,38 +335,38 @@ public class GameManager : MonoBehaviour
 
         //Debug.Log(_currentPlayer);
         
-        initDone = true;
+        InitDone = true;
     }
 
     private void InitUI()
     {
-        UIReferences.currentPlayerText.text = "Current Player: " + (_currentPlayer.OriginalPlayerIndex + 1);
+        UIReferences.CurrentPlayerText.text = "Current Player: " + (CurrentPlayer.OriginalPlayerIndex + 1);
         
-        UIReferences.currentUnitText.text = "Current Unit: " + (_currentPlayer.currentUnit.originalIndex + 1);
+        UIReferences.CurrentUnitText.text = "Current Unit: " + (CurrentPlayer.CurrentUnit.OriginalIndex + 1);
     }
 
     private void InitMainCamera()
     {
-        mainCamera.Follow = _currentPlayer.currentUnit.transform;
-        mainCamera.LookAt = _currentPlayer.currentUnit.transform;
+        MainCamera.Follow = CurrentPlayer.CurrentUnit.transform;
+        MainCamera.LookAt = CurrentPlayer.CurrentUnit.transform;
         
-        mainCamera.m_XAxis.m_InputAxisName = "Mouse X";
-        mainCamera.m_YAxis.m_InputAxisName = "Mouse Y";
+        MainCamera.m_XAxis.m_InputAxisName = "Mouse X";
+        MainCamera.m_YAxis.m_InputAxisName = "Mouse Y";
     }
 
     private void OnPlayerDied(PlayerBehaviour player)
     {
-        playersEliminatedDuringTurn++;
+        PlayersEliminatedDuringTurn++;
         
         Debug.LogWarning(player, player);
         
-        var barToDestroy = player.TeamHPBar.gameObject;
+        var barToDestroy = player.TeamHpBar.gameObject;
 
         var playerToDestroy = player;
         
         //Debug.Log(barToDestroy.name);
 
-        UIReferences.GlobalHPBarParent.HPBars.Remove(player.TeamHPBar);
+        UIReferences.GlobalHpBarParent.HpBars.Remove(player.TeamHpBar);
         
         Destroy(barToDestroy.gameObject);
         
@@ -375,7 +376,7 @@ public class GameManager : MonoBehaviour
             
         Debug.Log("removing from alive players " + playerToDestroy);
         
-        playerList.Remove(playerToDestroy);
+        PlayerList.Remove(playerToDestroy);
 
         Debug.Log("Removed from player list " + playerToDestroy);
 
@@ -390,21 +391,21 @@ public class GameManager : MonoBehaviour
 
     public void StartNextTurn()
     {
-        Debug.LogWarning("starting next turn flag 1 " + isTurnStarting);
+        Debug.Log("starting next turn flag 1 " + IsTurnStarting);
         
-        if (!isTurnStarting)
+        if (!IsTurnStarting)
         {
-            Debug.LogWarning("start next turn if 2 " + isTurnStarting);
+            Debug.Log("start next turn if 2 " + IsTurnStarting);
             
             _turnEndCoroutine = StartCoroutine(WaitForTurnToEnd());
             
-            Debug.LogWarning("coroutine called if 3 " + isTurnStarting);
+            Debug.Log("coroutine called if 3 " + IsTurnStarting);
             
-            isTurnStarting = true;
+            IsTurnStarting = true;
         }
         else
         {
-            Debug.LogWarning("can't start next turn else 4 " + isTurnStarting);
+            Debug.Log("can't start next turn else 4 " + IsTurnStarting);
             
             //StopCoroutine(_turnEndCoroutine);
         }
@@ -412,9 +413,9 @@ public class GameManager : MonoBehaviour
 
     public void NextTurn()
     {
-        if (!gameOver)
+        if (!GameOver)
         {
-            startEndTurnTimer = false;
+            StartEndTurnTimer = false;
             
             _endTurnTimer = _defaultEndTurnTime;
             
@@ -426,12 +427,12 @@ public class GameManager : MonoBehaviour
         
             // Add the previous player to the end of the queue as they just finished their turn, if they are still alive
 
-            if (!_currentPlayer.SelfDestructed)
+            if (!CurrentPlayer.SelfDestructed)
             {
-                PlayerQueue.Add(_currentPlayer);
+                PlayerQueue.Add(CurrentPlayer);
             }
 
-            var previousPlayer = _currentPlayer;
+            var previousPlayer = CurrentPlayer;
         
             // This shouldn't be necessary but the SelfDestruct fails to remove from the PlayerQueue
 
@@ -449,43 +450,43 @@ public class GameManager : MonoBehaviour
 
             //CheckForDeadPlayers();
 
-            _currentPlayer = PlayerQueue[0];
+            CurrentPlayer = PlayerQueue[0];
         
-            _currentPlayer.currentUnitIndex = 0;
+            CurrentPlayer.CurrentUnitIndex = 0;
         
-            _currentPlayer.currentUnit = _currentPlayer.unitList[_currentPlayer.currentUnitIndex];
+            CurrentPlayer.CurrentUnit = CurrentPlayer.UnitList[CurrentPlayer.CurrentUnitIndex];
         
-            SetCurrentPlayerEvent.Invoke(_currentPlayer);
+            SetCurrentPlayerEvent.Invoke(CurrentPlayer);
 
             SetCurrentPlayerValues();
         
-            Debug.Log("switching from " + previousPlayer + " to " + _currentPlayer);
+            Debug.Log("switching from " + previousPlayer + " to " + CurrentPlayer);
 
             //MakeAllUnitsKinematic();
 
-            if (_currentPlayer.unitList.Count > 0)
+            if (CurrentPlayer.UnitList.Count > 0)
             {
-                FollowCurrentUnit(_currentPlayer.currentUnit);
+                FollowCurrentUnit(CurrentPlayer.CurrentUnit);
             
                 // If the current unit has a weapon equipped
 
-                if (_currentPlayer.currentUnit.currentWeaponObject)
+                if (CurrentPlayer.CurrentUnit.CurrentWeaponObject)
                 {
                     SetFirstPersonCamera();
                     
-                    _currentPlayer.currentUnit.canShoot = true;
-                    _currentPlayer.currentUnit.canAim = true;
+                    CurrentPlayer.CurrentUnit.CanShoot = true;
+                    CurrentPlayer.CurrentUnit.CanAim = true;
                 }
                 else
                 {
-                    if (firstPersonCamera)
+                    if (FirstPersonCamera)
                     {
-                        firstPersonCamera.Follow = null;
-                        firstPersonCamera.LookAt = null;   
+                        FirstPersonCamera.Follow = null;
+                        FirstPersonCamera.LookAt = null;   
                     }
                 }
 
-                foreach (var unit in unitList)
+                foreach (var unit in UnitList)
                 {
                     if (unit) // the units fail to remove themselves from the GameManager's unit list so we do this to prevent errors
                     {
@@ -500,7 +501,7 @@ public class GameManager : MonoBehaviour
 
             //Debug.Log(_currentPlayer);
 
-            if (turnNumber % 4 == 1)
+            if (_turnNumber % 4 == 1)
             {
                 _waterCoroutine = StartCoroutine(Water.RaiseWaterLevel());
                 
@@ -511,33 +512,33 @@ public class GameManager : MonoBehaviour
 
     public void SetSelfDestructed(bool selfDestructed)
     {
-        _currentPlayer.SelfDestructed = selfDestructed;
+        CurrentPlayer.SelfDestructed = selfDestructed;
     }
 
     public void SetCurrentPlayerValues()
     {
-        _currentPlayer.roundUnitPicked = false;
+        CurrentPlayer.RoundUnitPicked = false;
 
-        foreach (var player in playerList)
+        foreach (var player in PlayerList)
         {
-            if (player == _currentPlayer)
+            if (player == CurrentPlayer)
             {
-                player.canPlay = true;
-                player.currentUnit.canMove = true;
-                player.turnStarted = true;
+                player.CanPlay = true;
+                player.CurrentUnit.CanMove = true;
+                player.TurnStarted = true;
                 
                 Debug.Log("setting " + player + "'s values");
             }
             else
             {
-                player.canPlay = false;
-                player.currentUnit.canMove = false;
-                player.turnStarted = false;
+                player.CanPlay = false;
+                player.CurrentUnit.CanMove = false;
+                player.TurnStarted = false;
                 Debug.Log("setting everyone else's values");
             }
             
-            player.currentUnit.canTakeDamage = true;
-            player.currentUnit.canTakeFallDamage = true;
+            player.CurrentUnit.CanTakeDamage = true;
+            player.CurrentUnit.CanTakeFallDamage = true;
         }
 
         /*for (int i = 0; i < playerList.Count; i++)
@@ -562,69 +563,69 @@ public class GameManager : MonoBehaviour
 
     private void SetFirstPersonCamera()
     {
-        var currentWeaponScript = _currentPlayer.currentUnit.currentWeaponObject.GetComponent<WeaponBehaviour>();
+        var currentWeaponScript = CurrentPlayer.CurrentUnit.CurrentWeaponObject.GetComponent<WeaponBehaviour>();
                 
-        firstPersonCamera = currentWeaponScript.FPSCamera;
-        firstPersonCamera = currentWeaponScript.FPSCamera;
+        FirstPersonCamera = currentWeaponScript.FPSCamera;
+        FirstPersonCamera = currentWeaponScript.FPSCamera;
                 
-        firstPersonCamera.Follow = null;
+        FirstPersonCamera.Follow = null;
                 
-        firstPersonCamera.transform.position = currentWeaponScript.shootPoint.transform.position;
+        FirstPersonCamera.transform.position = currentWeaponScript.ShootPoint.transform.position;
                 
-        firstPersonCamera.LookAt = currentWeaponScript.lookPoint.transform;
+        FirstPersonCamera.LookAt = currentWeaponScript.LookPoint.transform;
     }
 
     private void FollowCurrentUnit(UnitBehaviour unit)
     {
-        mainCamera.Priority = 100;
-        mainCamera.Follow = unit.transform;
-        mainCamera.LookAt = unit.transform;
+        MainCamera.Priority = 100;
+        MainCamera.Follow = unit.transform;
+        MainCamera.LookAt = unit.transform;
             
         Debug.Log("setting camera follow to: " + unit.transform);
     }
 
     public void InitTurn()
     {
-        playersEliminatedDuringTurn = 0;
+        PlayersEliminatedDuringTurn = 0;
         
         //Debug.LogWarning("next turn init turn");
 
-        _currentPlayer.canChangeTurn = false;
+        CurrentPlayer.CanChangeTurn = false;
         
-        isTurnStarting = false;
+        IsTurnStarting = false;
         
         // Set the FPS Camera's priority to 0 so the unit's camera becomes the default
         
-        if (firstPersonCamera)
+        if (FirstPersonCamera)
         {
-            firstPersonCamera.Priority = 0;
+            FirstPersonCamera.Priority = 0;
         }
         
         // Re-enable the camera movement by setting the mouse axes string properties
 
-        mainCamera.m_XAxis.m_InputAxisName = "Mouse X";
-        mainCamera.m_YAxis.m_InputAxisName = "Mouse Y";
+        MainCamera.m_XAxis.m_InputAxisName = "Mouse X";
+        MainCamera.m_YAxis.m_InputAxisName = "Mouse Y";
 
         // Disable the highlight of the previous player's unit before switching to the next player
         
-        _currentPlayer.currentUnit.highlighted = false;
+        CurrentPlayer.CurrentUnit.Highlighted = false;
         
         // Reset the shots of the previous player's unit before switching to the next player   
         
-        _currentPlayer.currentUnit.shotsFiredDuringRound = 0;
+        CurrentPlayer.CurrentUnit.ShotsFiredDuringRound = 0;
 
-        startTurnTimer = false;
+        StartTurnTimer = false;
         
-        _turnTimer = _defaultTurnTime;
+        TurnTimer = _defaultTurnTime;
     }
 
     public void NextPlayer()
     {
-        turnNumber++;
+        _turnNumber++;
 
-        if (_currentPlayer.currentUnit)
+        if (CurrentPlayer.CurrentUnit)
         {
-            _currentPlayer.currentUnit.GetComponent<Rigidbody>().isKinematic = true;
+            CurrentPlayer.CurrentUnit.GetComponent<Rigidbody>().isKinematic = true;
         }
 
         //Debug.LogWarning("switching from player " + (currentPlayerIndex + 1) + " index: " + currentPlayerIndex);
@@ -632,29 +633,29 @@ public class GameManager : MonoBehaviour
         // if the current player did not self-destruct and they still have more than 1 unit, remove them from the queue
         // we also check if more than 1 player was eliminated during the round to make sure we don't remove the first element twice
 
-        if (!_currentPlayer.SelfDestructed && playerList.Count > 1 && playersEliminatedDuringTurn < 2)
+        if (!CurrentPlayer.SelfDestructed && PlayerList.Count > 1 && PlayersEliminatedDuringTurn < 2)
         {
             Debug.Log("removed " + PlayerQueue[0] + "from queue");
             PlayerQueue.RemoveAt(0);
         }
-        else if (_currentPlayer.SelfDestructed && playerList.Count > 1)
+        else if (CurrentPlayer.SelfDestructed && PlayerList.Count > 1)
         {
             Debug.Log("did not remove " + PlayerQueue[1] + "from queue as " + PlayerQueue[0] + " self destructed");
         }
         
         // set the current player to the next one on the queue, now the first element
 
-        if (!gameOver && matchStarted)
+        if (!GameOver && MatchStarted)
         {
-            _currentPlayer = PlayerQueue[0];
+            CurrentPlayer = PlayerQueue[0];
         }
 
-        SetCurrentPlayerEvent.Invoke(_currentPlayer);
-        SetCurrentUnitEvent.Invoke(_currentPlayer.currentUnit);
+        SetCurrentPlayerEvent.Invoke(CurrentPlayer);
+        SetCurrentUnitEvent.Invoke(CurrentPlayer.CurrentUnit);
         
         //Debug.LogWarning("to player " + (currentPlayerIndex + 1) + " index: " + currentPlayerIndex);
 
-        _currentPlayer.currentUnit.highlighted = true;
+        CurrentPlayer.CurrentUnit.Highlighted = true;
 
         InitUI();
 
@@ -663,41 +664,41 @@ public class GameManager : MonoBehaviour
 
     public void InitCurrentPlayer()
     {
-        _currentPlayer = playerList[0];
+        CurrentPlayer = PlayerList[0];
         
-        _currentPlayer.currentUnit = _currentPlayer.unitList[_currentPlayer.currentUnitIndex];
+        CurrentPlayer.CurrentUnit = CurrentPlayer.UnitList[CurrentPlayer.CurrentUnitIndex];
         
-        _currentPlayer.canChangeTurn = true;
+        CurrentPlayer.CanChangeTurn = true;
         
-        _currentPlayer.canPlay = true;
+        CurrentPlayer.CanPlay = true;
         
-        _currentPlayer.turnStarted = true;
+        CurrentPlayer.TurnStarted = true;
 
-        _currentPlayer.currentUnit.highlighted = true;
+        CurrentPlayer.CurrentUnit.Highlighted = true;
         
-        SetCurrentPlayerEvent.Invoke(_currentPlayer);
+        SetCurrentPlayerEvent.Invoke(CurrentPlayer);
         
         InitUI();
         
-        Debug.Log("Switching to player" + (currentPlayerIndex + 1));
+        Debug.Log("Switching to player" + (CurrentPlayerIndex + 1));
     }
 
     public void NextUnit()
     {
-        _currentPlayer.currentUnit.movementValue = Vector2.zero;
+        CurrentPlayer.CurrentUnit.MovementValue = Vector2.zero;
         
-        _currentPlayer.currentUnitIndex++;
-        _currentPlayer.currentUnitIndex %= _currentPlayer.unitList.Count;
+        CurrentPlayer.CurrentUnitIndex++;
+        CurrentPlayer.CurrentUnitIndex %= CurrentPlayer.UnitList.Count;
         
-        _currentPlayer.currentUnit = _currentPlayer.unitList[_currentPlayer.currentUnitIndex];
+        CurrentPlayer.CurrentUnit = CurrentPlayer.UnitList[CurrentPlayer.CurrentUnitIndex];
         
-        _currentPlayer.currentUnit.highlighted = true;
+        CurrentPlayer.CurrentUnit.Highlighted = true;
             
-        SetCurrentUnitEvent.Invoke(_currentPlayer.currentUnit);
+        SetCurrentUnitEvent.Invoke(CurrentPlayer.CurrentUnit);
         
-        UIReferences.currentUnitText.text = "Current Unit: " + (_currentPlayer.currentUnit.originalIndex + 1);
+        UIReferences.CurrentUnitText.text = "Current Unit: " + (CurrentPlayer.CurrentUnit.OriginalIndex + 1);
         
-        Debug.Log("Switching to player " + (currentPlayerIndex + 1) + "'s unit " + (_currentPlayer.currentUnitIndex + 1));
+        Debug.Log("Switching to player " + (CurrentPlayerIndex + 1) + "'s unit " + (CurrentPlayer.CurrentUnitIndex + 1));
     }
 
     public void SpawnDamagePopUp(Transform parent, Vector3 offset, int damage)
@@ -708,18 +709,18 @@ public class GameManager : MonoBehaviour
         
         damagePrefab.transform.localPosition = Vector3.zero + offset;
         
-        damagePrefab.GetComponent<DamagePopUpBehaviour>().initialPosition = damagePrefab.transform.localPosition;
+        damagePrefab.GetComponent<DamagePopUpBehaviour>().InitialPosition = damagePrefab.transform.localPosition;
         
         damagePrefab.GetComponent<DamagePopUpBehaviour>().DamageText.text = "- " + damage;
     }
 
     public void SetTurnTimer(int timeToAdd)
     {
-        var newTurnTimer = _turnTimer + timeToAdd;
+        var newTurnTimer = TurnTimer + timeToAdd;
 
-        _turnTimer = newTurnTimer;
+        TurnTimer = newTurnTimer;
         
-        Debug.Log("set turn timer to " + _turnTimer);
+        Debug.Log("set turn timer to " + TurnTimer);
 
         //UIReferences.timerText.text = _turnTimer.ToString();
     }

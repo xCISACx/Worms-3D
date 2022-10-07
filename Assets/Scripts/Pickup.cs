@@ -10,11 +10,11 @@ public class Pickup : ScriptableObject
     
     public Mesh Model;
     
-    [SerializeField] private int ammoAmount;
+    [SerializeField] private int _ammoAmount;
     [SerializeField] public int HealthAmount;
-    [SerializeField] private int armourAmount;
+    [SerializeField] private int _armourAmount;
     [SerializeField] public int TimeAmount;
-    [SerializeField] private Weapon weapon;
+    [SerializeField] private Weapon _weapon;
     
     // Start is called before the first frame update
     void Start()

@@ -12,15 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c8418ecd33bc6c540aef28d6c9f4d068, type: 3}
   m_Name: Pistol
   m_EditorClassIdentifier: 
-  name: Pistol
-  model: {fileID: 4280629184277841843, guid: c1c5bbd70d35d7c458c3f5206df81340, type: 3}
-  ammoPrefab: {fileID: 7926522421175382475, guid: 1e211596a4235124a934628de8cfb63a, type: 3}
-  damage: 20
-  shootingForce: {x: 150, y: 0, z: 0}
-  maxShootingForce: {x: 150, y: 0, z: 0}
-  accuracy: 100
-  shootingDirection: 0
-  explosive: 0
-  explosionForce: 200
-  explosionRadius: 1
-  upwardsModifier: 0.2
+  Name: Pistol
+  Model: {fileID: 4280629184277841843, guid: c1c5bbd70d35d7c458c3f5206df81340, type: 3}
+  AmmoPrefab: {fileID: 7926522421175382475, guid: 1e211596a4235124a934628de8cfb63a, type: 3}
+  Damage: 20
+  ShootingForce: {x: 250, y: 0, z: 0}
+  MaxShootingForce: {x: 250, y: 0, z: 0}
+  Accuracy: 100
+  ShootingDirection: 0
+  Explosive: 0
+  ExplosionForce: 0
+  ExplosionRadius: 0
+  UpwardsModifier: 0

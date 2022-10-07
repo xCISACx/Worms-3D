@@ -238,7 +238,6 @@ GameObject:
   m_Component:
   - component: {fileID: 8629709224789736202}
   - component: {fileID: 8629139441270526312}
-  - component: {fileID: 6229997274632158226}
   m_Layer: 6
   m_Name: Weapon Parent
   m_TagString: Weapon
@@ -278,46 +277,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e0174712fdaa714ba416a29cdd83d43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  shootingDirection: 0
-  initDone: 0
-  user: {fileID: 0}
-  projectilePrefab: {fileID: 7926522421175382475, guid: b15f321068190a0479093c1c480dc696, type: 3}
-  weaponModel: {fileID: 0}
-  weaponModelParent: {fileID: 1455909103330932808}
-  shootPoint: {fileID: 2716900819515389305}
-  lookPoint: {fileID: 4777526482475794161}
-  defaultShootForce: {x: 0, y: 0, z: 0}
-  currentShootForce: {x: 0, y: 0, z: 0}
-  maxShootForce: {x: 0, y: 0, z: 0}
+  ShootingDirection: 0
+  InitDone: 0
+  User: {fileID: 0}
+  ProjectilePrefab: {fileID: 0}
+  WeaponModel: {fileID: 0}
+  WeaponModelParent: {fileID: 1455909103330932808}
+  ShootPoint: {fileID: 2716900819515389305}
+  LookPoint: {fileID: 4777526482475794161}
+  DefaultShootForce: {x: 0, y: 0, z: 0}
+  CurrentShootForce: {x: 0, y: 0, z: 0}
+  MaxShootForce: {x: 0, y: 0, z: 0}
   FPSCamera: {fileID: 3814268495298545999}
-  lineRenderer: {fileID: 1209461737350313463}
-  chargeSpeed: 0.5
-  charging: 0
-  playerInput: {fileID: 0}
-  fire:
-    m_Name: Fire
-    m_Type: 0
-    m_ExpectedControlType: 
-    m_Id: e28a36a3-7aad-491b-9d9b-04d1c7e24310
-    m_Processors: 
-    m_Interactions: 
-    m_SingletonActionBindings: []
-    m_Flags: 0
-  controls: {fileID: -944628639613478452, guid: 66884b2c95fa9664e851233774bc1dbe, type: 3}
---- !u!114 &6229997274632158226
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4260267504412137361}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7074aa44a6deadf45ba2bfced0f6265f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  stepCount: 10
-  lineRenderer: {fileID: 1209461737350313463}
+  _chargeSpeed: 10
 --- !u!1 &7465110811714564541
 GameObject:
   m_ObjectHideFlags: 0

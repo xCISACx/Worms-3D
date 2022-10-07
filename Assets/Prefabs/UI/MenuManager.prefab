@@ -44,7 +44,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03c6e07e2d2224f4b8f5cb4e62861b28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SettingsPopup: {fileID: 0}
-  ButtonHoverSFX: {fileID: 8300000, guid: f35e23d1f7e1dc745987ad61885fbe58, type: 3}
-  ButtonClickSFX: {fileID: 8300000, guid: ee9b57099228d2445b037196bb315eea, type: 3}
+  _settingsPopup: {fileID: 0}
+  ButtonHoverSfx: {fileID: 8300000, guid: f35e23d1f7e1dc745987ad61885fbe58, type: 3}
+  ButtonClickSfx: {fileID: 8300000, guid: ee9b57099228d2445b037196bb315eea, type: 3}
   FullScreenMode: 1
+  _prefs: {fileID: 11400000, guid: 4451aaddac13b404baf6e8d88a29eb39, type: 2}
+  _masterSlider: {fileID: 0}
+  _musicSlider: {fileID: 0}
+  _sfxSlider: {fileID: 0}
+  _resolutionDropdown: {fileID: 0}
+  _fullscreenToggle: {fileID: 0}

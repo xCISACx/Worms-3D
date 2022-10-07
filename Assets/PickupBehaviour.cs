@@ -40,11 +40,11 @@ public class PickupBehaviour : MonoBehaviour
         
         unit.SetHealth(newHealth);
 
-        if (unit == gameManager._currentPlayer.currentUnit)
+        if (unit == gameManager.CurrentPlayer.CurrentUnit)
         {
             gameManager.SetTurnTimer(timeToAdd);
         
-            gameManager._turnTimer += timeToAdd;   
+            gameManager.TurnTimer += timeToAdd;   
         }
     }
 

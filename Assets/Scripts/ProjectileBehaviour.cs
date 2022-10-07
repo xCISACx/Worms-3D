@@ -5,16 +5,15 @@ using UnityEngine;
 
 public class ProjectileBehaviour : MonoBehaviour
 {
-    public bool explosive;
-    public int damage;
+    public bool Explosive;
+    public int Damage;
     public GameObject ExplosionPrefab;
-    public LayerMask layerMask;
-    private Vector3 origin;
-    [SerializeField] public float explosionForce;
-    [SerializeField] public float explosionRadius;
-    [SerializeField] public float upwardsModifier;
-    [SerializeField] private TerrainDamageConfig TerrainDamageConfig;
-    [SerializeField] private bool spawnedExplosion = false;
+    public LayerMask LayerMask;
+    private Vector3 _origin;
+    [SerializeField] public float ExplosionForce;
+    [SerializeField] public float ExplosionRadius;
+    [SerializeField] public float UpwardsModifier;
+    [SerializeField] private bool _spawnedExplosion = false;
 
     private void OnTriggerEnter(Collider other)
     {
@@ -22,7 +21,7 @@ public class ProjectileBehaviour : MonoBehaviour
                 
         if (unit)
         {
-            unit.beingKnockedBack = true;
+            unit.BeingKnockedBack = true;
             //unit.grounded = false;
             unit.GetComponent<Rigidbody>().isKinematic = false;
             Debug.LogWarning("set being knocked back to true");
@@ -30,16 +29,15 @@ public class ProjectileBehaviour : MonoBehaviour
         
         if (other.gameObject.CompareTag("Environment") || other.gameObject.CompareTag("Wall"))
         {
-            origin = other.gameObject.GetComponent<Collider>().ClosestPointOnBounds(transform.position);
+            _origin = other.gameObject.GetComponent<Collider>().ClosestPointOnBounds(transform.position);
 
-            if (explosive && !spawnedExplosion)
+            if (Explosive && !_spawnedExplosion)
             {
-                Instantiate(ExplosionPrefab, origin, Quaternion.identity);
-                ApplyKnockback(origin);
-                ApplySplashDamage(origin);
-
-                //other.GetComponent<TerrainDamager>().ApplyDamage(origin, TerrainDamageConfig, 1.0f);
-                spawnedExplosion = true;
+                Instantiate(ExplosionPrefab, _origin, Quaternion.identity);
+                ApplyKnockback(_origin);
+                ApplySplashDamage(_origin);
+                
+                _spawnedExplosion = true;
                 Destroy(gameObject);
             }
             else
@@ -50,24 +48,19 @@ public class ProjectileBehaviour : MonoBehaviour
 
         if (other.gameObject.CompareTag("Ground"))
         {
-            origin = other.gameObject.GetComponent<Collider>().ClosestPointOnBounds(transform.position);
+            _origin = other.gameObject.GetComponent<Collider>().ClosestPointOnBounds(transform.position);
 
-            if (explosive && !spawnedExplosion)
+            if (Explosive && !_spawnedExplosion)
             {
-                Instantiate(ExplosionPrefab, origin, Quaternion.identity);
-                ApplyKnockback(origin);
-                ApplySplashDamage(origin);
+                Instantiate(ExplosionPrefab, _origin, Quaternion.identity);
+                ApplyKnockback(_origin);
+                ApplySplashDamage(_origin);
 
-                var origin1 = transform.position;
-                var localOrigin = transform.InverseTransformPoint(transform.position);
-                //Debug.Log("origin: " + origin1);
-                //Debug.Log("origin: " + localOrigin);
-                //Debug.Log("local position: " + transform.localPosition);
-                //other.GetComponent<TerrainDamager>().ApplyDamage(origin, TerrainDamageConfig, 1.0f);
+                var origin = transform.position;
+
+                other.gameObject.GetComponent<TerrainBehaviour>().DestroyTerrain(origin, ExplosionRadius);
                 
-                other.gameObject.GetComponent<TerrainBehaviour>().DestroyTerrain(origin1, explosionRadius);
-                
-                spawnedExplosion = true;
+                _spawnedExplosion = true;
                 Destroy(gameObject);
             }
             else
@@ -78,24 +71,24 @@ public class ProjectileBehaviour : MonoBehaviour
         
         else if (other.gameObject.CompareTag("Unit"))
         {
-            GameManager.Instance.firstPersonCamera.Follow = other.transform;
-            GameManager.Instance.firstPersonCamera.LookAt = other.transform;
+            GameManager.Instance.FirstPersonCamera.Follow = other.transform;
+            GameManager.Instance.FirstPersonCamera.LookAt = other.transform;
             
-            origin = other.gameObject.GetComponent<Collider>().ClosestPointOnBounds(transform.position);
+            _origin = other.gameObject.GetComponent<Collider>().ClosestPointOnBounds(transform.position);
 
-            if (explosive && !spawnedExplosion)
+            if (Explosive && !_spawnedExplosion)
             {
-                Instantiate(ExplosionPrefab, origin, Quaternion.identity);
-                ApplyKnockback(origin);
-                ApplySplashDamage(origin);
+                Instantiate(ExplosionPrefab, _origin, Quaternion.identity);
+                ApplyKnockback(_origin);
+                ApplySplashDamage(_origin);
 
                 //TODO: Deal more damage closer to explosion center.
-                spawnedExplosion = true;
+                _spawnedExplosion = true;
                 Destroy(gameObject);
             }
             else
             {
-                other.gameObject.GetComponent<UnitBehaviour>().TakeDamage(damage);
+                other.gameObject.GetComponent<UnitBehaviour>().TakeDamage(Damage);
                 Destroy(gameObject);
             }
         }
@@ -105,7 +98,7 @@ public class ProjectileBehaviour : MonoBehaviour
     {
         Debug.Log("Applying Splash Damage");
         
-        Collider[] colliders = Physics.OverlapSphere(pos, explosionRadius, layerMask);
+        Collider[] colliders = Physics.OverlapSphere(pos, ExplosionRadius, LayerMask);
 
         foreach (Collider collider in colliders)
         {
@@ -114,16 +107,16 @@ public class ProjectileBehaviour : MonoBehaviour
             
             if (unitBehaviour != null)
             {
-                unitBehaviour.TakeDamage(damage);
+                unitBehaviour.TakeDamage(Damage);
             }
         }
     }
 
     private void ApplyKnockback(Vector3 pos)
     {
-        Debug.Log("Applying Knockback with force " + explosionForce);
+        Debug.Log("Applying Knockback with force " + ExplosionForce);
         
-        Collider[] colliders = Physics.OverlapSphere(pos, explosionRadius, layerMask);
+        Collider[] colliders = Physics.OverlapSphere(pos, ExplosionRadius, LayerMask);
 
         foreach (Collider collider in colliders)
         {
@@ -135,11 +128,11 @@ public class ProjectileBehaviour : MonoBehaviour
             {
                 rb.isKinematic = false;
                 Debug.Log("setting kinematic to false knockback");
-                rb.AddExplosionForce(explosionForce / 10f, transform.position, explosionRadius, upwardsModifier, ForceMode.Impulse);
+                rb.AddExplosionForce(ExplosionForce / 10f, transform.position, ExplosionRadius, UpwardsModifier, ForceMode.Impulse);
                 if (unit)
                 {
                     unit.TimeSpentGrounded = 0;
-                    unit.grounded = false;
+                    unit.Grounded = false;
                 }
                 Debug.Log("adding explosion force");
             }
@@ -149,6 +142,6 @@ public class ProjectileBehaviour : MonoBehaviour
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, explosionRadius);
+        Gizmos.DrawWireSphere(transform.position, ExplosionRadius);
     }
 }

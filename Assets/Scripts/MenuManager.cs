@@ -8,56 +8,56 @@ using UnityEngine.UI;
 
 public class MenuManager : MonoBehaviour
 {
-    [SerializeField] private GameObject SettingsPopup;
-    private bool showSettings;
-    public AudioClip ButtonHoverSFX;
-    public AudioClip ButtonClickSFX;
+    [SerializeField] private GameObject _settingsPopup;
+    private bool _showSettings;
+    public AudioClip ButtonHoverSfx;
+    public AudioClip ButtonClickSfx;
     public FullScreenMode FullScreenMode;
-    [SerializeField] private Prefs prefs;
-    [SerializeField] private Slider masterSlider;
-    [SerializeField] private Slider musicSlider;
-    [SerializeField] private Slider sfxSlider;
-    [SerializeField] private TMP_Dropdown resolutionDropdown;
-    [SerializeField] private Toggle fullscreenToggle;
+    [SerializeField] private Prefs _prefs;
+    [SerializeField] private Slider _masterSlider;
+    [SerializeField] private Slider _musicSlider;
+    [SerializeField] private Slider _sfxSlider;
+    [SerializeField] private TMP_Dropdown _resolutionDropdown;
+    [SerializeField] private Toggle _fullscreenToggle;
     private void Awake()
     {
         Cursor.lockState = CursorLockMode.None;
-        SettingsPopup.SetActive(false);
+        _settingsPopup.SetActive(false);
         //Debug.Log("awake: " + prefs);
     }
 
     public void Options()
     {
         //SettingsPopup.enabled = true;
-        SettingsPopup.gameObject.SetActive(true);
+        _settingsPopup.gameObject.SetActive(true);
         LoadMenuUIValues();
     }
     
     public void CloseOptions() //TODO: MAKE TOGGLE?
     {
         //SettingsPopup.enabled = false;
-        SettingsPopup.gameObject.SetActive(false);
+        _settingsPopup.gameObject.SetActive(false);
     }
 
     public void LoadMenuUIValues()
     {
-        masterSlider.value = prefs.masterValue;
-        musicSlider.value = prefs.musicValue;
-        sfxSlider.value = prefs.sfxValue;
-        resolutionDropdown.value = prefs.resolutionIndex;
-        fullscreenToggle.isOn = prefs.fullscreen;
+        _masterSlider.value = _prefs.MasterValue;
+        _musicSlider.value = _prefs.MusicValue;
+        _sfxSlider.value = _prefs.SfxValue;
+        _resolutionDropdown.value = _prefs.ResolutionIndex;
+        _fullscreenToggle.isOn = _prefs.Fullscreen;
     }
 
     public void PlayButtonHoverSound()
     {
-        var audioSource = GameManager.Instance.SFXSource;
-        audioSource.PlayOneShot(ButtonHoverSFX);
+        var audioSource = GameManager.Instance.SfxSource;
+        audioSource.PlayOneShot(ButtonHoverSfx);
     }
     
     public void PlayButtonClickSound()
     {
-        var audioSource = GameManager.Instance.SFXSource;
-        audioSource.PlayOneShot(ButtonClickSFX);
+        var audioSource = GameManager.Instance.SfxSource;
+        audioSource.PlayOneShot(ButtonClickSfx);
     }
 
     public void SetMasterVolume(float value)
@@ -73,9 +73,9 @@ public class MenuManager : MonoBehaviour
         }
         
         // for some reason Unity sets prefs to null after Awake so we need to get prefs from the Resources folder
-        prefs = Resources.Load<Prefs>("Prefs");
-        prefs.masterValue = newValue;
-        prefs.masterVolume = newVolume;
+        _prefs = Resources.Load<Prefs>("Prefs");
+        _prefs.MasterValue = newValue;
+        _prefs.MasterVolume = newVolume;
     }
     
     public void SetMusicVolume(float value)
@@ -85,21 +85,21 @@ public class MenuManager : MonoBehaviour
         GameManager.Instance.AudioMixer.SetFloat("musicVolume", newVolume);
         
         // for some reason Unity sets prefs to null after Awake so we need to get prefs from the Resources folder
-        prefs = Resources.Load<Prefs>("Prefs");
-        prefs.musicValue = newValue;
-        prefs.musicVolume = newVolume;
+        _prefs = Resources.Load<Prefs>("Prefs");
+        _prefs.MusicValue = newValue;
+        _prefs.MusicVolume = newVolume;
     }
     
-    public void SetSFXVolume(float value)
+    public void SetSfxVolume(float value)
     {
         var newValue = value;
         var newVolume = Mathf.Log10(value) * 20f;
         GameManager.Instance.AudioMixer.SetFloat("sfxVolume", newVolume);
         
         // for some reason Unity sets prefs to null after Awake so we need to get prefs from the Resources folder
-        prefs = Resources.Load<Prefs>("Prefs");
-        prefs.sfxValue = newValue;
-        prefs.sfxVolume = newVolume;
+        _prefs = Resources.Load<Prefs>("Prefs");
+        _prefs.SfxValue = newValue;
+        _prefs.SfxVolume = newVolume;
     }
 
     public void ToggleFullscreen(bool value)
@@ -107,18 +107,18 @@ public class MenuManager : MonoBehaviour
         if (value)
         {
             Screen.fullScreen = true;
-            prefs.fullscreen = true;
+            _prefs.Fullscreen = true;
             FullScreenMode = FullScreenMode.FullScreenWindow;
         }
         else
         {
             Screen.fullScreen = false;
-            prefs.fullscreen = false;
+            _prefs.Fullscreen = false;
             FullScreenMode = FullScreenMode.Windowed;
         }
 
         Screen.fullScreenMode = FullScreenMode;
-        prefs.fullScreenMode = FullScreenMode;
+        _prefs.FullScreenMode = FullScreenMode;
     }
 
     public void SetResolution(int index)
@@ -127,27 +127,27 @@ public class MenuManager : MonoBehaviour
         {
             case 0:
                 Screen.SetResolution(1920, 1080, FullScreenMode);
-                prefs.resolutionW = 1920;
-                prefs.resolutionH = 1080;
+                _prefs.ResolutionW = 1920;
+                _prefs.ResolutionH = 1080;
                 break;
             case 1:
                 Screen.SetResolution(1366, 768, FullScreenMode);
-                prefs.resolutionW = 1366;
-                prefs.resolutionH = 768;
+                _prefs.ResolutionW = 1366;
+                _prefs.ResolutionH = 768;
                 break;
             case 2:
                 Screen.SetResolution(1280, 720, FullScreenMode);
-                prefs.resolutionW = 1280;
-                prefs.resolutionH = 720;
+                _prefs.ResolutionW = 1280;
+                _prefs.ResolutionH = 720;
                 break;
             case 3:
                 Screen.SetResolution(1024, 768, FullScreenMode);
-                prefs.resolutionW = 1024;
-                prefs.resolutionH = 768;
+                _prefs.ResolutionW = 1024;
+                _prefs.ResolutionH = 768;
                 break;
         }
         
-        prefs.resolutionIndex = index;
+        _prefs.ResolutionIndex = index;
     }
 
     public void Quit()

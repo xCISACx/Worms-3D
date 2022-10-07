@@ -7,27 +7,27 @@ using UnityEngine.SceneManagement;
 
 public class MainMenuManager : MonoBehaviour
 {
-    [SerializeField] private GameObject MatchSettingsPopup;
-    [SerializeField] private GameObject SettingsPopup;
-    [SerializeField] private GameObject ColourHParent;
-    [SerializeField] private GameObject ColourHPrefab;
-    private bool showMatchSettings;
+    [SerializeField] private GameObject _matchSettingsPopup;
+    [SerializeField] private GameObject _settingsPopup;
+    [SerializeField] private GameObject _colourHParent;
+    [SerializeField] private GameObject _colourHPrefab;
+    private bool _showMatchSettings;
 
-    public GameObject map;
+    public GameObject Map;
     
     public string GameScene;
     
-    public int numberOfPlayers;
+    public int NumberOfPlayers;
     
-    [SerializeField] private int numberOfPlayerUnits;
+    [SerializeField] private int _numberOfPlayerUnits;
     
-    [SerializeField] private GameObject PlayerPrefab;
-    [SerializeField] private GameObject UnitPrefab;
+    [SerializeField] private GameObject _playerPrefab;
+    [SerializeField] private GameObject _unitPrefab;
     
     public string[] PlayerColours;
     
-    public AudioClip ButtonHoverSFX;
-    public AudioClip ButtonClickSFX;
+    public AudioClip ButtonHoverSfx;
+    public AudioClip ButtonClickSfx;
 
     IEnumerator LoadAsyncScene()
     {
@@ -43,18 +43,18 @@ public class MainMenuManager : MonoBehaviour
             yield return null;
         }
 
-        for (int i = 0; i < numberOfPlayers; i++)
+        for (int i = 0; i < NumberOfPlayers; i++)
         {
-            var newPlayer = Instantiate(PlayerPrefab, new Vector3(0, 0, 0), Quaternion.identity);
+            var newPlayer = Instantiate(_playerPrefab, new Vector3(0, 0, 0), Quaternion.identity);
             newPlayer.name = "Player " + (i + 1);
             var playerScript = newPlayer.GetComponent<PlayerBehaviour>();
             
             playerScript.OriginalPlayerIndex = i;
             
-            GameManager.Instance.playerList.Add(newPlayer.GetComponent<PlayerBehaviour>());
+            GameManager.Instance.PlayerList.Add(newPlayer.GetComponent<PlayerBehaviour>());
             GameManager.Instance.PlayerQueue.Add(newPlayer.GetComponent<PlayerBehaviour>());
 
-            for (int j = 0; j < numberOfPlayerUnits; j++)
+            for (int j = 0; j < _numberOfPlayerUnits; j++)
             {
                 var closestPoint = GenerateSpawnPoint();
                 
@@ -81,7 +81,7 @@ public class MainMenuManager : MonoBehaviour
 
                 newUnit.transform.SetParent(newPlayer.transform);
                 
-                playerScript.unitList.Add(newUnit.GetComponent<UnitBehaviour>());
+                playerScript.UnitList.Add(newUnit.GetComponent<UnitBehaviour>());
                 
                 
                 var unitScript = newUnit.GetComponent<UnitBehaviour>();
@@ -90,7 +90,7 @@ public class MainMenuManager : MonoBehaviour
                 
                 unitScript.Owner = (UnitBehaviour.PlayerNumber) i;
                 
-                unitScript.originalIndex = j;
+                unitScript.OriginalIndex = j;
                 
                 var color = Color.black;
                 ColorUtility.TryParseHtmlString(PlayerColours[i], out color);
@@ -99,23 +99,23 @@ public class MainMenuManager : MonoBehaviour
                 
                 newUnit.name = unitScript.Owner + " Unit " + (j + 1);
                 
-                GameManager.Instance.unitList.Add(newUnit.GetComponent<UnitBehaviour>());
+                GameManager.Instance.UnitList.Add(newUnit.GetComponent<UnitBehaviour>());
             }
             
-            SceneManager.MoveGameObjectToScene(map, SceneManager.GetSceneByName(GameScene));
+            SceneManager.MoveGameObjectToScene(Map, SceneManager.GetSceneByName(GameScene));
             
             SceneManager.MoveGameObjectToScene(newPlayer, SceneManager.GetSceneByName(GameScene));
         }
         
         // Unload the previous Scene
-        GameManager.Instance.matchStarted = true;
+        GameManager.Instance.MatchStarted = true;
         
         SceneManager.UnloadSceneAsync(currentScene);
     }
 
     private GameObject SpawnUnitAtLocation(Vector3 closestPoint)
     {
-        var newUnit = Instantiate(UnitPrefab, closestPoint, Quaternion.identity);
+        var newUnit = Instantiate(_unitPrefab, closestPoint, Quaternion.identity);
 
         return newUnit;
     }
@@ -130,13 +130,13 @@ public class MainMenuManager : MonoBehaviour
 
         Vector3 spawnPoint = new Vector3(xPos, yPos, zPos);
 
-        float unitRadius = UnitPrefab.GetComponent<Collider>().bounds.extents.x;
+        float unitRadius = _unitPrefab.GetComponent<Collider>().bounds.extents.x;
 
         var minDistance = float.PositiveInfinity;
         
         var closestPointToCollider = Vector3.zero;
 
-        foreach (var collider in map.GetComponentsInChildren<Collider>())
+        foreach (var collider in Map.GetComponentsInChildren<Collider>())
         {
             if (collider.isTrigger)
             {
@@ -160,19 +160,19 @@ public class MainMenuManager : MonoBehaviour
 
     private void Awake()
     {
-        ColourHParent = GameObject.Find("ColourHParent");
+        _colourHParent = GameObject.Find("ColourHParent");
         
         Cursor.lockState = CursorLockMode.None;
         
-        MatchSettingsPopup.SetActive(false);
+        _matchSettingsPopup.SetActive(false);
         
-        GameManager.Instance.gameOver = false;
+        GameManager.Instance.GameOver = false;
         
-        GameManager.Instance.matchStarted = false;
+        GameManager.Instance.MatchStarted = false;
         
         PlayerColours = new string[2];
         
-        for (int i = 0; i < numberOfPlayers; i++)
+        for (int i = 0; i < NumberOfPlayers; i++)
         {
             PlayerColours[i] = "#FF0000";
         }
@@ -180,55 +180,55 @@ public class MainMenuManager : MonoBehaviour
 
     public void Play()
     {
-        showMatchSettings = true;
-        MatchSettingsPopup.SetActive(true);
+        _showMatchSettings = true;
+        _matchSettingsPopup.SetActive(true);
         //SceneManager.LoadScene(sceneName: "Game");
     }
     
     public void CloseMatchSettings() //TODO: MAKE TOGGLE?
     {
-        showMatchSettings = false;
-        MatchSettingsPopup.SetActive(false);
+        _showMatchSettings = false;
+        _matchSettingsPopup.SetActive(false);
     }
 
     public void Options()
     {
-        SettingsPopup.SetActive(true);
+        _settingsPopup.SetActive(true);
     }
     
     public void CloseOptions() //TODO: MAKE TOGGLE?
     {
-        SettingsPopup.SetActive(false);
+        _settingsPopup.SetActive(false);
     }
     public void SetNumberOfPlayers(int num)
     {
-        numberOfPlayers = num + 2;
+        NumberOfPlayers = num + 2;
         PlayerColours = new string[num + 2];
         
         //Add or remove colour selection containers according to number of players
         
-        ColourHParent = GameObject.Find("ColourHParent");
+        _colourHParent = GameObject.Find("ColourHParent");
 
-        if (ColourHParent.transform.childCount > 0)
+        if (_colourHParent.transform.childCount > 0)
         {
-            for (int j = 0; j < ColourHParent.transform.childCount; j++)
+            for (int j = 0; j < _colourHParent.transform.childCount; j++)
             {
-                Destroy(ColourHParent.transform.GetChild(j).gameObject);
+                Destroy(_colourHParent.transform.GetChild(j).gameObject);
             }   
         }
 
-        for (int i = 0; i < numberOfPlayers; i++)
+        for (int i = 0; i < NumberOfPlayers; i++)
         {
-            var newContainer = Instantiate(ColourHPrefab, Vector3.zero, Quaternion.identity);
+            var newContainer = Instantiate(_colourHPrefab, Vector3.zero, Quaternion.identity);
             
-            newContainer.transform.SetParent(ColourHParent.transform);
+            newContainer.transform.SetParent(_colourHParent.transform);
             
             newContainer.GetComponentInChildren<TMP_Text>().text = "Player " + (i + 1) + " Colour";
             
-            newContainer.GetComponent<ColourDropdownBehaviour>().playerIndex = i;
+            newContainer.GetComponent<ColourDropdownBehaviour>().PlayerIndex = i;
         }
 
-        for (int i = 0; i < numberOfPlayers; i++)
+        for (int i = 0; i < NumberOfPlayers; i++)
         {
             PlayerColours[i] = "#FF0000";
         }
@@ -236,7 +236,7 @@ public class MainMenuManager : MonoBehaviour
     
     public void SetNumberOfPlayerUnits(int num)
     {
-        numberOfPlayerUnits = num + 1;
+        _numberOfPlayerUnits = num + 1;
         
         GameManager.Instance.NumberOfStartingUnits = num + 1;
     }
@@ -248,16 +248,16 @@ public class MainMenuManager : MonoBehaviour
 
     public void PlayButtonHoverSound()
     {
-        var audioSource = GameManager.Instance.SFXSource;
+        var audioSource = GameManager.Instance.SfxSource;
         
-        audioSource.PlayOneShot(ButtonHoverSFX);
+        audioSource.PlayOneShot(ButtonHoverSfx);
     }
     
     public void PlayButtonClickSound()
     {
-        var audioSource = GameManager.Instance.SFXSource;
+        var audioSource = GameManager.Instance.SfxSource;
         
-        audioSource.PlayOneShot(ButtonClickSFX);
+        audioSource.PlayOneShot(ButtonClickSfx);
     }
 
     public void Quit()

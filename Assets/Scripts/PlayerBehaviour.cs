@@ -20,46 +20,46 @@ public class PlayerBehaviour : MonoBehaviour
         TurnEnd
     }
     
-    public bool canPlay;
-    public bool turnStarted;
-    public bool unitPickedFlag;
-    public bool canChangeTurn;
-    public List<UnitBehaviour> unitList;
-    public UnitBehaviour currentUnit;
-    public int currentUnitIndex = 0;
-    public bool roundUnitPicked;
-    private bool initialisationDone;
+    public bool CanPlay;
+    public bool TurnStarted;
+    public bool UnitPickedFlag;
+    public bool CanChangeTurn;
+    public List<UnitBehaviour> UnitList;
+    public UnitBehaviour CurrentUnit;
+    public int CurrentUnitIndex = 0;
+    public bool RoundUnitPicked;
+    private bool _initialisationDone;
 
     public List<Weapon> WeaponInventory;
 
-    public int GlobalTeamHP = 0;
-    public Image TeamHPBar;
+    public int GlobalTeamHp = 0;
+    public Image TeamHpBar;
 
     public bool SelfDestructed;
 
     // Start is called before the first frame update
     void Start()
     {
-        if (GameManager.Instance.matchStarted)
+        if (GameManager.Instance.MatchStarted)
         {
-            currentUnit = unitList[0];
-            GameManager.Instance.SetCurrentUnitEvent.Invoke(currentUnit);
+            CurrentUnit = UnitList[0];
+            GameManager.Instance.SetCurrentUnitEvent.Invoke(CurrentUnit);
         }
     }
 
     private void Update()
     {
-        if (!initialisationDone)
+        if (!_initialisationDone)
         {
             UpdateBar();
             
-            initialisationDone = true;
+            _initialisationDone = true;
         }
         
-        if (!currentUnit && unitList.Count > 0)
+        if (!CurrentUnit && UnitList.Count > 0)
         {
-            currentUnit = unitList[0];
-            GameManager.Instance.SetCurrentUnitEvent.Invoke(currentUnit);
+            CurrentUnit = UnitList[0];
+            GameManager.Instance.SetCurrentUnitEvent.Invoke(CurrentUnit);
         }
     }
 
@@ -75,20 +75,20 @@ public class PlayerBehaviour : MonoBehaviour
     
     public void UpdateBar()
     {
-        GlobalTeamHP = 0;
+        GlobalTeamHp = 0;
         
         Debug.Log("Updating Health Bar for " + gameObject.name);
         
-        for (int j = 0; j < unitList.Count; j++)
+        for (int j = 0; j < UnitList.Count; j++)
         {
-            var unitScript = unitList[j].GetComponent<UnitBehaviour>();
+            var unitScript = UnitList[j].GetComponent<UnitBehaviour>();
 
-            GlobalTeamHP += unitScript.CurrentHealth;
+            GlobalTeamHp += unitScript.CurrentHealth;
         }
         
-        GlobalTeamHP /= GameManager.Instance.NumberOfStartingUnits;
+        GlobalTeamHp /= GameManager.Instance.NumberOfStartingUnits;
 
-        TeamHPBar.fillAmount = Mathf.InverseLerp(0, 100, GlobalTeamHP);
+        TeamHpBar.fillAmount = Mathf.InverseLerp(0, 100, GlobalTeamHp);
     }
 
     private void OnDestroy()

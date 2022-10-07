@@ -7,9 +7,9 @@ public class PickupManager : MonoBehaviour
 {
     public static PickupManager Instance;
     
-    [SerializeField] private List<Pickup> PickupList;
+    [SerializeField] private List<Pickup> _pickupList;
 
-    [SerializeField] private GameObject PickupPrefab;
+    [SerializeField] private GameObject _pickupPrefab;
 
     private void Awake()
     {
@@ -34,9 +34,9 @@ public class PickupManager : MonoBehaviour
 
         var spawnPoint = new Vector3(xPos, yPos, zPos);
 
-        var randomPickup = PickupList[Random.Range(0, PickupList.Count)];
+        var randomPickup = _pickupList[Random.Range(0, _pickupList.Count)];
 
-        var newPickup = Instantiate(PickupPrefab, spawnPoint, Quaternion.identity);
+        var newPickup = Instantiate(_pickupPrefab, spawnPoint, Quaternion.identity);
         
         newPickup.GetComponent<PickupBehaviour>().Init(randomPickup);
     }

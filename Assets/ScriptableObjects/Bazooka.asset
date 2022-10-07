@@ -12,15 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c8418ecd33bc6c540aef28d6c9f4d068, type: 3}
   m_Name: Bazooka
   m_EditorClassIdentifier: 
-  name: Bazooka
-  model: {fileID: 7117321401797842027, guid: 731b8adfed1d52d468824c24f15ae3c6, type: 3}
-  ammoPrefab: {fileID: 7926522421175382475, guid: b15f321068190a0479093c1c480dc696, type: 3}
-  damage: 45
-  shootingForce: {x: 100, y: 100, z: 0}
-  maxShootingForce: {x: 200, y: 200, z: 0}
-  accuracy: 100
-  shootingDirection: 0
-  explosive: 1
-  explosionForce: 1000
-  explosionRadius: 2.5
-  upwardsModifier: 2
+  Name: Bazooka
+  Model: {fileID: 7117321401797842027, guid: 731b8adfed1d52d468824c24f15ae3c6, type: 3}
+  AmmoPrefab: {fileID: 7926522421175382475, guid: b15f321068190a0479093c1c480dc696, type: 3}
+  Damage: 45
+  ShootingForce: {x: 100, y: 0, z: 0}
+  MaxShootingForce: {x: 200, y: 0, z: 0}
+  Accuracy: 90
+  ShootingDirection: 0
+  Explosive: 1
+  ExplosionForce: 0
+  ExplosionRadius: 2.5
+  UpwardsModifier: 1

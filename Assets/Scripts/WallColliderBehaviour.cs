@@ -5,13 +5,13 @@ using UnityEngine;
 
 public class WallColliderBehaviour : MonoBehaviour
 {
-    [SerializeField] private GameObject Unit;
+    [SerializeField] private GameObject _unit;
 
     private void OnDisable()
     {
-        if (Unit)
+        if (_unit)
         {
-            Unit.GetComponent<CapsuleCollider>().material.dynamicFriction = 0.4f;   
+            _unit.GetComponent<CapsuleCollider>().material.dynamicFriction = 0.4f;   
         }
     }
 
@@ -19,7 +19,7 @@ public class WallColliderBehaviour : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Wall"))
         {
-            Unit.GetComponent<CapsuleCollider>().material.dynamicFriction = 0;
+            _unit.GetComponent<CapsuleCollider>().material.dynamicFriction = 0;
         }
     }
 }

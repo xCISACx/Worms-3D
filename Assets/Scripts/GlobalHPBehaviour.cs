@@ -5,12 +5,12 @@ using System.Linq;
 using UnityEngine;
 using Image = UnityEngine.UI.Image;
 
-public class GlobalHPBehaviour : MonoBehaviour
+public class GlobalHpBehaviour : MonoBehaviour
 {
-    public List<Image> HPBars;
-    public List<Transform> HPBarsTransform;
+    public List<Image> HpBars;
+    public List<Transform> HpBarsTransform;
 
-    private bool initialisedColours = false;
+    private bool _initialisedColours = false;
     
     // Start is called before the first frame update
     void Start()
@@ -21,58 +21,44 @@ public class GlobalHPBehaviour : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (GameManager.Instance.AlivePlayers.Count > 0 && !initialisedColours)
+        if (GameManager.Instance.AlivePlayers.Count > 0 && !_initialisedColours)
         {
-            HPBars.Clear();
+            HpBars.Clear();
             
             var allBars = new List<Image>();
             
-            HPBarsTransform = GetTopLevelChildren(transform).ToList();
+            HpBarsTransform = GetTopLevelChildren(transform).ToList();
         
-            foreach (var tr in HPBarsTransform)
+            foreach (var tr in HpBarsTransform)
             {
                 var image = tr.GetComponent<Image>();
             
                 allBars.Add(image);
             }
 
-            for (int i = 0; i < GameManager.Instance.playerList.Count; i++)
+            for (int i = 0; i < GameManager.Instance.PlayerList.Count; i++)
             {
-                HPBars.Add(allBars[i]);
+                HpBars.Add(allBars[i]);
 
-                GameManager.Instance.playerList[i].TeamHPBar = HPBars[i];
+                GameManager.Instance.PlayerList[i].TeamHpBar = HpBars[i];
                 
-                HPBars[i].color = GameManager.Instance.playerList[i].unitList[0].PlayerColour;
-                HPBars[i].gameObject.SetActive(true);
+                HpBars[i].color = GameManager.Instance.PlayerList[i].UnitList[0].PlayerColour;
+                HpBars[i].gameObject.SetActive(true);
 
-                initialisedColours = true;
+                _initialisedColours = true;
             }
         }
     }
 
-    private void Awake()
-    {
-        /*HPBars.Clear();
-
-        HPBarsTransform = GetTopLevelChildren(transform).ToList();
-        
-        foreach (var tr in HPBarsTransform)
-        {
-            var image = tr.GetComponent<Image>();
-            
-            HPBars.Add(image);
-        }*/
-    }
-    
     public static Transform[] GetTopLevelChildren(Transform parent)
     {
-        Transform[] Children = new Transform[parent.childCount];
+        Transform[] children = new Transform[parent.childCount];
         
-        for (int ID = 0; ID < parent.childCount; ID++)
+        for (int id = 0; id < parent.childCount; id++)
         {
-            Children[ID] = parent.GetChild(ID);
+            children[id] = parent.GetChild(id);
         }
         
-        return Children;
+        return children;
     }
 }

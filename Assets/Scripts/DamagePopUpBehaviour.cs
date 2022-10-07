@@ -8,15 +8,15 @@ using Random = UnityEngine.Random;
 
 public class DamagePopUpBehaviour : MonoBehaviour
 {
-    public CinemachineFreeLook mainCamera;
+    public CinemachineFreeLook MainCamera;
     public TMP_Text DamageText;
-    public Vector3 randomDirection;
-    public Vector3 initialPosition;
+    public Vector3 RandomDirection;
+    public Vector3 InitialPosition;
 
     private void Awake()
     {
         DamageText = GetComponentInChildren<TMP_Text>();
-        randomDirection = new Vector3(Random.Range(2f, 5f), 8f, 0f);
+        RandomDirection = new Vector3(Random.Range(2f, 5f), 8f, 0f);
     }
 
     // Start is called before the first frame update
@@ -28,6 +28,6 @@ public class DamagePopUpBehaviour : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        transform.localPosition = Vector3.MoveTowards(initialPosition, initialPosition + randomDirection, 2f * Time.deltaTime);
+        transform.localPosition = Vector3.MoveTowards(InitialPosition, InitialPosition + RandomDirection, 2f * Time.deltaTime);
     }
 }

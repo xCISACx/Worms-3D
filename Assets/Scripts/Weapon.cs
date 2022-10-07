@@ -7,27 +7,27 @@ public class Weapon : ScriptableObject
 {
     [Header ("Name")]
     
-    public string name;
+    public string Name;
     
     [Header("Model")] 
     
-    public GameObject model;
+    public GameObject Model;
 
     [Header("Stats")]
     
-    public GameObject ammoPrefab;
-    public int damage;
-    public Vector3 shootingForce;
-    public Vector3 maxShootingForce;
-    public float accuracy;
+    public GameObject AmmoPrefab;
+    public int Damage;
+    public Vector3 ShootingForce;
+    public Vector3 MaxShootingForce;
+    public float Accuracy;
 
-    public WeaponBehaviour.Direction shootingDirection;
+    public WeaponBehaviour.Direction ShootingDirection;
     
-    public bool explosive;
+    public bool Explosive;
     
-    [SerializeField] public float explosionForce;
-    [SerializeField] public float explosionRadius;
-    [SerializeField] public float upwardsModifier;
+    [SerializeField] public float ExplosionForce;
+    [SerializeField] public float ExplosionRadius;
+    [SerializeField] public float UpwardsModifier;
 
     // Start is called before the first frame update
     void Start()

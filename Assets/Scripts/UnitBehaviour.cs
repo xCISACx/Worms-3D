@@ -19,7 +19,7 @@ public class UnitBehaviour : MonoBehaviour
         Player4
     }
 
-    public int originalIndex;
+    public int OriginalIndex;
 
     [Header("Player Stats")] 
     
@@ -29,152 +29,152 @@ public class UnitBehaviour : MonoBehaviour
 
     [Header("Unit Conditions")]
     
-    public bool canMove = false;
+    public bool CanMove = false;
 
-    public bool canJump = true;
+    public bool CanJump = true;
 
-    public bool canAim = false;
+    public bool CanAim = false;
     
-    public bool canShoot = false;
+    public bool CanShoot = false;
 
-    public bool matchInitDone = false;
+    public bool MatchInitDone = false;
     
-    public bool grounded = false;
+    public bool Grounded = false;
     
-    public bool onUnit = false;
+    public bool OnUnit = false;
     
-    public bool falling = false;
+    public bool Falling = false;
     
-    public bool jumping = false;
+    public bool Jumping = false;
     
-    public bool highJumping = false;
+    public bool HighJumping = false;
 
-    public bool highlighted = false;
+    public bool Highlighted = false;
 
     [Header("Unit Stats")]
     
     public int MaxHealth = 100;
     public int CurrentHealth = 100;
 
-    [SerializeField] private float jumpForce;
-    [SerializeField] private float doubleJumpForce;
-    [SerializeField] private float highJumpForce;
-    [SerializeField] private float forwardJumpForce;
+    [SerializeField] private float _jumpForce = 8;
+    [SerializeField] private float _doubleJumpForce = 12;
+    [SerializeField] private float _highJumpForce = 12;
+    [SerializeField] private float _forwardJumpForce = 10;
 
-    public int shotsFiredDuringRound;
+    public int ShotsFiredDuringRound;
 
     [Header("Unit References")]
     
-    [SerializeField] private Transform camera;
+    [SerializeField] private Transform _camera;
     
-    [SerializeField] private TMP_Text HealthText;
+    [SerializeField] private TMP_Text _healthText;
     
-    [SerializeField] private GameObject SelectionArrow;
+    [SerializeField] private GameObject _selectionArrow;
 
-    [SerializeField] private GameObject WallCollider;
+    [SerializeField] private GameObject _wallCollider;
 
-    [SerializeField] private SkinnedMeshRenderer meshRenderer;
+    [SerializeField] private SkinnedMeshRenderer _meshRenderer;
     
-    private Rigidbody rigidbody;
+    private Rigidbody _rigidbody;
 
     [Header("Movement Values")]
 
-    public Vector2 movementValue;
-    private Vector3 movementVector;
-    private Vector3 movementDirection;
+    public Vector2 MovementValue;
+    private Vector3 _movementVector;
+    private Vector3 _movementDirection;
     
-    [SerializeField] float movementSpeed;
-    [SerializeField] float airMovementSpeed;
+    [SerializeField] float _movementSpeed;
+    [SerializeField] float _airMovementSpeed;
 
-    [SerializeField] private float turnRate;
+    [SerializeField] private float _turnRate;
     
     [Header("Ground Check")]
     
-    [SerializeField] private float groundCheckDistance = 1.6f;
-    [SerializeField] private float groundCheckRadius = 0.4f;
-    [SerializeField] private LayerMask GroundLayerMask;
-    [SerializeField] private LayerMask UnitLayerMask;
+    [SerializeField] private float _groundCheckDistance = 1.6f;
+    [SerializeField] private float _groundCheckRadius = 0.4f;
+    [SerializeField] private LayerMask _groundLayerMask;
+    [SerializeField] private LayerMask _unitLayerMask;
     
     [Header("Movement Limits")]
 
-    private Vector3 turnStartPosition;
-    private Vector3 lastPosition;
+    private Vector3 _turnStartPosition;
+    private Vector3 _lastPosition;
     
-    private float distanceMovedX;
-    private float distanceMovedZ;
+    private float _distanceMovedX;
+    private float _distanceMovedZ;
                                           
-    [SerializeField] private float distanceMoved;
-    [SerializeField] private float maxMoveDistance = 30f;
+    [SerializeField] private float _distanceMoved;
+    [SerializeField] private float _maxMoveDistance = 30f;
     
     [Header("Weapon")]
     
-    public bool canSwitchWeapon;
-    public bool currentWeaponSelected;
-    [SerializeField] private Transform weaponSlot;
-    [SerializeField] private GameObject WeaponParentPrefab;
-    [SerializeField] public Weapon selectedWeapon;
-    [SerializeField] public int selectedWeaponIndex;
-    [SerializeField] public GameObject currentWeaponObject;
+    public bool CanSwitchWeapon;
+    public bool CurrentWeaponSelected;
+    [SerializeField] private Transform _weaponSlot;
+    [SerializeField] private GameObject _weaponParentPrefab;
+    [SerializeField] public Weapon SelectedWeapon;
+    [SerializeField] public int SelectedWeaponIndex;
+    [SerializeField] public GameObject CurrentWeaponObject;
 
     [Header("Fall Damage")]
     
-    [SerializeField] public bool canTakeDamage;
-    [SerializeField] public bool canTakeFallDamage;
-    [SerializeField] private int fallDamageToTake;
-    [SerializeField] private float fallHeight;
-    [SerializeField] private bool countFallDamage = false;
+    [SerializeField] public bool CanTakeDamage;
+    [SerializeField] public bool CanTakeFallDamage;
+    [SerializeField] private int _fallDamageToTake;
+    [SerializeField] private float _fallHeight;
+    [SerializeField] private bool _countFallDamage = false;
     [SerializeField] public float TimeSpentGrounded;
 
-    public bool beingKnockedBack = false;
+    public bool BeingKnockedBack = false;
 
     [Header("Slope Handling")]
     
-    [SerializeField] float maxSlopeAngle;
+    [SerializeField] float _maxSlopeAngle;
 
-    [SerializeField] private float slopeCheckDistance;
-    private RaycastHit slopeHit;
-    [SerializeField] private LayerMask SlopeMask;
-    [SerializeField] private float fallMultiplier = 4f;
+    [SerializeField] private float _slopeCheckDistance;
+    private RaycastHit _slopeHit;
+    [SerializeField] private LayerMask _slopeMask;
+    [SerializeField] private float _fallMultiplier = 4f;
 
     [Header("Animation")] 
     
-    public Animator animator;
+    public Animator Animator;
 
     // Start is called before the first frame update
     void Start()
     {
-        if (GameManager.Instance.matchStarted)
+        if (GameManager.Instance.MatchStarted)
         {
-            Player = GameManager.Instance.playerList[(int) Owner];
+            Player = GameManager.Instance.PlayerList[(int) Owner];
         }
     }
 
     private void Reset()
     {
-        Player = GameManager.Instance.playerList[(int) Owner];
+        Player = GameManager.Instance.PlayerList[(int) Owner];
     }
 
     private void Awake()
     {
-        rigidbody = GetComponent<Rigidbody>();
-        camera = Camera.main.transform;
-        animator = GetComponent<Animator>();
+        _rigidbody = GetComponent<Rigidbody>();
+        _camera = Camera.main.transform;
+        Animator = GetComponent<Animator>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (GameManager.Instance.matchStarted)
+        if (GameManager.Instance.MatchStarted)
         {
-            if (!matchInitDone)
+            if (!MatchInitDone)
             {
-                meshRenderer.material.color = PlayerColour;
+                _meshRenderer.material.color = PlayerColour;
                 
                 //Player.GlobalTeamHP += MaxHealth;
 
                 //Debug.Log("changed colour");
 
-                matchInitDone = true;
+                MatchInitDone = true;
             }
 
             if (!Player)
@@ -182,7 +182,7 @@ public class UnitBehaviour : MonoBehaviour
                 Player = transform.parent.GetComponent<PlayerBehaviour>();
             }
 
-            SelectionArrow.SetActive(highlighted);   
+            _selectionArrow.SetActive(Highlighted);   
         }
 
         /*if (movementValue.sqrMagnitude > 0)
@@ -194,7 +194,7 @@ public class UnitBehaviour : MonoBehaviour
             animator.SetTrigger("Idle");
         }*/
         
-        animator.SetInteger("Input", (int) movementValue.sqrMagnitude);
+        Animator.SetInteger("Input", (int) MovementValue.sqrMagnitude);
         
         //Debug.Log("magnitude: " + movementVector.sqrMagnitude);
         
@@ -208,7 +208,7 @@ public class UnitBehaviour : MonoBehaviour
     
     private void FixedUpdate()
     {
-        if (GameManager.Instance.matchStarted)
+        if (GameManager.Instance.MatchStarted)
         {
             /*int oldLayer = gameObject.layer; // This variable now stored our original layer
             
@@ -226,9 +226,9 @@ public class UnitBehaviour : MonoBehaviour
                 grounded = false;
             }*/
  
-            grounded = Physics.CheckSphere(transform.position - new Vector3(0, groundCheckDistance, 0), groundCheckRadius, GroundLayerMask);
+            Grounded = Physics.CheckSphere(transform.position - new Vector3(0, _groundCheckDistance, 0), _groundCheckRadius, _groundLayerMask);
             
-            onUnit = Physics.CheckSphere(transform.position - new Vector3(0, groundCheckDistance, 0), groundCheckRadius, UnitLayerMask);
+            OnUnit = Physics.CheckSphere(transform.position - new Vector3(0, _groundCheckDistance, 0), _groundCheckRadius, _unitLayerMask);
  
             //gameObject.layer = oldLayer;
 
@@ -236,38 +236,38 @@ public class UnitBehaviour : MonoBehaviour
 
             //grounded = true;
 
-            if (shotsFiredDuringRound >= 1)
+            if (ShotsFiredDuringRound >= 1)
             {
-                canSwitchWeapon = false;
-                Player.canChangeTurn = false;
+                CanSwitchWeapon = false;
+                Player.CanChangeTurn = false;
             }
 
-            if (!grounded && rigidbody.velocity.y <= 0f)
+            if (!Grounded && _rigidbody.velocity.y <= 0f)
             {
                 //Debug.Log("going down");
-                rigidbody.velocity += Vector3.up * Physics.gravity.y * fallMultiplier * Time.deltaTime;
+                _rigidbody.velocity += Vector3.up * Physics.gravity.y * _fallMultiplier * Time.deltaTime;
             }
             
             // TODO: Add the forward force to regular and double jumping, but not high jumping
 
-            if (!grounded && jumping || highJumping)
+            if (!Grounded && Jumping || HighJumping)
             {
-                rigidbody.AddForce(transform.forward * forwardJumpForce);
+                _rigidbody.AddForce(transform.forward * _forwardJumpForce);
             }
 
-            if (!grounded && Mathf.Abs(rigidbody.velocity.y) <= 0.5f)
+            if (!Grounded && Mathf.Abs(_rigidbody.velocity.y) <= 0.5f)
             {
-                canShoot = false;
+                CanShoot = false;
 
-                falling = true;
+                Falling = true;
                 
                 TimeSpentGrounded = 0;
                 
                 //countFallDamage = true;
                 
-                fallHeight = transform.position.y;
+                _fallHeight = transform.position.y;
                 
-                Debug.Log("fall height: " + fallHeight);
+                Debug.Log("fall height: " + _fallHeight);
 
                 //Debug.Log(rigidbody.velocity);
                 
@@ -278,93 +278,93 @@ public class UnitBehaviour : MonoBehaviour
             }
         }
 
-        rigidbody.useGravity = !OnSlope();
+        _rigidbody.useGravity = !OnSlope();
     }
 
     public void InitUnit()
     {
         //Debug.Log("initialising unit " + this.gameObject.name);
-        canTakeDamage = true;
-        WallCollider.SetActive(false);
-        turnStartPosition = transform.position;
-        lastPosition = transform.position;
-        distanceMovedX = 0f;
-        distanceMovedZ = 0f;
-        distanceMoved = 0f;
-        Player.unitPickedFlag = false;
+        CanTakeDamage = true;
+        _wallCollider.SetActive(false);
+        _turnStartPosition = transform.position;
+        _lastPosition = transform.position;
+        _distanceMovedX = 0f;
+        _distanceMovedZ = 0f;
+        _distanceMoved = 0f;
+        Player.UnitPickedFlag = false;
     }
 
     public void InitTurn()
     {
-        Player.canChangeTurn = true;
-        Player.turnStarted = false;
-        canMove = true;
-        canSwitchWeapon = true;
+        Player.CanChangeTurn = true;
+        Player.TurnStarted = false;
+        CanMove = true;
+        CanSwitchWeapon = true;
     }
 
     public void Move()
     {
-        if (canMove)
+        if (CanMove)
         {
-            movementVector = new Vector3(movementValue.x, 0, movementValue.y);
+            _movementVector = new Vector3(MovementValue.x, 0, MovementValue.y);
         
-            movementDirection = camera.forward * movementValue.y + camera.right  * movementValue.x;
+            _movementDirection = _camera.forward * MovementValue.y + _camera.right  * MovementValue.x;
 
             //Debug.Log(OnSlope());
 
-            if (grounded || onUnit && !OnSlope())
+            if (Grounded || OnUnit && !OnSlope())
             {
-                movementDirection = movementDirection * movementSpeed;
-                movementDirection.y = 0f;
+                _movementDirection = _movementDirection * _movementSpeed;
+                _movementDirection.y = 0f;
 
-                rigidbody.velocity = new Vector3(movementDirection.x, rigidbody.velocity.y, movementDirection.z);
+                _rigidbody.velocity = new Vector3(_movementDirection.x, _rigidbody.velocity.y, _movementDirection.z);
             }
-            else if (grounded && OnSlope())
+            else if (Grounded && OnSlope())
             {
-                movementDirection = GetSlopeMoveDirection() * movementSpeed;
-                movementDirection.y = 0f;
+                _movementDirection = GetSlopeMoveDirection() * _movementSpeed;
+                _movementDirection.y = 0f;
 
-                rigidbody.velocity = new Vector3(movementDirection.x, rigidbody.velocity.y, movementDirection.z);
+                _rigidbody.velocity = new Vector3(_movementDirection.x, _rigidbody.velocity.y, _movementDirection.z);
             }
-            else if (!grounded && !OnSlope())
+            else if (!Grounded && !OnSlope())
             {
-                movementDirection = Vector3.zero;
-                movementDirection.y = 0f;
+                _movementDirection = Vector3.zero;
+                _movementDirection.y = 0f;
             
-                rigidbody.velocity = new Vector3(movementDirection.x, rigidbody.velocity.y, movementDirection.z);
+                _rigidbody.velocity = new Vector3(_movementDirection.x, _rigidbody.velocity.y, _movementDirection.z);
             }
             //Debug.Log(rigidbody.velocity);
             
-            animator.SetInteger("Input", (int) movementValue.sqrMagnitude);
+            Animator.SetInteger("Input", (int) MovementValue.sqrMagnitude);
         }
         else
         {
-            rigidbody.velocity = new Vector3(0, rigidbody.velocity.y, 0);
+            _rigidbody.velocity = new Vector3(0, _rigidbody.velocity.y, 0);
             
-            movementValue = Vector2.zero;
+            MovementValue = Vector2.zero;
 
-            animator.SetInteger("Input", 0);
+            Animator.SetInteger("Input", 0);
         }
         
     }
 
     public void HandleWeaponAiming()
     {
-        if (canAim)
+        if (CanAim)
         {
-            GameManager.Instance.firstPersonCamera.Priority = 100;
+            GameManager.Instance.FirstPersonCamera.Priority = 100;
 
             GameManager.Instance.UIReferences.Reticle.GetComponent<Image>().enabled = true;
         
             //remove Cinemachine mouse input strings so we can't move the camera
-            GameManager.Instance.mainCamera.m_XAxis.m_InputAxisName = string.Empty;
-            GameManager.Instance.mainCamera.m_YAxis.m_InputAxisName = string.Empty;
+            GameManager.Instance.MainCamera.m_XAxis.m_InputAxisName = string.Empty;
+            GameManager.Instance.MainCamera.m_YAxis.m_InputAxisName = string.Empty;
 
             var aimSpeed = 2f;
             float vertical = Input.GetAxis ("Mouse Y") * aimSpeed;
             float horizontal = Input.GetAxis ("Mouse X") * aimSpeed;
 
-            var target = weaponSlot.transform;
+            var target = _weaponSlot.transform;
             var target2 = transform;
         
             target.transform.Rotate(-vertical, 0, 0);
@@ -374,67 +374,67 @@ public class UnitBehaviour : MonoBehaviour
 
     public void StopWeaponAiming()
     {
-        if (canAim)
+        if (CanAim)
         {
-            if (GameManager.Instance.firstPersonCamera)
+            if (GameManager.Instance.FirstPersonCamera)
             {
-                GameManager.Instance.firstPersonCamera.Priority = 0;   
+                GameManager.Instance.FirstPersonCamera.Priority = 0;   
             }
 
             GameManager.Instance.UIReferences.Reticle.GetComponent<Image>().enabled = false;
             
-            GameManager.Instance.mainCamera.m_XAxis.m_InputAxisName = "Mouse X";
-            GameManager.Instance.mainCamera.m_YAxis.m_InputAxisName = "Mouse Y";
+            GameManager.Instance.MainCamera.m_XAxis.m_InputAxisName = "Mouse X";
+            GameManager.Instance.MainCamera.m_YAxis.m_InputAxisName = "Mouse Y";
         }
     }
 
     public void LimitTotalMovement()
     {
-        if (movementVector != Vector3.zero)
+        if (_movementVector != Vector3.zero)
         {
             //We separate the distance moved on the X and Z axes so we don't count distance moved in the Y axis.
 
             var position = transform.position;
             
-            distanceMovedX += Mathf.Abs((position.x - lastPosition.x));
-            distanceMovedZ += Mathf.Abs((position.z - lastPosition.z));
+            _distanceMovedX += Mathf.Abs((position.x - _lastPosition.x));
+            _distanceMovedZ += Mathf.Abs((position.z - _lastPosition.z));
             
-            distanceMoved = distanceMovedX + distanceMovedZ;
+            _distanceMoved = _distanceMovedX + _distanceMovedZ;
             
-            lastPosition = position;
+            _lastPosition = position;
         }
 
         //If we go over the move distance limit, stop movement
         
-        if (movementVector != Vector3.zero && distanceMoved > maxMoveDistance)
+        if (_movementVector != Vector3.zero && _distanceMoved > _maxMoveDistance)
         {
-            canMove = false;
+            CanMove = false;
             //Debug.Log("Can't move any more");
         }
     }
 
     public void RotateWithMovement()
     {
-        if (movementVector != Vector3.zero)
+        if (_movementVector != Vector3.zero)
         {
-            float targetAngle = Mathf.Atan2(movementValue.x, movementValue.y) * Mathf.Rad2Deg + camera.eulerAngles.y;
+            float targetAngle = Mathf.Atan2(MovementValue.x, MovementValue.y) * Mathf.Rad2Deg + _camera.eulerAngles.y;
             
             Quaternion targetRotation = Quaternion.Euler(transform.rotation.x, targetAngle, transform.rotation.z);
             
-            transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * turnRate);
+            transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * _turnRate);
         }
     }
 
     private bool OnSlope()
     {
-        if (Physics.Raycast(transform.position, Vector3.down, out slopeHit, slopeCheckDistance, SlopeMask))
+        if (Physics.Raycast(transform.position, Vector3.down, out _slopeHit, _slopeCheckDistance, _slopeMask))
         {
-            float angle = Vector3.Angle(Vector3.up, slopeHit.normal);
+            float angle = Vector3.Angle(Vector3.up, _slopeHit.normal);
             //Debug.Log(slopeHit.normal);
             //Debug.DrawRay(transform.position, Vector3.down * slopeCheckDistance, Color.red);
             //Debug.Log(angle);
-            rigidbody.AddForce(slopeHit.normal * -Physics.gravity.magnitude);
-            return angle < maxSlopeAngle && angle != 0;
+            _rigidbody.AddForce(_slopeHit.normal * -Physics.gravity.magnitude);
+            return angle < _maxSlopeAngle && angle != 0;
         }
 
         return false;
@@ -442,23 +442,23 @@ public class UnitBehaviour : MonoBehaviour
 
     Vector3 GetSlopeMoveDirection()
     {
-        return Vector3.ProjectOnPlane(movementDirection, slopeHit.normal).normalized;
+        return Vector3.ProjectOnPlane(_movementDirection, _slopeHit.normal).normalized;
     }
 
     private void LimitMovementWithinRange()
     {
-        if (movementVector != Vector3.zero)
+        if (_movementVector != Vector3.zero)
         {
-            distanceMoved = Vector3.Distance(transform.position, turnStartPosition);
+            _distanceMoved = Vector3.Distance(transform.position, _turnStartPosition);
         
-            if (distanceMoved > maxMoveDistance)
+            if (_distanceMoved > _maxMoveDistance)
             {
                 //Debug.Log("Can't move farther.");
-                Vector3 spawnToPlayer = transform.position - turnStartPosition;
-                spawnToPlayer *= maxMoveDistance / distanceMoved;
+                Vector3 spawnToPlayer = transform.position - _turnStartPosition;
+                spawnToPlayer *= _maxMoveDistance / _distanceMoved;
                 //transform.position = turnStartPosition + fromOrigintoObject;
-                transform.position = new Vector3(turnStartPosition.x + spawnToPlayer.x, transform.position.y,
-                    turnStartPosition.z + spawnToPlayer.z);
+                transform.position = new Vector3(_turnStartPosition.x + spawnToPlayer.x, transform.position.y,
+                    _turnStartPosition.z + spawnToPlayer.z);
             }
         }
         
@@ -466,66 +466,66 @@ public class UnitBehaviour : MonoBehaviour
 
     public void Jump(int jumpType)
     {
-        if (grounded && canMove && canJump && !jumping)
+        if (Grounded && CanMove && CanJump && !Jumping)
         {
             switch (jumpType)
             {
                 case 0:
                     //rigidbody.AddForce(Vector3.up * jumpForce + transform.forward * (forwardJumpForce), ForceMode.Impulse);
                     //rigidbody.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
-                    rigidbody.velocity = new Vector3(rigidbody.velocity.x, jumpForce, rigidbody.velocity.z);
-                    jumping = true;
-                    canMove = false;
+                    _rigidbody.velocity = new Vector3(_rigidbody.velocity.x, _jumpForce, _rigidbody.velocity.z);
+                    Jumping = true;
+                    CanMove = false;
                     Debug.Log("jumping");
                     break;
                 case 1:
                     //rigidbody.AddForce(Vector3.up * doubleJumpForce, ForceMode.Impulse);
-                    rigidbody.velocity = new Vector3(rigidbody.velocity.x, doubleJumpForce, rigidbody.velocity.z);
-                    jumping = true;
-                    canMove = false;
+                    _rigidbody.velocity = new Vector3(_rigidbody.velocity.x, _doubleJumpForce, _rigidbody.velocity.z);
+                    Jumping = true;
+                    CanMove = false;
                     Debug.Log("double jumping");
                     break;
                 case 2:
                     //rigidbody.AddForce(Vector3.up * highJumpForce, ForceMode.Impulse);
-                    rigidbody.velocity = new Vector3(rigidbody.velocity.x, highJumpForce, rigidbody.velocity.z);
-                    highJumping = true;
-                    canMove = false;
+                    _rigidbody.velocity = new Vector3(_rigidbody.velocity.x, _highJumpForce, _rigidbody.velocity.z);
+                    HighJumping = true;
+                    CanMove = false;
                     Debug.Log("high jumping");
                     break;
             }
 
             //rigidbody.velocity = new Vector3(rigidbody.velocity.x, jumpForce, rigidbody.velocity.z);
             
-            WallCollider.SetActive(true);
-            grounded = false;
-            canJump = false;
+            _wallCollider.SetActive(true);
+            Grounded = false;
+            CanJump = false;
         }
         //rigidbody.velocity += new Vector3(rigidbody.velocity.x, jumpForce, rigidbody.velocity.z);
     }
 
     public void TakeDamage(int damage)
     {
-        if (canTakeDamage)
+        if (CanTakeDamage)
         {
-            canTakeDamage = false;
+            CanTakeDamage = false;
             
             //Debug.Log("take damage " + damage);
             CurrentHealth -= damage;
         
             CurrentHealth = Mathf.Clamp(CurrentHealth, 0, 100);
         
-            canTakeDamage = false;
+            CanTakeDamage = false;
         
-            HealthText.text = CurrentHealth.ToString();
+            _healthText.text = CurrentHealth.ToString();
         
-            if (Player.TeamHPBar)
+            if (Player.TeamHpBar)
             {
                 Player.UpdateBar();
             }
         
             GameManager.Instance.SpawnDamagePopUp(transform, new Vector3(0, 2f, 0), damage);
 
-            canTakeDamage = true;
+            CanTakeDamage = true;
 
             if (CurrentHealth <= 0)
             {
@@ -538,12 +538,12 @@ public class UnitBehaviour : MonoBehaviour
     {
         // If the unit self-destructs but there are more units, switch to the next player
         
-        if (GameManager.Instance._currentPlayer == Player && Player.currentUnit == this && Player.unitList.Count > 0)
+        if (GameManager.Instance.CurrentPlayer == Player && Player.CurrentUnit == this && Player.UnitList.Count > 0)
         {
             Debug.LogWarning("unit killed itself");
             Debug.LogWarning("suicide turn end");
 
-            if (!GameManager.Instance.gameOver)
+            if (!GameManager.Instance.GameOver)
             {
                 GameManager.Instance.StartNextTurn();
                 
@@ -553,20 +553,20 @@ public class UnitBehaviour : MonoBehaviour
 
                 GameManager.Instance.SetCurrentPlayerValues();
 
-                GameManager.Instance.SetCurrentUnitEvent.Invoke(Player.currentUnit);
+                GameManager.Instance.SetCurrentUnitEvent.Invoke(Player.CurrentUnit);
             }
         }
         
         // If the unit self-destructs and it's the player's last unit, eliminate the player
 
-        if (GameManager.Instance._currentPlayer == Player && Player.currentUnit == this && Player.unitList.Count == 1)
+        if (GameManager.Instance.CurrentPlayer == Player && Player.CurrentUnit == this && Player.UnitList.Count == 1)
         {
             GameManager.Instance.SetSelfDestructed(true);
             Player.SelfDestruct(); //OnPlayerDied
             Debug.Log("unit self destructed");
         }
 
-        else if (Player.unitList.Count == 1)
+        else if (Player.UnitList.Count == 1)
         {
             GameManager.Instance.SetSelfDestructed(false);
             Player.SelfDestruct();
@@ -574,11 +574,11 @@ public class UnitBehaviour : MonoBehaviour
         
         // Remove the unit from the unit lists and destroy it
 
-        Player.unitList.Remove(this);
+        Player.UnitList.Remove(this);
         
         Debug.Log("removed " + this + " from " + Player + "'s unitList");
         
-        GameManager.Instance.unitList.Remove(this);
+        GameManager.Instance.UnitList.Remove(this);
         
         Debug.Log("removed " + this + " from GM unitList");
 
@@ -594,118 +594,116 @@ public class UnitBehaviour : MonoBehaviour
             return;
         }*/
 
-        if (weaponSlot.childCount > 0) //destroy weapon if one already exists in the weapon slot
+        if (_weaponSlot.childCount > 0) //destroy weapon if one already exists in the weapon slot
         {
-            Destroy(weaponSlot.GetChild(0).gameObject);
+            Destroy(_weaponSlot.GetChild(0).gameObject);
         }
         
         // Instantiate a new weapon parent
         
-        var newWeaponParentObject = Instantiate(WeaponParentPrefab, weaponSlot.transform.position, weaponSlot.transform.rotation);
+        var newWeaponParentObject = Instantiate(_weaponParentPrefab, _weaponSlot.transform.position, _weaponSlot.transform.rotation);
         
         // Set the currentWeaponObject variable to the instantiated weapon parent
         
-        currentWeaponObject = newWeaponParentObject;
+        CurrentWeaponObject = newWeaponParentObject;
         
-        var weaponScript = currentWeaponObject.GetComponent<WeaponBehaviour>();
+        var weaponScript = CurrentWeaponObject.GetComponent<WeaponBehaviour>();
         
         // Parent the newWeaponParentObject to the weaponSlot transform
         
-        newWeaponParentObject.transform.SetParent(weaponSlot);
+        newWeaponParentObject.transform.SetParent(_weaponSlot);
         
-        weaponScript.user = gameObject;
+        weaponScript.User = gameObject;
         
-        weaponScript.Init(selectedWeapon);
+        weaponScript.Init(SelectedWeapon);
 
-        var newWeapon = Instantiate(weaponScript.weaponModel, newWeaponParentObject.transform.position,
+        var newWeapon = Instantiate(weaponScript.WeaponModel, newWeaponParentObject.transform.position,
             newWeaponParentObject.transform.rotation);
 
-        weaponScript.shootPoint.position = newWeapon.GetComponent<ModelProperties>().ShootPoint.position;
-        
-        weaponScript.lineRenderer.transform.position = weaponScript.shootPoint.position;
-        
-        weaponScript.FPSCamera.transform.position = weaponScript.shootPoint.position;
+        weaponScript.ShootPoint.position = newWeapon.GetComponent<ModelProperties>().ShootPoint.position;
+
+        weaponScript.FPSCamera.transform.position = weaponScript.ShootPoint.position;
         
         //weaponScript.user.GetComponent<UnitBehaviour>().FPSTarget = weaponScript.shootPoint;
 
-        GameManager.Instance.firstPersonCamera = weaponScript.FPSCamera;
+        GameManager.Instance.FirstPersonCamera = weaponScript.FPSCamera;
 
         //GameManager.Instance.firstPersonCamera.Follow = weaponScript.shootPoint;
         //GameManager.Instance.firstPersonCamera.LookAt = weaponScript.shootPoint;
 
-        newWeapon.transform.SetParent(weaponScript.weaponModelParent);
+        newWeapon.transform.SetParent(weaponScript.WeaponModelParent);
 
-        canAim = true;
-        canShoot = true;
+        CanAim = true;
+        CanShoot = true;
     }
 
     public void SetHighlight()
     {
-        if (GameManager.Instance._currentPlayer.currentUnit == this)
+        if (GameManager.Instance.CurrentPlayer.CurrentUnit == this)
         {
-            highlighted = true;
+            Highlighted = true;
         }
         else
         {
-            highlighted = false;
+            Highlighted = false;
         }
         
-        SelectionArrow.SetActive(highlighted);
+        _selectionArrow.SetActive(Highlighted);
     }
 
     private void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.CompareTag("Ground") || collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
         {
-            canJump = true;
-            canMove = true;
-            jumping = false;
-            highJumping = false;
-            WallCollider.SetActive(false);
-            countFallDamage = false;
+            CanJump = true;
+            CanMove = true;
+            Jumping = false;
+            HighJumping = false;
+            _wallCollider.SetActive(false);
+            _countFallDamage = false;
             TimeSpentGrounded++;
 
             //Debug.Log("setting kinematic to true ground");
 
             var landHeight = transform.position.y;
             
-            var heightFallen = MathF.Abs(fallHeight - landHeight);
+            var heightFallen = MathF.Abs(_fallHeight - landHeight);
 
-            if (falling && canTakeFallDamage)
+            if (Falling && CanTakeFallDamage)
             {
-                Debug.Log("Fell from " + fallHeight + " to " + landHeight);
+                Debug.Log("Fell from " + _fallHeight + " to " + landHeight);
 
                 var heightFallenInt = Mathf.FloorToInt(heightFallen);
 
-                if (heightFallenInt >= GameManager.Instance.fallDamageTreshold)
+                if (heightFallenInt >= GameManager.Instance.FallDamageTreshold)
                 {
                     Debug.Log("Taking fall damage from height " + heightFallenInt);
 
-                    fallDamageToTake = heightFallenInt - GameManager.Instance.fallDamageTreshold;
+                    _fallDamageToTake = heightFallenInt - GameManager.Instance.FallDamageTreshold;
 
-                    if (fallDamageToTake > 0)
+                    if (_fallDamageToTake > 0)
                     {
-                        TakeDamage(fallDamageToTake);  
-                        canShoot = false;
+                        TakeDamage(_fallDamageToTake);  
+                        CanShoot = false;
                         GameManager.Instance.StartNextTurn();
                     }
                 }
                 else
                 {
-                    canShoot = true;
+                    CanShoot = true;
                 }
                 
-                fallHeight = 0;
+                _fallHeight = 0;
 
-                falling = false;
+                Falling = false;
             }
 
-            fallDamageToTake = 0;
+            _fallDamageToTake = 0;
 
-            if (beingKnockedBack && TimeSpentGrounded > 0.5f)
+            if (BeingKnockedBack && TimeSpentGrounded > 0.5f)
             {
-                rigidbody.isKinematic = true;
-                beingKnockedBack = false;
+                _rigidbody.isKinematic = true;
+                BeingKnockedBack = false;
                 Debug.LogWarning("set being knocked back to false");
             }
         }
@@ -720,7 +718,7 @@ public class UnitBehaviour : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Ground") || collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
         {
-            countFallDamage = false;
+            _countFallDamage = false;
         }
         
         if (collision.gameObject.CompareTag("KillPlane"))
@@ -740,7 +738,7 @@ public class UnitBehaviour : MonoBehaviour
     {
         CurrentHealth = health;
         
-        HealthText.text = health.ToString();
+        _healthText.text = health.ToString();
     }
 
     private void OnTriggerEnter(Collider other)
@@ -753,6 +751,6 @@ public class UnitBehaviour : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        Gizmos.DrawSphere(transform.position - new Vector3(0, groundCheckDistance, 0), groundCheckRadius);
+        Gizmos.DrawSphere(transform.position - new Vector3(0, _groundCheckDistance, 0), _groundCheckRadius);
     }
 }

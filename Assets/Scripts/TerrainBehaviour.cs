@@ -4,25 +4,25 @@ using UnityEngine;
 
 public class TerrainBehaviour : MonoBehaviour
 {
-    [SerializeField] private Mesh mesh;
-    [SerializeField] private Vector3[] vertices;
-    [SerializeField] private Vector3[] newVertices;
-    [SerializeField] private AnimationCurve curve;
+    [SerializeField] private Mesh _mesh;
+    [SerializeField] private Vector3[] _vertices;
+    [SerializeField] private Vector3[] _newVertices;
+    [SerializeField] private AnimationCurve _curve;
     
     // Start is called before the first frame update
     void Start()
     {
-        mesh = GetComponent<MeshFilter>().mesh;
-        vertices = mesh.vertices;
-        newVertices = mesh.vertices;
+        _mesh = GetComponent<MeshFilter>().mesh;
+        _vertices = _mesh.vertices;
+        _newVertices = _mesh.vertices;
     }
 
     public void DestroyTerrain(Vector3 origin, float radius)
     {
-        for (int i = 0; i < newVertices.Length; i++)
+        for (int i = 0; i < _newVertices.Length; i++)
         {
-            origin = new Vector3(origin.x, newVertices[i].y, origin.z);
-            float hitDistance = Vector3.Distance(newVertices[i], origin);
+            origin = new Vector3(origin.x, _newVertices[i].y, origin.z);
+            float hitDistance = Vector3.Distance(_newVertices[i], origin);
 
             //var fallOff = curve.Evaluate(hitDistance1);
             
@@ -30,7 +30,7 @@ public class TerrainBehaviour : MonoBehaviour
             if (hitDistance < radius)
             {
                 //Debug.Log("less than radius");
-                newVertices[i] += Vector3.down * 1f;
+                _newVertices[i] += Vector3.down * 1f;
             }
         }
 
@@ -39,9 +39,9 @@ public class TerrainBehaviour : MonoBehaviour
 
     void RegenerateMesh()
     {
-        mesh.vertices = newVertices;
+        _mesh.vertices = _newVertices;
         //mesh.UploadMeshData(true);
-        GetComponent<MeshCollider>().sharedMesh = mesh;
-        mesh.RecalculateNormals();
+        GetComponent<MeshCollider>().sharedMesh = _mesh;
+        _mesh.RecalculateNormals();
     }
 }

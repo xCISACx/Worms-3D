@@ -51,7 +51,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e1e89dcccc80e934c8c8e5b84d864da6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cam: {fileID: 0}
+  Cam: {fileID: 0}
 --- !u!223 &1855642446892153108
 Canvas:
   m_ObjectHideFlags: 0
@@ -242,7 +242,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e6148e63688a0494799da0da0ce75233, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  parent: {fileID: 5353392602512573696}
+  Parent: {fileID: 5353392602512573696}
 --- !u!1 &5353392602512573696
 GameObject:
   m_ObjectHideFlags: 0
@@ -288,7 +288,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ee80b5aca2e8f74d8e32b114a8fbb61, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mainCamera: {fileID: 0}
+  MainCamera: {fileID: 0}
   DamageText: {fileID: 4502957165309221498}
-  randomDirection: {x: 0, y: 0, z: 0}
-  initialPosition: {x: 0, y: 0, z: 0}
+  RandomDirection: {x: 0, y: 0, z: 0}
+  InitialPosition: {x: 0, y: 0, z: 0}
