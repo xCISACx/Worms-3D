@@ -10,9 +10,9 @@ public class ProjectileBehaviour : MonoBehaviour
     public GameObject ExplosionPrefab;
     public LayerMask layerMask;
     private Vector3 origin;
-    [SerializeField] private float explosionForce;
-    [SerializeField] private float explosionRadius;
-    [SerializeField] private float upwardsModifier;
+    [SerializeField] public float explosionForce;
+    [SerializeField] public float explosionRadius;
+    [SerializeField] public float upwardsModifier;
     [SerializeField] private TerrainDamageConfig TerrainDamageConfig;
     [SerializeField] private bool spawnedExplosion = false;
 
@@ -23,6 +23,8 @@ public class ProjectileBehaviour : MonoBehaviour
         if (unit)
         {
             unit.beingKnockedBack = true;
+            //unit.grounded = false;
+            unit.GetComponent<Rigidbody>().isKinematic = false;
             Debug.LogWarning("set being knocked back to true");
         }
         
@@ -62,7 +64,9 @@ public class ProjectileBehaviour : MonoBehaviour
                 //Debug.Log("origin: " + localOrigin);
                 //Debug.Log("local position: " + transform.localPosition);
                 //other.GetComponent<TerrainDamager>().ApplyDamage(origin, TerrainDamageConfig, 1.0f);
+                
                 other.gameObject.GetComponent<TerrainBehaviour>().DestroyTerrain(origin1, explosionRadius);
+                
                 spawnedExplosion = true;
                 Destroy(gameObject);
             }
@@ -134,7 +138,8 @@ public class ProjectileBehaviour : MonoBehaviour
                 rb.AddExplosionForce(explosionForce, transform.position, explosionRadius, upwardsModifier);
                 if (unit)
                 {
-                    unit.TimeSpentGrounded = 0;   
+                    unit.TimeSpentGrounded = 0;
+                    unit.grounded = false;
                 }
                 Debug.Log("adding explosion force");
             }

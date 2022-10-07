@@ -64,19 +64,34 @@ public class WeaponBehaviour : MonoBehaviour
     public void Init(Weapon selectedWeapon)
     {
         weaponModel = selectedWeapon.model;
+        
         defaultShootForce = selectedWeapon.shootingForce;
+        
         currentShootForce = selectedWeapon.shootingForce;
+        
         maxShootForce = selectedWeapon.maxShootingForce;
+        
         projectilePrefab = selectedWeapon.ammoPrefab;
+        
         projectilePrefab.GetComponent<ProjectileBehaviour>().damage = selectedWeapon.damage;
+        
+        projectilePrefab.GetComponent<ProjectileBehaviour>().explosive = selectedWeapon.explosive;
+        
+        projectilePrefab.GetComponent<ProjectileBehaviour>().explosionForce = selectedWeapon.explosionForce;
+        
+        projectilePrefab.GetComponent<ProjectileBehaviour>().explosionRadius = selectedWeapon.explosionRadius;
+        
+        projectilePrefab.GetComponent<ProjectileBehaviour>().upwardsModifier = selectedWeapon.upwardsModifier;
+        
         shootingDirection = selectedWeapon.shootingDirection;
+        
     }
 
     public void ChargeShot()
     {
         if (GameManager.Instance._currentPlayer.roundUnitPicked
             && GameManager.Instance._currentPlayer.currentUnit == user.GetComponent<UnitBehaviour>()
-            && GameManager.Instance._currentPlayer.currentUnit.shotsFiredDuringRound < 1)
+            && user.GetComponent<UnitBehaviour>().canShoot)
         {
             var newShootForceX = currentShootForce.x += chargeSpeed;
             var newShootForceY = currentShootForce.y += chargeSpeed;
@@ -98,7 +113,7 @@ public class WeaponBehaviour : MonoBehaviour
 
         if (GameManager.Instance._currentPlayer.roundUnitPicked
             && GameManager.Instance._currentPlayer.currentUnit == user.GetComponent<UnitBehaviour>()
-            && GameManager.Instance._currentPlayer.currentUnit.shotsFiredDuringRound < 1)
+            && user.GetComponent<UnitBehaviour>().canShoot)
         {
             var newProjectile = Instantiate(projectilePrefab, shootPoint.position, Quaternion.identity);
             Physics.IgnoreCollision(newProjectile.GetComponent<Collider>(), user.GetComponent<Collider>());
@@ -131,12 +146,22 @@ public class WeaponBehaviour : MonoBehaviour
             lineRenderer.transform.rotation = transform.localRotation;
 
             //Debug.Log("shoot");
+            
             user.GetComponent<UnitBehaviour>().shotsFiredDuringRound++;
+            
             //user.GetComponent<UnitBehaviour>().canAct = false;
+            
             currentShootForce = defaultShootForce;
+            
             GameManager.Instance.UIReferences.ChargeBar.fillAmount = 0;
+            
             GameManager.Instance.firstPersonCamera.Follow = newProjectile.transform;
             GameManager.Instance.firstPersonCamera.LookAt = newProjectile.transform;
+
+            user.GetComponent<UnitBehaviour>().canAim = false;
+
+            GameManager.Instance.mainCamera.m_XAxis.m_InputAxisName = "";
+            GameManager.Instance.mainCamera.m_YAxis.m_InputAxisName = "";
             
             if (GameManager.Instance.AlivePlayers.Count > 1)
             {
@@ -146,6 +171,8 @@ public class WeaponBehaviour : MonoBehaviour
                 
                 GameManager.Instance.ShotFiredEvent.Invoke();
             }
+
+            user.GetComponent<UnitBehaviour>().canShoot = false;
             
             Destroy(newProjectile.gameObject, 10f);
         }

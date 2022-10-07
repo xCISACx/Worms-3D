@@ -22,6 +22,12 @@ public class Weapon : ScriptableObject
     public float accuracy;
 
     public WeaponBehaviour.Direction shootingDirection;
+    
+    public bool explosive;
+    
+    [SerializeField] public float explosionForce;
+    [SerializeField] public float explosionRadius;
+    [SerializeField] public float upwardsModifier;
 
     // Start is called before the first frame update
     void Start()

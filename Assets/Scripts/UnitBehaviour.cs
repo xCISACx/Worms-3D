@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -18,6 +19,8 @@ public class UnitBehaviour : MonoBehaviour
         Player4
     }
 
+    public int originalIndex;
+
     [Header("Player Stats")] 
     
     public PlayerBehaviour Player;
@@ -27,10 +30,20 @@ public class UnitBehaviour : MonoBehaviour
     [Header("Unit Conditions")]
     
     public bool canMove = false;
+
+    public bool canJump = true;
+
+    public bool canAim = false;
     
+    public bool canShoot = false;
+
     public bool matchInitDone = false;
     
     public bool grounded = false;
+    
+    public bool onUnit = false;
+    
+    public bool falling = false;
     
     public bool jumping = false;
     
@@ -60,7 +73,7 @@ public class UnitBehaviour : MonoBehaviour
 
     [SerializeField] private GameObject WallCollider;
 
-    [SerializeField] private MeshRenderer meshRenderer;
+    [SerializeField] private SkinnedMeshRenderer meshRenderer;
     
     private Rigidbody rigidbody;
 
@@ -80,6 +93,7 @@ public class UnitBehaviour : MonoBehaviour
     [SerializeField] private float groundCheckDistance = 1.6f;
     [SerializeField] private float groundCheckRadius = 0.4f;
     [SerializeField] private LayerMask GroundLayerMask;
+    [SerializeField] private LayerMask UnitLayerMask;
     
     [Header("Movement Limits")]
 
@@ -121,7 +135,10 @@ public class UnitBehaviour : MonoBehaviour
     private RaycastHit slopeHit;
     [SerializeField] private LayerMask SlopeMask;
     [SerializeField] private float fallMultiplier = 4f;
-    [SerializeField] private bool wasGrounded;
+
+    [Header("Animation")] 
+    
+    public Animator animator;
 
     // Start is called before the first frame update
     void Start()
@@ -141,9 +158,7 @@ public class UnitBehaviour : MonoBehaviour
     {
         rigidbody = GetComponent<Rigidbody>();
         camera = Camera.main.transform;
-        rigidbody = GetComponent<Rigidbody>();
-
-        //TODO: Make weapon selection function
+        animator = GetComponent<Animator>();
     }
 
     // Update is called once per frame
@@ -170,6 +185,19 @@ public class UnitBehaviour : MonoBehaviour
             SelectionArrow.SetActive(highlighted);   
         }
 
+        /*if (movementValue.sqrMagnitude > 0)
+        {
+            animator.SetTrigger("Move");
+        }
+        else
+        {
+            animator.SetTrigger("Idle");
+        }*/
+        
+        animator.SetInteger("Input", (int) movementValue.sqrMagnitude);
+        
+        //Debug.Log("magnitude: " + movementVector.sqrMagnitude);
+        
         //Collider[] hitColliders = Physics.OverlapSphere(transform.position - new Vector3(0, groundCheckDistance, 0), groundCheckRadius, GroundLayerMask);
         //if (hitColliders[0].
         // check grounded normal to check if the touched object is not a wall
@@ -182,8 +210,32 @@ public class UnitBehaviour : MonoBehaviour
     {
         if (GameManager.Instance.matchStarted)
         {
+            /*int oldLayer = gameObject.layer; // This variable now stored our original layer
+            
+            gameObject.layer = 2; // The game object will now ignore all forms of raycasting
+            
+            var hitColliders = Physics.OverlapSphere(transform.position - new Vector3(0, groundCheckDistance, 0),
+                groundCheckRadius, GroundLayerMask);
+
+            if (hitColliders.Length > 0)
+            {
+                grounded = true;
+            }
+            else
+            {
+                grounded = false;
+            }*/
+ 
             grounded = Physics.CheckSphere(transform.position - new Vector3(0, groundCheckDistance, 0), groundCheckRadius, GroundLayerMask);
             
+            onUnit = Physics.CheckSphere(transform.position - new Vector3(0, groundCheckDistance, 0), groundCheckRadius, UnitLayerMask);
+ 
+            //gameObject.layer = oldLayer;
+
+            //grounded = Physics.CheckSphere(transform.position - new Vector3(0, groundCheckDistance, 0), groundCheckRadius, GroundLayerMask);
+
+            //grounded = true;
+
             if (shotsFiredDuringRound >= 1)
             {
                 canSwitchWeapon = false;
@@ -205,6 +257,12 @@ public class UnitBehaviour : MonoBehaviour
 
             if (!grounded && Mathf.Abs(rigidbody.velocity.y) <= 0.5f)
             {
+                canShoot = false;
+
+                falling = true;
+                
+                TimeSpentGrounded = 0;
+                
                 //countFallDamage = true;
                 
                 fallHeight = transform.position.y;
@@ -254,7 +312,7 @@ public class UnitBehaviour : MonoBehaviour
 
             //Debug.Log(OnSlope());
 
-            if (grounded && !OnSlope())
+            if (grounded || onUnit && !OnSlope())
             {
                 movementDirection = movementDirection * movementSpeed;
                 movementDirection.y = 0f;
@@ -270,52 +328,64 @@ public class UnitBehaviour : MonoBehaviour
             }
             else if (!grounded && !OnSlope())
             {
-                movementDirection = movementDirection * airMovementSpeed;
+                movementDirection = Vector3.zero;
                 movementDirection.y = 0f;
             
                 rigidbody.velocity = new Vector3(movementDirection.x, rigidbody.velocity.y, movementDirection.z);
             }
             //Debug.Log(rigidbody.velocity);
+            
+            animator.SetInteger("Input", (int) movementValue.sqrMagnitude);
         }
         else
         {
             rigidbody.velocity = new Vector3(0, rigidbody.velocity.y, 0);
+            
+            movementValue = Vector2.zero;
+
+            animator.SetInteger("Input", 0);
         }
         
     }
 
     public void HandleWeaponAiming()
     {
-        GameManager.Instance.firstPersonCamera.Priority = 100;
+        if (canAim)
+        {
+            GameManager.Instance.firstPersonCamera.Priority = 100;
 
-        GameManager.Instance.UIReferences.Reticle.GetComponent<Image>().enabled = true;
+            GameManager.Instance.UIReferences.Reticle.GetComponent<Image>().enabled = true;
         
-        //remove Cinemachine mouse input strings so we can't move the camera
-        GameManager.Instance.mainCamera.m_XAxis.m_InputAxisName = string.Empty;
-        GameManager.Instance.mainCamera.m_YAxis.m_InputAxisName = string.Empty;
+            //remove Cinemachine mouse input strings so we can't move the camera
+            GameManager.Instance.mainCamera.m_XAxis.m_InputAxisName = string.Empty;
+            GameManager.Instance.mainCamera.m_YAxis.m_InputAxisName = string.Empty;
 
-        var aimSpeed = 2f;
-        float vertical = Input.GetAxis ("Mouse Y") * aimSpeed;
-        float horizontal = Input.GetAxis ("Mouse X") * aimSpeed;
+            var aimSpeed = 2f;
+            float vertical = Input.GetAxis ("Mouse Y") * aimSpeed;
+            float horizontal = Input.GetAxis ("Mouse X") * aimSpeed;
 
-        var target = weaponSlot.transform;
-        var target2 = transform;
+            var target = weaponSlot.transform;
+            var target2 = transform;
         
-        target.transform.Rotate(-vertical, 0, 0);
-        target2.transform.Rotate(0, horizontal, 0);
+            target.transform.Rotate(-vertical, 0, 0);
+            target2.transform.Rotate(0, horizontal, 0);   
+        }
     }
 
     public void StopWeaponAiming()
     {
-        if (GameManager.Instance.firstPersonCamera)
+        if (canAim)
         {
-            GameManager.Instance.firstPersonCamera.Priority = 0;   
-        }
+            if (GameManager.Instance.firstPersonCamera)
+            {
+                GameManager.Instance.firstPersonCamera.Priority = 0;   
+            }
 
-        GameManager.Instance.UIReferences.Reticle.GetComponent<Image>().enabled = false;
-        
-        GameManager.Instance.mainCamera.m_XAxis.m_InputAxisName = "Mouse X";
-        GameManager.Instance.mainCamera.m_YAxis.m_InputAxisName = "Mouse Y";
+            GameManager.Instance.UIReferences.Reticle.GetComponent<Image>().enabled = false;
+            
+            GameManager.Instance.mainCamera.m_XAxis.m_InputAxisName = "Mouse X";
+            GameManager.Instance.mainCamera.m_YAxis.m_InputAxisName = "Mouse Y";
+        }
     }
 
     public void LimitTotalMovement()
@@ -396,24 +466,30 @@ public class UnitBehaviour : MonoBehaviour
 
     public void Jump(int jumpType)
     {
-        if (grounded && canMove)
+        if (grounded && canMove && canJump && !jumping)
         {
             switch (jumpType)
             {
                 case 0:
                     //rigidbody.AddForce(Vector3.up * jumpForce + transform.forward * (forwardJumpForce), ForceMode.Impulse);
-                    rigidbody.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+                    //rigidbody.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+                    rigidbody.velocity = new Vector3(rigidbody.velocity.x, jumpForce, rigidbody.velocity.z);
                     jumping = true;
+                    canMove = false;
                     Debug.Log("jumping");
                     break;
                 case 1:
-                    rigidbody.AddForce(Vector3.up * doubleJumpForce, ForceMode.Impulse);
+                    //rigidbody.AddForce(Vector3.up * doubleJumpForce, ForceMode.Impulse);
+                    rigidbody.velocity = new Vector3(rigidbody.velocity.x, doubleJumpForce, rigidbody.velocity.z);
                     jumping = true;
+                    canMove = false;
                     Debug.Log("double jumping");
                     break;
                 case 2:
-                    rigidbody.AddForce(Vector3.up * highJumpForce, ForceMode.Impulse);
+                    //rigidbody.AddForce(Vector3.up * highJumpForce, ForceMode.Impulse);
+                    rigidbody.velocity = new Vector3(rigidbody.velocity.x, highJumpForce, rigidbody.velocity.z);
                     highJumping = true;
+                    canMove = false;
                     Debug.Log("high jumping");
                     break;
             }
@@ -422,6 +498,7 @@ public class UnitBehaviour : MonoBehaviour
             
             WallCollider.SetActive(true);
             grounded = false;
+            canJump = false;
         }
         //rigidbody.velocity += new Vector3(rigidbody.velocity.x, jumpForce, rigidbody.velocity.z);
     }
@@ -452,32 +529,53 @@ public class UnitBehaviour : MonoBehaviour
 
     public void Die()
     {
+        // If the unit self-destructs but there are more units, switch to the next player
+        
         if (GameManager.Instance._currentPlayer == Player && Player.currentUnit == this && Player.unitList.Count > 0)
         {
             Debug.LogWarning("unit killed itself");
             Debug.LogWarning("suicide turn end");
 
-            GameManager.Instance.NextUnit();
+            if (!GameManager.Instance.gameOver)
+            {
+                GameManager.Instance.StartNextTurn();
+                
+                GameManager.Instance.NextUnit();
 
-            //Player.currentUnit = Player.unitList[(Player.currentUnitIndex + 1) % Player.unitList.Count];
+                //Player.currentUnit = Player.unitList[(Player.currentUnitIndex + 1) % Player.unitList.Count];
 
-            GameManager.Instance.SetCurrentPlayerValues();
+                GameManager.Instance.SetCurrentPlayerValues();
 
-            GameManager.Instance.SetCurrentUnitEvent.Invoke(Player.currentUnit);
-
-            GameManager.Instance.StartNextTurn();
+                GameManager.Instance.SetCurrentUnitEvent.Invoke(Player.currentUnit);
+            }
         }
+        
+        // If the unit self-destructs and it's the player's last unit, eliminate the player
 
         if (GameManager.Instance._currentPlayer == Player && Player.currentUnit == this && Player.unitList.Count == 1)
         {
             GameManager.Instance.SetSelfDestructed(true);
+            Player.SelfDestruct(); //OnPlayerDied
+            Debug.Log("unit self destructed");
         }
+
+        else if (Player.unitList.Count == 1)
+        {
+            GameManager.Instance.SetSelfDestructed(false);
+            Player.SelfDestruct();
+        }
+        
+        // Remove the unit from the unit lists and destroy it
 
         Player.unitList.Remove(this);
         
+        Debug.Log("removed " + this + " from " + Player + "'s unitList");
+        
         GameManager.Instance.unitList.Remove(this);
+        
+        Debug.Log("removed " + this + " from GM unitList");
 
-        Destroy(gameObject, 1f);
+        Destroy(gameObject);
     }
 
     //todo: SEPARATE BLOCKS INTO FUNCTIONS
@@ -529,6 +627,9 @@ public class UnitBehaviour : MonoBehaviour
         //GameManager.Instance.firstPersonCamera.LookAt = weaponScript.shootPoint;
 
         newWeapon.transform.SetParent(weaponScript.weaponModelParent);
+
+        canAim = true;
+        canShoot = true;
     }
 
     public void SetHighlight()
@@ -549,6 +650,8 @@ public class UnitBehaviour : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Ground") || collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
         {
+            canJump = true;
+            canMove = true;
             jumping = false;
             highJumping = false;
             WallCollider.SetActive(false);
@@ -561,23 +664,44 @@ public class UnitBehaviour : MonoBehaviour
             
             var heightFallen = MathF.Abs(fallHeight - landHeight);
 
-            if (!grounded && canTakeFallDamage && heightFallen >= GameManager.Instance.fallDamageTreshold)
+            if (falling && canTakeFallDamage)
             {
-                Debug.Log("Taking fall damage");
-                
-                TakeDamage(Mathf.FloorToInt(heightFallen - GameManager.Instance.fallDamageTreshold));
+                Debug.Log("Fell from " + fallHeight + " to " + landHeight);
 
-                GameManager.Instance.StartNextTurn();
+                if (heightFallen >= GameManager.Instance.fallDamageTreshold)
+                {
+                    Debug.Log("Taking fall damage from height " + heightFallen);
+                    
+                    TakeDamage(Mathf.FloorToInt(heightFallen - GameManager.Instance.fallDamageTreshold));
+
+                    fallHeight = 0;
+
+                    falling = false;
+
+                    canShoot = false;
+
+                    GameManager.Instance.StartNextTurn();
+                }
             }
-            
+
+            if (!grounded)
+            {
+                canShoot = true;
+            }
+
             fallDamageToTake = 0;
 
-            if (beingKnockedBack && TimeSpentGrounded > 1f)
+            if (beingKnockedBack && TimeSpentGrounded > 0.5f)
             {
                 rigidbody.isKinematic = true;
                 beingKnockedBack = false;
                 Debug.LogWarning("set being knocked back to false");
             }
+        }
+        
+        if (collision.gameObject.CompareTag("KillPlane"))
+        {
+            Die();
         }
     }
     
@@ -586,6 +710,24 @@ public class UnitBehaviour : MonoBehaviour
         if (collision.gameObject.CompareTag("Ground") || collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
         {
             countFallDamage = false;
+        }
+        
+        if (collision.gameObject.CompareTag("KillPlane"))
+        {
+            Die();
+        }
+        
+        if (collision.gameObject.CompareTag("Unit"))
+        {
+            GetComponent<CapsuleCollider>().material.dynamicFriction = 0;
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.CompareTag("KillPlane"))
+        {
+            Die();
         }
     }
 

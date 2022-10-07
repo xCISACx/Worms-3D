@@ -15,6 +15,7 @@ TagManager:
   - Ground
   - Wall
   - Weapon
+  - KillPlane
   layers:
   - Default
   - TransparentFX

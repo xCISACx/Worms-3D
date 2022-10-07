@@ -42,6 +42,7 @@ public class MainMenuManager : MonoBehaviour
             var newPlayer = Instantiate(PlayerPrefab, new Vector3(0, 0, 0), Quaternion.identity);
             newPlayer.name = "Player " + (i + 1);
             var playerScript = newPlayer.GetComponent<PlayerBehaviour>();
+            
             playerScript.OriginalPlayerIndex = i;
             
             GameManager.Instance.playerList.Add(newPlayer.GetComponent<PlayerBehaviour>());
@@ -82,6 +83,7 @@ public class MainMenuManager : MonoBehaviour
                 var unitScript = newUnit.GetComponent<UnitBehaviour>();
                 unitScript.enabled = true;
                 unitScript.Owner = (UnitBehaviour.PlayerNumber) i;
+                unitScript.originalIndex = j;
                 
                 var color = Color.black;
                 ColorUtility.TryParseHtmlString(PlayerColours[i], out color);

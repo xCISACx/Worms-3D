@@ -8,6 +8,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/Assets/WaterBehaviour.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.cinemachine@2.8.9/Samples~/Cinemachine Example Scenes/Shared/Scripts/PlayerMovePhysics.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.probuilder@5.0.6/Runtime/Shapes/Stairs.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.timeline@1.6.4/Editor/Utilities/PropertyCollector.cs" root0="SKIP_HIGHLIGHTING" />
@@ -72,7 +73,7 @@
       <option name="presentableId" value="Default" />
       <updated>1665055177343</updated>
       <workItem from="1665055178273" duration="1228000" />
-      <workItem from="1665056438855" duration="5630000" />
+      <workItem from="1665056438855" duration="37488000" />
     </task>
     <servers />
   </component>

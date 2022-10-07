@@ -127,7 +127,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 623b65a04461b67439b932049901d955, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  explosive: 1
+  explosive: 0
   damage: 45
   ExplosionPrefab: {fileID: 2727298428513077183, guid: 34733f823077fd24f808e8a2ae7830f7, type: 3}
   layerMask:

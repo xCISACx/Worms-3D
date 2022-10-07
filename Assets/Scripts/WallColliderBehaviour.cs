@@ -9,7 +9,10 @@ public class WallColliderBehaviour : MonoBehaviour
 
     private void OnDisable()
     {
-        Unit.GetComponent<CapsuleCollider>().material.dynamicFriction = 0.4f;
+        if (Unit)
+        {
+            Unit.GetComponent<CapsuleCollider>().material.dynamicFriction = 0.4f;   
+        }
     }
 
     private void OnTriggerStay(Collider other)

@@ -20,3 +20,7 @@ MonoBehaviour:
   maxShootingForce: {x: 200, y: 200, z: 0}
   accuracy: 100
   shootingDirection: 0
+  explosive: 1
+  explosionForce: 1000
+  explosionRadius: 2.5
+  upwardsModifier: 2
