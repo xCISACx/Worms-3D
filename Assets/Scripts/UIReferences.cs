@@ -15,4 +15,5 @@ public class UIReferences : MonoBehaviour
     public Image ChargeBar;
     public GameObject DamagePopUpPrefab;
     public GameObject Reticle;
+    public TMP_Text EndTurnTimerText;
 }

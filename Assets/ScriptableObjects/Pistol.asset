@@ -16,11 +16,11 @@ MonoBehaviour:
   model: {fileID: 1710935246616217760, guid: 07dc19d18bd9cfc4fad84889cab32ae8, type: 3}
   ammoPrefab: {fileID: 7926522421175382475, guid: 1e211596a4235124a934628de8cfb63a, type: 3}
   damage: 20
-  shootingForce: {x: 50, y: 0, z: 0}
-  maxShootingForce: {x: 50, y: 0, z: 0}
-  accuracy: 90
+  shootingForce: {x: 150, y: 0, z: 0}
+  maxShootingForce: {x: 150, y: 0, z: 0}
+  accuracy: 100
   shootingDirection: 0
-  explosive: 1
+  explosive: 0
   explosionForce: 200
   explosionRadius: 1
   upwardsModifier: 0.2

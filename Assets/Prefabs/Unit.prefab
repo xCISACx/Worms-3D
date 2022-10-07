@@ -2074,7 +2074,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   distanceMoved: 0
-  maxMoveDistance: 60
+  maxMoveDistance: 1000
   canSwitchWeapon: 0
   currentWeaponSelected: 0
   weaponSlot: {fileID: 6706881824310305739}

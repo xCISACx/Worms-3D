@@ -14,12 +14,18 @@ public class MainMenuManager : MonoBehaviour
     private bool showMatchSettings;
 
     public GameObject map;
+    
     public string GameScene;
+    
     public int numberOfPlayers;
+    
     [SerializeField] private int numberOfPlayerUnits;
+    
     [SerializeField] private GameObject PlayerPrefab;
     [SerializeField] private GameObject UnitPrefab;
+    
     public string[] PlayerColours;
+    
     public AudioClip ButtonHoverSFX;
     public AudioClip ButtonClickSFX;
 
@@ -74,19 +80,21 @@ public class MainMenuManager : MonoBehaviour
                 SpawnUnitAtLocation(closestPoint);*/
 
                 newUnit.transform.SetParent(newPlayer.transform);
+                
                 playerScript.unitList.Add(newUnit.GetComponent<UnitBehaviour>());
-
-                /*var newUnit = Instantiate(UnitPrefab, 
-                    new Vector3(xPos, yPos + 10f, zPos),
-                    Quaternion.identity);*/
-
+                
+                
                 var unitScript = newUnit.GetComponent<UnitBehaviour>();
+                
                 unitScript.enabled = true;
+                
                 unitScript.Owner = (UnitBehaviour.PlayerNumber) i;
+                
                 unitScript.originalIndex = j;
                 
                 var color = Color.black;
                 ColorUtility.TryParseHtmlString(PlayerColours[i], out color);
+                
                 unitScript.PlayerColour = color;
                 
                 newUnit.name = unitScript.Owner + " Unit " + (j + 1);
@@ -95,11 +103,13 @@ public class MainMenuManager : MonoBehaviour
             }
             
             SceneManager.MoveGameObjectToScene(map, SceneManager.GetSceneByName(GameScene));
+            
             SceneManager.MoveGameObjectToScene(newPlayer, SceneManager.GetSceneByName(GameScene));
         }
         
         // Unload the previous Scene
         GameManager.Instance.matchStarted = true;
+        
         SceneManager.UnloadSceneAsync(currentScene);
     }
 
@@ -151,9 +161,13 @@ public class MainMenuManager : MonoBehaviour
     private void Awake()
     {
         ColourHParent = GameObject.Find("ColourHParent");
+        
         Cursor.lockState = CursorLockMode.None;
+        
         MatchSettingsPopup.SetActive(false);
+        
         GameManager.Instance.gameOver = false;
+        
         GameManager.Instance.matchStarted = false;
         
         PlayerColours = new string[2];
@@ -206,8 +220,11 @@ public class MainMenuManager : MonoBehaviour
         for (int i = 0; i < numberOfPlayers; i++)
         {
             var newContainer = Instantiate(ColourHPrefab, Vector3.zero, Quaternion.identity);
+            
             newContainer.transform.SetParent(ColourHParent.transform);
+            
             newContainer.GetComponentInChildren<TMP_Text>().text = "Player " + (i + 1) + " Colour";
+            
             newContainer.GetComponent<ColourDropdownBehaviour>().playerIndex = i;
         }
 
@@ -220,6 +237,7 @@ public class MainMenuManager : MonoBehaviour
     public void SetNumberOfPlayerUnits(int num)
     {
         numberOfPlayerUnits = num + 1;
+        
         GameManager.Instance.NumberOfStartingUnits = num + 1;
     }
 
@@ -231,12 +249,14 @@ public class MainMenuManager : MonoBehaviour
     public void PlayButtonHoverSound()
     {
         var audioSource = GameManager.Instance.SFXSource;
+        
         audioSource.PlayOneShot(ButtonHoverSFX);
     }
     
     public void PlayButtonClickSound()
     {
         var audioSource = GameManager.Instance.SFXSource;
+        
         audioSource.PlayOneShot(ButtonClickSFX);
     }
 

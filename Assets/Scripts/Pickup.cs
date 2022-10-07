@@ -3,15 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "New Pickup", menuName = "Pickup")]
+
 public class Pickup : ScriptableObject
 {
     [Header("Model")] 
     
-    public GameObject model;
+    public Mesh Model;
     
-    [SerializeField] private float ammoAmount;
-    [SerializeField] private float healthAmount;
-    [SerializeField] private float armourAmount;
+    [SerializeField] private int ammoAmount;
+    [SerializeField] public int HealthAmount;
+    [SerializeField] private int armourAmount;
+    [SerializeField] public int TimeAmount;
     [SerializeField] private Weapon weapon;
     
     // Start is called before the first frame update

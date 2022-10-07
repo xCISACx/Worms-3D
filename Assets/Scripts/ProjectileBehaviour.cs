@@ -121,7 +121,7 @@ public class ProjectileBehaviour : MonoBehaviour
 
     private void ApplyKnockback(Vector3 pos)
     {
-        Debug.Log("Applying Knockback");
+        Debug.Log("Applying Knockback with force " + explosionForce);
         
         Collider[] colliders = Physics.OverlapSphere(pos, explosionRadius, layerMask);
 
@@ -135,7 +135,7 @@ public class ProjectileBehaviour : MonoBehaviour
             {
                 rb.isKinematic = false;
                 Debug.Log("setting kinematic to false knockback");
-                rb.AddExplosionForce(explosionForce, transform.position, explosionRadius, upwardsModifier);
+                rb.AddExplosionForce(explosionForce / 10f, transform.position, explosionRadius, upwardsModifier, ForceMode.Impulse);
                 if (unit)
                 {
                     unit.TimeSpentGrounded = 0;

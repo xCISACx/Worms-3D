@@ -118,6 +118,8 @@ public class WeaponBehaviour : MonoBehaviour
             var newProjectile = Instantiate(projectilePrefab, shootPoint.position, Quaternion.identity);
             Physics.IgnoreCollision(newProjectile.GetComponent<Collider>(), user.GetComponent<Collider>());
 
+            newProjectile.GetComponent<ProjectileBehaviour>().explosionForce = currentShootForce.x;
+
             switch (shootingDirection)
             {
                 case Direction.Forward:

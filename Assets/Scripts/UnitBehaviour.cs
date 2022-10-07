@@ -120,7 +120,7 @@ public class UnitBehaviour : MonoBehaviour
     
     [SerializeField] public bool canTakeDamage;
     [SerializeField] public bool canTakeFallDamage;
-    [SerializeField] private float fallDamageToTake;
+    [SerializeField] private int fallDamageToTake;
     [SerializeField] private float fallHeight;
     [SerializeField] private bool countFallDamage = false;
     [SerializeField] public float TimeSpentGrounded;
@@ -505,25 +505,32 @@ public class UnitBehaviour : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
-        //Debug.Log("take damage " + damage);
-        CurrentHealth -= damage;
-        
-        CurrentHealth = Mathf.Clamp(CurrentHealth, 0, 100);
-        
-        canTakeDamage = false;
-        
-        HealthText.text = CurrentHealth.ToString();
-        
-        if (Player.TeamHPBar)
+        if (canTakeDamage)
         {
-            Player.UpdateBar();
-        }
+            canTakeDamage = false;
+            
+            //Debug.Log("take damage " + damage);
+            CurrentHealth -= damage;
         
-        GameManager.Instance.SpawnDamagePopUp(transform, new Vector3(0, 2f, 0), damage);
+            CurrentHealth = Mathf.Clamp(CurrentHealth, 0, 100);
+        
+            canTakeDamage = false;
+        
+            HealthText.text = CurrentHealth.ToString();
+        
+            if (Player.TeamHPBar)
+            {
+                Player.UpdateBar();
+            }
+        
+            GameManager.Instance.SpawnDamagePopUp(transform, new Vector3(0, 2f, 0), damage);
 
-        if (CurrentHealth <= 0)
-        {
-            Die();
+            canTakeDamage = true;
+
+            if (CurrentHealth <= 0)
+            {
+                Die();
+            }
         }
     }
 
@@ -668,25 +675,29 @@ public class UnitBehaviour : MonoBehaviour
             {
                 Debug.Log("Fell from " + fallHeight + " to " + landHeight);
 
-                if (heightFallen >= GameManager.Instance.fallDamageTreshold)
+                var heightFallenInt = Mathf.FloorToInt(heightFallen);
+
+                if (heightFallenInt >= GameManager.Instance.fallDamageTreshold)
                 {
-                    Debug.Log("Taking fall damage from height " + heightFallen);
-                    
-                    TakeDamage(Mathf.FloorToInt(heightFallen - GameManager.Instance.fallDamageTreshold));
+                    Debug.Log("Taking fall damage from height " + heightFallenInt);
 
-                    fallHeight = 0;
+                    fallDamageToTake = heightFallenInt - GameManager.Instance.fallDamageTreshold;
 
-                    falling = false;
-
-                    canShoot = false;
-
-                    GameManager.Instance.StartNextTurn();
+                    if (fallDamageToTake > 0)
+                    {
+                        TakeDamage(fallDamageToTake);  
+                        canShoot = false;
+                        GameManager.Instance.StartNextTurn();
+                    }
                 }
-            }
+                else
+                {
+                    canShoot = true;
+                }
+                
+                fallHeight = 0;
 
-            if (!grounded)
-            {
-                canShoot = true;
+                falling = false;
             }
 
             fallDamageToTake = 0;
@@ -717,10 +728,19 @@ public class UnitBehaviour : MonoBehaviour
             Die();
         }
         
+        // This was added so the units don't get stuck on each other if they jump towards one another
+        
         if (collision.gameObject.CompareTag("Unit"))
         {
             GetComponent<CapsuleCollider>().material.dynamicFriction = 0;
         }
+    }
+
+    public void SetHealth(int health)
+    {
+        CurrentHealth = health;
+        
+        HealthText.text = health.ToString();
     }
 
     private void OnTriggerEnter(Collider other)

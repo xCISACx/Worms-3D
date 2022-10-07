@@ -8,6 +8,7 @@ using Image = UnityEngine.UI.Image;
 public class GlobalHPBehaviour : MonoBehaviour
 {
     public List<Image> HPBars;
+    public List<Transform> HPBarsTransform;
 
     private bool initialisedColours = false;
     
@@ -22,7 +23,18 @@ public class GlobalHPBehaviour : MonoBehaviour
     {
         if (GameManager.Instance.AlivePlayers.Count > 0 && !initialisedColours)
         {
-            var allBars = GetComponentsInChildren<Image>(true).ToList();
+            HPBars.Clear();
+            
+            var allBars = new List<Image>();
+            
+            HPBarsTransform = GetTopLevelChildren(transform).ToList();
+        
+            foreach (var tr in HPBarsTransform)
+            {
+                var image = tr.GetComponent<Image>();
+            
+                allBars.Add(image);
+            }
 
             for (int i = 0; i < GameManager.Instance.playerList.Count; i++)
             {
@@ -40,6 +52,27 @@ public class GlobalHPBehaviour : MonoBehaviour
 
     private void Awake()
     {
-        HPBars = GetComponentsInChildren<Image>().ToList();
+        /*HPBars.Clear();
+
+        HPBarsTransform = GetTopLevelChildren(transform).ToList();
+        
+        foreach (var tr in HPBarsTransform)
+        {
+            var image = tr.GetComponent<Image>();
+            
+            HPBars.Add(image);
+        }*/
+    }
+    
+    public static Transform[] GetTopLevelChildren(Transform parent)
+    {
+        Transform[] Children = new Transform[parent.childCount];
+        
+        for (int ID = 0; ID < parent.childCount; ID++)
+        {
+            Children[ID] = parent.GetChild(ID);
+        }
+        
+        return Children;
     }
 }
