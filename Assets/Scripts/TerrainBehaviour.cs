@@ -17,21 +17,6 @@ public class TerrainBehaviour : MonoBehaviour
         newVertices = mesh.vertices;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        /*Mesh mesh = GetComponent<MeshFilter>().mesh;
-        Vector3[] vertices = mesh.vertices;
-        Vector3[] normals = mesh.normals;
-
-        for (var i = 0; i < vertices.Length; i++)
-        {
-            vertices[i] += normals[i] * Mathf.Sin(Time.time / 5f);
-        }
-
-        mesh.vertices = vertices;*/
-    }
-
     public void DestroyTerrain(Vector3 origin, float radius)
     {
         for (int i = 0; i < newVertices.Length; i++)

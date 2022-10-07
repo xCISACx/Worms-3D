@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Bazooka
   m_EditorClassIdentifier: 
   name: Bazooka
-  model: {fileID: 1710935246616217760, guid: 1b41f25082248c341bba805b64e88913, type: 3}
+  model: {fileID: 7117321401797842027, guid: 731b8adfed1d52d468824c24f15ae3c6, type: 3}
   ammoPrefab: {fileID: 7926522421175382475, guid: b15f321068190a0479093c1c480dc696, type: 3}
   damage: 45
   shootingForce: {x: 100, y: 100, z: 0}
