@@ -26,7 +26,7 @@ public class PickupManager : MonoBehaviour
 
     public void SpawnRandomPickup()
     {
-        Debug.Log("spawning random pickup");
+        //Debug.Log("spawning random pickup");
         
         var xPos = UnityEngine.Random.Range(-27f, 27f);
         var zPos = UnityEngine.Random.Range(-27f, 27f);

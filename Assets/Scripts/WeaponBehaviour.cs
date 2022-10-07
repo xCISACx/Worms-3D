@@ -87,7 +87,7 @@ public class WeaponBehaviour : MonoBehaviour
             
             CurrentShootForce = new Vector3(newShootForceX, newShootForceY, 0);
             
-            Debug.Log("charging " + newShootForceX + " | " + newShootForceY + " | " + CurrentShootForce);
+            //Debug.Log("charging " + newShootForceX + " | " + newShootForceY + " | " + CurrentShootForce);
             
             var barValue = Mathf.InverseLerp(DefaultShootForce.magnitude, MaxShootForce.magnitude, CurrentShootForce.magnitude);
             GameManager.Instance.UIReferences.ChargeBar.fillAmount = barValue;

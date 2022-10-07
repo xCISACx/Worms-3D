@@ -77,7 +77,7 @@ public class PlayerBehaviour : MonoBehaviour
     {
         GlobalTeamHp = 0;
         
-        Debug.Log("Updating Health Bar for " + gameObject.name);
+        //Debug.Log("Updating Health Bar for " + gameObject.name);
         
         for (int j = 0; j < UnitList.Count; j++)
         {
@@ -93,6 +93,6 @@ public class PlayerBehaviour : MonoBehaviour
 
     private void OnDestroy()
     {
-        Debug.Log(gameObject.name + " died");
+        //Debug.Log(gameObject.name + " died");
     }
 }

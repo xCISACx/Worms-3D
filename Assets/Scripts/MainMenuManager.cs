@@ -58,7 +58,7 @@ public class MainMenuManager : MonoBehaviour
             {
                 var closestPoint = GenerateSpawnPoint();
                 
-                Debug.Log(closestPoint);
+                //Debug.Log(closestPoint);
 
                 var newUnit = SpawnUnitAtLocation(closestPoint);
                 
@@ -150,7 +150,7 @@ public class MainMenuManager : MonoBehaviour
                     
                     closestPointToCollider.y += 1f;
                     
-                    Debug.Log(closestPointToCollider);
+                    //Debug.Log(closestPointToCollider);
                 }   
             }
         }

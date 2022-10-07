@@ -267,7 +267,7 @@ public class UnitBehaviour : MonoBehaviour
                 
                 _fallHeight = transform.position.y;
                 
-                Debug.Log("fall height: " + _fallHeight);
+                //Debug.Log("fall height: " + _fallHeight);
 
                 //Debug.Log(rigidbody.velocity);
                 
@@ -476,21 +476,21 @@ public class UnitBehaviour : MonoBehaviour
                     _rigidbody.velocity = new Vector3(_rigidbody.velocity.x, _jumpForce, _rigidbody.velocity.z);
                     Jumping = true;
                     CanMove = false;
-                    Debug.Log("jumping");
+                    //Debug.Log("jumping");
                     break;
                 case 1:
                     //rigidbody.AddForce(Vector3.up * doubleJumpForce, ForceMode.Impulse);
                     _rigidbody.velocity = new Vector3(_rigidbody.velocity.x, _doubleJumpForce, _rigidbody.velocity.z);
                     Jumping = true;
                     CanMove = false;
-                    Debug.Log("double jumping");
+                    //Debug.Log("double jumping");
                     break;
                 case 2:
                     //rigidbody.AddForce(Vector3.up * highJumpForce, ForceMode.Impulse);
                     _rigidbody.velocity = new Vector3(_rigidbody.velocity.x, _highJumpForce, _rigidbody.velocity.z);
                     HighJumping = true;
                     CanMove = false;
-                    Debug.Log("high jumping");
+                    //Debug.Log("high jumping");
                     break;
             }
 
@@ -540,8 +540,8 @@ public class UnitBehaviour : MonoBehaviour
         
         if (GameManager.Instance.CurrentPlayer == Player && Player.CurrentUnit == this && Player.UnitList.Count > 0)
         {
-            Debug.LogWarning("unit killed itself");
-            Debug.LogWarning("suicide turn end");
+            //Debug.LogWarning("unit killed itself");
+            //Debug.LogWarning("suicide turn end");
 
             if (!GameManager.Instance.GameOver)
             {
@@ -563,7 +563,7 @@ public class UnitBehaviour : MonoBehaviour
         {
             GameManager.Instance.SetSelfDestructed(true);
             Player.SelfDestruct(); //OnPlayerDied
-            Debug.Log("unit self destructed");
+            //Debug.Log("unit self destructed");
         }
 
         else if (Player.UnitList.Count == 1)
@@ -576,11 +576,11 @@ public class UnitBehaviour : MonoBehaviour
 
         Player.UnitList.Remove(this);
         
-        Debug.Log("removed " + this + " from " + Player + "'s unitList");
+        //Debug.Log("removed " + this + " from " + Player + "'s unitList");
         
         GameManager.Instance.UnitList.Remove(this);
         
-        Debug.Log("removed " + this + " from GM unitList");
+        //Debug.Log("removed " + this + " from GM unitList");
 
         Destroy(gameObject);
     }
@@ -671,13 +671,13 @@ public class UnitBehaviour : MonoBehaviour
 
             if (Falling && CanTakeFallDamage)
             {
-                Debug.Log("Fell from " + _fallHeight + " to " + landHeight);
+                //Debug.Log("Fell from " + _fallHeight + " to " + landHeight);
 
                 var heightFallenInt = Mathf.FloorToInt(heightFallen);
 
                 if (heightFallenInt >= GameManager.Instance.FallDamageTreshold)
                 {
-                    Debug.Log("Taking fall damage from height " + heightFallenInt);
+                    //Debug.Log("Taking fall damage from height " + heightFallenInt);
 
                     _fallDamageToTake = heightFallenInt - GameManager.Instance.FallDamageTreshold;
 
@@ -704,7 +704,7 @@ public class UnitBehaviour : MonoBehaviour
             {
                 _rigidbody.isKinematic = true;
                 BeingKnockedBack = false;
-                Debug.LogWarning("set being knocked back to false");
+                //Debug.LogWarning("set being knocked back to false");
             }
         }
         

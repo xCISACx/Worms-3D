@@ -24,7 +24,7 @@ public class ProjectileBehaviour : MonoBehaviour
             unit.BeingKnockedBack = true;
             //unit.grounded = false;
             unit.GetComponent<Rigidbody>().isKinematic = false;
-            Debug.LogWarning("set being knocked back to true");
+            //Debug.Log("set being knocked back to true");
         }
         
         if (other.gameObject.CompareTag("Environment") || other.gameObject.CompareTag("Wall"))
@@ -96,13 +96,13 @@ public class ProjectileBehaviour : MonoBehaviour
 
     private void ApplySplashDamage(Vector3 pos)
     {
-        Debug.Log("Applying Splash Damage");
+        //Debug.Log("Applying Splash Damage");
         
         Collider[] colliders = Physics.OverlapSphere(pos, ExplosionRadius, LayerMask);
 
         foreach (Collider collider in colliders)
         {
-            Debug.Log(collider.gameObject.name);
+            //Debug.Log(collider.gameObject.name);
             UnitBehaviour unitBehaviour = collider.GetComponent<UnitBehaviour>();
             
             if (unitBehaviour != null)
@@ -114,27 +114,27 @@ public class ProjectileBehaviour : MonoBehaviour
 
     private void ApplyKnockback(Vector3 pos)
     {
-        Debug.Log("Applying Knockback with force " + ExplosionForce);
+        //Debug.Log("Applying Knockback with force " + ExplosionForce);
         
         Collider[] colliders = Physics.OverlapSphere(pos, ExplosionRadius, LayerMask);
 
         foreach (Collider collider in colliders)
         {
-            Debug.Log(collider.gameObject.name);
+            //Debug.Log(collider.gameObject.name);
             Rigidbody rb = collider.GetComponent<Rigidbody>();
             UnitBehaviour unit = collider.GetComponent<UnitBehaviour>();
 
             if (rb != null)
             {
                 rb.isKinematic = false;
-                Debug.Log("setting kinematic to false knockback");
+                //Debug.Log("setting kinematic to false knockback");
                 rb.AddExplosionForce(ExplosionForce / 10f, transform.position, ExplosionRadius, UpwardsModifier, ForceMode.Impulse);
                 if (unit)
                 {
                     unit.TimeSpentGrounded = 0;
                     unit.Grounded = false;
                 }
-                Debug.Log("adding explosion force");
+                //Debug.Log("adding explosion force");
             }
         }
     }

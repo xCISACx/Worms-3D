@@ -88,7 +88,7 @@ public class GameManager : MonoBehaviour
 
         NumberOfStartingUnits = 1;
 
-        Debug.Log("gm awake");
+        //Debug.Log("gm awake");
 
         //LoadPlayerPrefs();
 
@@ -358,7 +358,7 @@ public class GameManager : MonoBehaviour
     {
         PlayersEliminatedDuringTurn++;
         
-        Debug.LogWarning(player, player);
+        //Debug.LogWarning(player, player);
         
         var barToDestroy = player.TeamHpBar.gameObject;
 
@@ -374,15 +374,15 @@ public class GameManager : MonoBehaviour
         
         AlivePlayers.Remove(playerToDestroy);
             
-        Debug.Log("removing from alive players " + playerToDestroy);
+        //Debug.Log("removing from alive players " + playerToDestroy);
         
         PlayerList.Remove(playerToDestroy);
 
-        Debug.Log("Removed from player list " + playerToDestroy);
+        //Debug.Log("Removed from player list " + playerToDestroy);
 
         PlayerQueue.Remove(playerToDestroy);
         
-        Debug.LogWarning("Removed from player queue " + playerToDestroy);
+        //Debug.LogWarning("Removed from player queue " + playerToDestroy);
         
         Destroy(playerToDestroy.gameObject);
 
@@ -391,21 +391,21 @@ public class GameManager : MonoBehaviour
 
     public void StartNextTurn()
     {
-        Debug.Log("starting next turn flag 1 " + IsTurnStarting);
+        //Debug.Log("starting next turn flag 1 " + IsTurnStarting);
         
         if (!IsTurnStarting)
         {
-            Debug.Log("start next turn if 2 " + IsTurnStarting);
+            //Debug.Log("start next turn if 2 " + IsTurnStarting);
             
             _turnEndCoroutine = StartCoroutine(WaitForTurnToEnd());
             
-            Debug.Log("coroutine called if 3 " + IsTurnStarting);
+            //Debug.Log("coroutine called if 3 " + IsTurnStarting);
             
             IsTurnStarting = true;
         }
         else
         {
-            Debug.Log("can't start next turn else 4 " + IsTurnStarting);
+            //Debug.Log("can't start next turn else 4 " + IsTurnStarting);
             
             //StopCoroutine(_turnEndCoroutine);
         }
@@ -421,7 +421,7 @@ public class GameManager : MonoBehaviour
             
             UIReferences.EndTurnTimerText.gameObject.SetActive(false);
             
-            Debug.Log("starting next turn");
+            //Debug.Log("starting next turn");
         
             InitTurn();
         
@@ -460,7 +460,7 @@ public class GameManager : MonoBehaviour
 
             SetCurrentPlayerValues();
         
-            Debug.Log("switching from " + previousPlayer + " to " + CurrentPlayer);
+            //Debug.Log("switching from " + previousPlayer + " to " + CurrentPlayer);
 
             //MakeAllUnitsKinematic();
 
@@ -527,38 +527,19 @@ public class GameManager : MonoBehaviour
                 player.CurrentUnit.CanMove = true;
                 player.TurnStarted = true;
                 
-                Debug.Log("setting " + player + "'s values");
+                //Debug.Log("setting " + player + "'s values");
             }
             else
             {
                 player.CanPlay = false;
                 player.CurrentUnit.CanMove = false;
                 player.TurnStarted = false;
-                Debug.Log("setting everyone else's values");
+                //Debug.Log("setting everyone else's values");
             }
             
             player.CurrentUnit.CanTakeDamage = true;
             player.CurrentUnit.CanTakeFallDamage = true;
         }
-
-        /*for (int i = 0; i < playerList.Count; i++)
-        {
-            if (i == currentPlayerIndex)
-            {
-                playerList[i].canPlay = true;
-                playerList[i].currentUnit.canMove = true;
-                playerList[i].turnStarted = true;
-            }
-            else
-            {
-                playerList[i].canPlay = false;
-                playerList[i].currentUnit.canMove = false;
-                playerList[i].turnStarted = false;
-            }
-            
-            playerList[i].currentUnit.canTakeDamage = true;
-            playerList[i].currentUnit.canTakeFallDamage = true;
-        }*/
     }
 
     private void SetFirstPersonCamera()
@@ -581,7 +562,7 @@ public class GameManager : MonoBehaviour
         MainCamera.Follow = unit.transform;
         MainCamera.LookAt = unit.transform;
             
-        Debug.Log("setting camera follow to: " + unit.transform);
+        //Debug.Log("setting camera follow to: " + unit.transform);
     }
 
     public void InitTurn()
@@ -635,12 +616,12 @@ public class GameManager : MonoBehaviour
 
         if (!CurrentPlayer.SelfDestructed && PlayerList.Count > 1 && PlayersEliminatedDuringTurn < 2)
         {
-            Debug.Log("removed " + PlayerQueue[0] + "from queue");
+            //Debug.Log("removed " + PlayerQueue[0] + "from queue");
             PlayerQueue.RemoveAt(0);
         }
         else if (CurrentPlayer.SelfDestructed && PlayerList.Count > 1)
         {
-            Debug.Log("did not remove " + PlayerQueue[1] + "from queue as " + PlayerQueue[0] + " self destructed");
+            //Debug.Log("did not remove " + PlayerQueue[1] + "from queue as " + PlayerQueue[0] + " self destructed");
         }
         
         // set the current player to the next one on the queue, now the first element
@@ -680,7 +661,7 @@ public class GameManager : MonoBehaviour
         
         InitUI();
         
-        Debug.Log("Switching to player" + (CurrentPlayerIndex + 1));
+        //Debug.Log("Switching to player" + (CurrentPlayerIndex + 1));
     }
 
     public void NextUnit()
@@ -698,7 +679,7 @@ public class GameManager : MonoBehaviour
         
         UIReferences.CurrentUnitText.text = "Current Unit: " + (CurrentPlayer.CurrentUnit.OriginalIndex + 1);
         
-        Debug.Log("Switching to player " + (CurrentPlayerIndex + 1) + "'s unit " + (CurrentPlayer.CurrentUnitIndex + 1));
+        //Debug.Log("Switching to player " + (CurrentPlayerIndex + 1) + "'s unit " + (CurrentPlayer.CurrentUnitIndex + 1));
     }
 
     public void SpawnDamagePopUp(Transform parent, Vector3 offset, int damage)
